@@ -1,9 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/gofiber/fiber"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"github.com/starkers/lander/database"
 	"github.com/withmandala/go-log"
 )
 
@@ -27,10 +31,21 @@ func envVarExists(key string) bool {
 	return false
 }
 
+func initDatabase() {
+	var err error
+	database.DBConn, err = gorm.Open("sqlite3", "cache.db")
+	if err != nil {
+		panic("failed to connect database")
+	}
+	fmt.Println("Connection Opened to Database")
+}
+
 func main() {
+	initDatabase()
 	app := fiber.New()
 	setupRoutes(app)
 	app.Listen(8000)
+	defer database.DBConn.Close()
 }
 
 func helloWorld(c *fiber.Ctx) {
