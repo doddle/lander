@@ -1,22 +1,10 @@
 package main
 
 import (
-	"context"
-	"fmt"
 	"os"
-	"path/filepath"
-	"time"
 
-	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/client-go/util/homedir"
-
+	"github.com/gofiber/fiber"
 	"github.com/withmandala/go-log"
-	//"k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
-
-	_ "k8s.io/client-go/plugin/pkg/client/auth"
-	"k8s.io/client-go/rest"
 )
 
 // returns true if PLUGIN_DEBUG!=""
@@ -39,66 +27,21 @@ func envVarExists(key string) bool {
 	return false
 }
 
-func autoClientInit(logger *log.Logger) *rest.Config {
-	// we will automatically decide if this is running inside the cluster or on someones laptop
-	// if the ENV vars KUBERNETES_SERVICE_HOST and KUBERNETES_SERVICE_PORT exist
-	// then we can assume this app is running inside a k8s cluster
-	if envVarExists("KUBERNETES_SERVICE_HOST") && envVarExists("KUBERNETES_SERVICE_PORT") {
-		logger.Info("running in-cluster")
-		config, err := rest.InClusterConfig()
-		if err != nil {
-			logger.Error(err)
-		}
-		return config
-	}
-
-	kubeconfig := findKubeConfig()
-	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
-	if err != nil {
-		logger.Error(err)
-	}
-	return config
-}
-
-// does a best guess to the location of your kubeconfig
-func findKubeConfig() string {
-	home := homedir.HomeDir()
-	if envVarExists("KUBECONFIG") {
-		kubeconfig := os.Getenv("KUBECONFIG")
-		return kubeconfig
-	} else {
-		kubeconfig := fmt.Sprintf(filepath.Join(home, ".kube", "config"))
-		return kubeconfig
-	}
-}
-
 func main() {
+	app := fiber.New()
+	setupRoutes(app)
+	app.Listen(8000)
+}
 
-	logger := newLogger(true)
+func helloWorld(c *fiber.Ctx) {
+	c.Send("Hello, World!")
+}
 
-	config := autoClientInit(logger)
+func setupRoutes(app *fiber.App) {
+	app.Get("/", helloWorld)
+	app.Get("/v1/ingress", getIngress)
+}
 
-	// creates the clientset
-	clientset, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		logger.Error(err)
-	}
-
-
-	for {
-		ingressList, err := clientset.ExtensionsV1beta1().Ingresses("").List(context.TODO(), metav1.ListOptions{})
-		if err != nil {
-			// handle err
-		}
-		ingressCtrls := ingressList.Items
-		if len(ingressCtrls) > 0 {
-			for _, ingress := range ingressCtrls {
-				logger.Infof("ingress %s exists in namespace %s\n", ingress.Name, ingress.Namespace)
-			}
-		} else {
-			logger.Info("no ingress found")
-		}
-		time.Sleep(10 * time.Second)
-	}
-
+func getIngress(c *fiber.Ctx) {
+	c.Send("foo")
 }
