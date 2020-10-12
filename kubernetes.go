@@ -7,16 +7,15 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/patrickmn/go-cache"
+	"github.com/withmandala/go-log"
+	"k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/client-go/util/homedir"
-
-	"github.com/withmandala/go-log"
-	//"k8s.io/apimachinery/pkg/api/errors"
-
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/util/homedir"
 )
 
 func autoClientInit(logger *log.Logger) *rest.Config {
@@ -52,36 +51,58 @@ func findKubeConfig() string {
 	}
 }
 
-func listIngresses(logger *log.Logger) {
+func getEndpoints(logger *log.Logger) []string {
+
+	cacheObj := "endpoints"
+	fakeResult := []string{}
+
+	cached, found := cacheShort.Get(cacheObj)
+
+	if found {
+		logger.Debug("getEndpoints serving from cache")
+		return cached.([]string)
+	} else {
+		ingressList, err := getIngressList(logger)
+		if err != nil {
+			logger.Error(err)
+		}
+		ingressObjects := ingressList.Items
+		time.Sleep(5 * time.Second)
+		if len(ingressObjects) > 0 {
+			for _, ingress := range ingressObjects {
+				for _, rule := range ingress.Spec.Rules {
+					for _, p := range rule.IngressRuleValue.HTTP.Paths {
+						uri := p.Path
+						if p.Path == "/" {
+							uri = ""
+						}
+						msg := fmt.Sprintf("https://%s%s", rule.Host, uri)
+						fakeResult = append(fakeResult, msg)
+						logger.Debug(msg)
+
+					}
+				}
+				// for k, v := range ingress.Annotations {
+				// 	logger.Debugf("%s = %s", k, v)
+				// }
+			}
+		}
+		cacheShort.Set(cacheObj, fakeResult, cache.DefaultExpiration)
+		return fakeResult
+	}
+}
+
+// Speaks to the cluster and attempt to pull an IngressList
+func getIngressList(logger *log.Logger) (*v1beta1.IngressList, error) {
+
 	config := autoClientInit(logger)
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
-		logger.Error(err)
+		return nil, err
 	}
 	ingressList, err := clientset.ExtensionsV1beta1().Ingresses("").List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
-		// handle err
+		return nil, err
 	}
-	ingressObjects := ingressList.Items
-	if len(ingressObjects) > 0 {
-		for _, ingress := range ingressObjects {
-			for _, rule := range ingress.Spec.Rules {
-				for _, p := range rule.IngressRuleValue.HTTP.Paths {
-					uri := p.Path
-					if p.Path == "/" {
-						uri = ""
-					}
-					logger.Infof("https://%s%s", rule.Host, uri)
-
-				}
-			}
-			for k, v := range ingress.Annotations {
-				logger.Debugf("%s = %s", k, v)
-
-			}
-		}
-	} else {
-		logger.Info("no ingress found")
-	}
-	time.Sleep(10 * time.Second)
+	return ingressList, err
 }
