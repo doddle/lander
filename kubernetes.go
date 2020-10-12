@@ -1,10 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
 
@@ -48,27 +52,36 @@ func findKubeConfig() string {
 	}
 }
 
-// func main() {
-// 	logger := newLogger(true)
-// 	config := autoClientInit(logger)
-// 	// creates the clientset
-// 	clientset, err := kubernetes.NewForConfig(config)
-// 	if err != nil {
-// 		logger.Error(err)
-// 	}
-// 	for {
-// 		ingressList, err := clientset.ExtensionsV1beta1().Ingresses("").List(context.TODO(), metav1.ListOptions{})
-// 		if err != nil {
-// 			// handle err
-// 		}
-// 		ingressCtrls := ingressList.Items
-// 		if len(ingressCtrls) > 0 {
-// 			for _, ingress := range ingressCtrls {
-// 				logger.Infof("ingress %s exists in namespace %s\n", ingress.Name, ingress.Namespace)
-// 			}
-// 		} else {
-// 			logger.Info("no ingress found")
-// 		}
-// 		time.Sleep(10 * time.Second)
-// 	}
-// }
+func listIngresses(logger *log.Logger) {
+	config := autoClientInit(logger)
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		logger.Error(err)
+	}
+	ingressList, err := clientset.ExtensionsV1beta1().Ingresses("").List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		// handle err
+	}
+	ingressObjects := ingressList.Items
+	if len(ingressObjects) > 0 {
+		for _, ingress := range ingressObjects {
+			for _, rule := range ingress.Spec.Rules {
+				for _, p := range rule.IngressRuleValue.HTTP.Paths {
+					uri := p.Path
+					if p.Path == "/" {
+						uri = ""
+					}
+					logger.Infof("https://%s%s", rule.Host, uri)
+
+				}
+			}
+			for k, v := range ingress.Annotations {
+				logger.Debugf("%s = %s", k, v)
+
+			}
+		}
+	} else {
+		logger.Info("no ingress found")
+	}
+	time.Sleep(10 * time.Second)
+}

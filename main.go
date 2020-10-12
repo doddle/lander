@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/gofiber/fiber"
@@ -31,17 +30,21 @@ func envVarExists(key string) bool {
 	return false
 }
 
-func initDatabase() {
+func initDatabase(logger *log.Logger) {
+	dbObj := "cache.db"
 	var err error
-	database.DBConn, err = gorm.Open("sqlite3", "cache.db")
+	database.DBConn, err = gorm.Open("sqlite3", dbObj)
 	if err != nil {
-		panic("failed to connect database")
+		logger.Error(err)
+		logger.Fatalf("failed to connect database: %s", dbObj)
 	}
-	fmt.Println("Connection Opened to Database")
+	logger.Infof("opened db: %s", dbObj)
 }
 
 func main() {
-	initDatabase()
+	logger := newLogger(true)
+	listIngresses(logger)
+	initDatabase(logger)
 	app := fiber.New()
 	setupRoutes(app)
 	app.Listen(8000)
