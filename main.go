@@ -9,7 +9,8 @@ import (
 	"github.com/withmandala/go-log"
 )
 
-var cacheShort = cache.New(5*time.Minute, 5*time.Minute)
+// create a short cache.. to prevent us hammering the kube api
+var cacheShort = cache.New(1*time.Minute, 2*time.Minute)
 
 func newLogger(debug bool) *log.Logger {
 	// check if debug enabled
@@ -41,9 +42,15 @@ func main() {
 	}
 	app := fiber.New(fiberCfg)
 	app.Get("/", func(c *fiber.Ctx) error {
-		logger.Info(c.Hostname())
-		foo := getEndpoints(logger)
-		return c.JSON(foo)
+		return c.SendString("hello")
+	})
+	app.Get("/v1/endpoints", func(c *fiber.Ctx) error {
+		logger.Info("v1/endpoints")
+		// get ALL endpoints
+		allEndpoints := getEndpoints(logger)
+		// lets filter them for only ones matching the hostname of the context
+		matchedHostnames := onlyHostnamesContaining(allEndpoints, c.Hostname())
+		return c.JSON(matchedHostnames)
 	})
 	logger.Fatal(app.Listen(":8000"))
 }
