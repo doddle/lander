@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/gofiber/fiber"
+	"github.com/gofiber/fiber/v2"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/starkers/lander/database"
@@ -43,23 +43,20 @@ func initDatabase(logger *log.Logger) {
 
 func main() {
 	logger := newLogger(true)
-	listIngresses(logger)
+	//listIngresses(logger)
+
 	initDatabase(logger)
-	app := fiber.New()
-	setupRoutes(app)
-	app.Listen(8000)
 	defer database.DBConn.Close()
+
+	fiberCfg := fiber.Config{
+		DisableStartupMessage: true,
+	}
+	app := fiber.New(fiberCfg)
+	app.Get("/", func(c *fiber.Ctx) error {
+		logger.Info(c.Hostname())
+		listIngresses(logger)
+		return c.SendString("Hello")
+	})
+	logger.Fatal(app.Listen(":8000"))
 }
 
-func helloWorld(c *fiber.Ctx) {
-	c.Send("Hello, World!")
-}
-
-func setupRoutes(app *fiber.App) {
-	app.Get("/", helloWorld)
-	app.Get("/v1/ingress", getIngress)
-}
-
-func getIngress(c *fiber.Ctx) {
-	c.Send("foo")
-}
