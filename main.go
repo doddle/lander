@@ -41,9 +41,9 @@ func main() {
 		DisableStartupMessage: true,
 	}
 	app := fiber.New(fiberCfg)
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("hello")
-	})
+	// app.Get("/", func(c *fiber.Ctx) error {
+	// 	return c.SendString("hello")
+	// })
 	app.Get("/v1/endpoints", func(c *fiber.Ctx) error {
 		logger.Info("v1/endpoints")
 		// get ALL endpoints
@@ -52,5 +52,6 @@ func main() {
 		matchedHostnames := onlyHostnamesContaining(allEndpoints, c.Hostname())
 		return c.JSON(matchedHostnames)
 	})
+	app.Static("/", "./public")
 	logger.Fatal(app.Listen(":8000"))
 }
