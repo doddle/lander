@@ -48,6 +48,7 @@
 		}
 
 		.logo {
+      // margin-top: 0;
 			width: 5.5rem;
 			height: 5.5rem;
 			line-height: 5.5rem;
@@ -56,6 +57,7 @@
 
 			.icon {
 				&:before {
+          // background-color:
 					font-size: 2rem;
 				}
 			}
