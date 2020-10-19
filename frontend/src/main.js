@@ -9,6 +9,8 @@ import vuetify from "./plugins/vuetify";
 Vue.use(crono);
 Vue.config.productionTip = false;
 
+
+
 new Vue({
   router,
   store,
