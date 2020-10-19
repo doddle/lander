@@ -78,6 +78,6 @@ func main() {
 		matchedHostnames := onlyHostnamesContaining(allEndpoints, c.Hostname())
 		return c.JSON(matchedHostnames)
 	})
-	app.Static("/", "./public")
+	app.Static("/", "./frontend/public")
 	logger.Fatal(app.Listen(":8000"))
 }
