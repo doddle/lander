@@ -74,8 +74,10 @@ func main() {
 		logger.Info("v1/endpoints")
 		// get ALL endpoints
 		allEndpoints := getEndpoints(logger)
+		logger.Debugf("getEndpoints returned %v results", len(allEndpoints))
 		// lets filter them for only ones matching the hostname of the context
-		matchedHostnames := onlyHostnamesContaining(allEndpoints, c.Hostname())
+		matchedHostnames := onlyHostnamesContaining(allEndpoints, "main.tooling.doddle.tech")
+		// matchedHostnames := onlyHostnamesContaining(allEndpoints, c.Hostname())
 		return c.JSON(matchedHostnames)
 	})
 	app.Static("/", "./frontend/public")
