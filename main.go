@@ -20,9 +20,8 @@ func newLogger(debug bool) *log.Logger {
 	if debug {
 		logger := log.New(os.Stdout).WithDebug().WithColor()
 		return logger
-	} else {
-		return log.New(os.Stdout).WithColor()
 	}
+	return log.New(os.Stdout).WithColor()
 }
 
 func envVarExists(key string) bool {
@@ -41,7 +40,7 @@ func main() {
 	//defer database.DBConn.Close()
 
 	fiberCfg := fiber.Config{
-		DisableStartupMessage: true,
+		// DisableStartupMessage: true,
 	}
 	app := fiber.New(fiberCfg)
 	app.Get("/favicon.ico", func(c *fiber.Ctx) error {
