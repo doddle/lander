@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"strings"
@@ -33,14 +34,18 @@ func envVarExists(key string) bool {
 }
 
 func main() {
-	logger := newLogger(true)
-	//listIngresses(logger)
 
-	//initDatabase(logger)
-	//defer database.DBConn.Close()
+	flagHost := flag.String("host", "clustername.example.com", "filter ingresses matching this hostname")
+	flagExcludeEndpoints := flag.String("excludeEndpoints", "https://example.com/foo,https://example.com/", "exclude (comma sperated) specific endpoints")
+	flagDebug := flag.Bool("debug", false, "enable or disable debug logging")
+
+	flag.Parse()
+	fmt.Println(*flagDebug)
+
+	logger := newLogger((*flagDebug))
 
 	fiberCfg := fiber.Config{
-		// DisableStartupMessage: true,
+		DisableStartupMessage: true,
 	}
 	app := fiber.New(fiberCfg)
 	app.Get("/img/icons/favicon*", func(c *fiber.Ctx) error {
@@ -70,7 +75,7 @@ func main() {
 		}
 		return c.SendFile(fileName)
 	})
-	app.Get("/favicon.ico", func(c *fiber.Ctx) error {
+	app.Get("/favicon-k8s.*", func(c *fiber.Ctx) error {
 		name := func(c *fiber.Ctx) string {
 			if c.Hostname() == "" {
 				return "unknown"
@@ -98,15 +103,24 @@ func main() {
 		return c.SendFile(fileName)
 	})
 	app.Get("/v1/endpoints", func(c *fiber.Ctx) error {
-		logger.Info("v1/endpoints")
 		// get ALL endpoints
 		allEndpoints := getEndpoints(logger)
-		logger.Debugf("getEndpoints returned %v results", len(allEndpoints))
 		// lets filter them for only ones matching the hostname of the context
-		matchedHostnames := onlyHostnamesContaining(allEndpoints, "main.tooling.doddle.tech")
+		matchedHostnames := onlyHostnamesContaining(allEndpoints, *flagHost, *flagExcludeEndpoints)
 		// matchedHostnames := onlyHostnamesContaining(allEndpoints, c.Hostname())
+		logger.Infof("/v1/endpoints filtered %v known endpoints and returned %v results", len(allEndpoints), len(matchedHostnames))
 		return c.JSON(matchedHostnames)
 	})
+
 	app.Static("/", "./frontend/dist")
+
+	onStartup(logger)
+
+	logger.Info("starting webserver on :8000")
 	logger.Fatal(app.Listen(":8000"))
+}
+
+func onStartup(logger *log.Logger) {
+	logger.Info("getting some initial data bootstrapped")
+	_ = getEndpoints(logger)
 }

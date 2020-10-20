@@ -6,7 +6,7 @@
           alt="identicon"
           class="shrink mr-2"
           contain
-          src="/favicon.ico"
+          src="/favicon-k8s.ico"
           transition="scale-transition"
           width="40"
         />
@@ -28,7 +28,7 @@
       <v-spacer></v-spacer>
 
       <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
+        href="https://github.com/starkers/lander"
         target="_blank"
         text
       >

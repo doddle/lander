@@ -37,8 +37,5 @@ export default {
     this.GetStacks();
   }
 
-  // components: {
-  //   HelloWorld
-  // }
 };
 </script>

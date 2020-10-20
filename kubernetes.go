@@ -52,14 +52,29 @@ func findKubeConfig() string {
 }
 
 // takes a slice of endpoint and only returns ones containing a hostname
-func onlyHostnamesContaining(input []Endpoint, host string) []Endpoint {
+// excluded is a (optionaly comma seperated) list of endpoints to exclude (EG this landing page itself)
+func onlyHostnamesContaining(input []Endpoint, host string, excluded string) []Endpoint {
+	slicedExclude := strings.Split(excluded, ",")
 	result := []Endpoint{}
 	for _, data := range input {
 		if strings.Contains(data.Address, host) {
-			result = append(result, data)
+			if !existsInSlice(slicedExclude, data.Address) {
+				result = append(result, data)
+			}
 		}
 	}
 	return result
+}
+
+// Find takes a slice and looks for an element in it. If found
+// if returns true, otherwise false
+func existsInSlice(slice []string, val string) bool {
+	for _, item := range slice {
+		if item == val {
+			return true
+		}
+	}
+	return false
 }
 
 func getEndpoints(logger *log.Logger) []Endpoint {
@@ -69,8 +84,9 @@ func getEndpoints(logger *log.Logger) []Endpoint {
 	cached, found := cacheShort.Get(cacheObj)
 
 	if found {
-		logger.Debug("getEndpoints serving from cache")
-		return cached.([]Endpoint)
+		data := cached.([]Endpoint)
+		logger.Debugf("getEndpoints retrieved %v items from cache", len(data))
+		return data
 	} else {
 		ingressList, err := getIngressList(logger)
 		if err != nil {
@@ -167,7 +183,6 @@ func guessApp(svc string) App {
 		if strings.Contains(svc, x.Name) {
 			return x
 		}
-		fmt.Println(x.Name)
 	}
 	return fallback
 }
