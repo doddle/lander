@@ -1,59 +1,48 @@
 <template>
-<div class="d-flex flex-column mb-6">
-  <v-card max-width="1080" class="mx-auto">
-    <v-toolbar color="indigo" dark>
-      <!-- <v-app-bar-nav-icon></v-app-bar-nav-icon> -->
+  <div class="d-flex flex-column mb-6">
+    <v-card max-width="700" class="mx-auto">
+      <v-toolbar color="indigo" dark>
+        <!-- <v-app-bar-nav-icon></v-app-bar-nav-icon> -->
 
-      <v-toolbar-title>Cluster Links</v-toolbar-title>
+        <v-toolbar-title>Cluster Links</v-toolbar-title>
 
-      <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
 
-      <!-- <v-btn icon>
-        <v-icon>mdi-magnify</v-icon>
-      </v-btn> -->
+        <!-- <v-btn icon>
+          <v-icon>mdi-magnify</v-icon>
+        </v-btn> -->
 
-      <!-- <v-btn icon>
-        <v-icon>mdi-dots-vertical</v-icon>
-      </v-btn> -->
-    </v-toolbar>
-    <v-list>
-      <v-list-item
-        v-for="item in stacks"
-        :key="item.title"
-        :href="item.address"
-      >
+        <!-- <v-btn icon>
+          <v-icon>mdi-dots-vertical</v-icon>
+        </v-btn> -->
+      </v-toolbar>
+      <v-list>
+        <v-list-item
+          v-for="item in stacks"
+          :key="item.title"
+          :href="item.address"
+        >
+          <v-list-item-icon>
+            <v-icon v-if="item.oauth2proxy" color="green">
+              mdi-account-lock
+            </v-icon>
+          </v-list-item-icon>
 
-        <v-list-item-icon>
-          <v-icon v-if="item.oauth2proxy" color="green">
-            mdi-account-lock
-          </v-icon>
-        </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title v-text="item.address"></v-list-item-title>
 
-        <v-list-item-content>
-          <v-list-item-title v-text="item.address"></v-list-item-title>
-          <v-list-item-subtitle v-html="item.description"></v-list-item-subtitle>
-        </v-list-item-content>
+            <v-list-item-subtitle
+              v-html="item.description"
+            ></v-list-item-subtitle>
+          </v-list-item-content>
 
-        <v-list-item-avatar>
-          <v-img :src="item.icon"></v-img>
-        </v-list-item-avatar>
-      </v-list-item>
-    </v-list>
-  </v-card>
-</div>
-<!-- 
-    <p v-for="post in stacks" :key="post.id">
-      {{ post.address }}
-    </p>
-  </v-container> -->
-  <!-- <v-data-table
-    :headers="headers"
-    :items="stacks"
-    :search="search"
-    class="elevation-3"
-    :rows-per-page-items="[100, 200, 300, 400]"
-  >
-  </v-data-table> -->
+          <v-list-item-avatar>
+            <v-img :src="item.icon"></v-img>
+          </v-list-item-avatar>
+        </v-list-item>
+      </v-list>
+    </v-card>
+  </div>
 </template>
 
 <script>

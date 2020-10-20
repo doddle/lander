@@ -43,6 +43,33 @@ func main() {
 		// DisableStartupMessage: true,
 	}
 	app := fiber.New(fiberCfg)
+	app.Get("/img/icons/favicon*", func(c *fiber.Ctx) error {
+		name := func(c *fiber.Ctx) string {
+			if c.Hostname() == "" {
+				return "unknown"
+			}
+			// strip any trailing ports off and just return the hostname
+			return strings.Split(c.Hostname(), ":")[0]
+		}(c)
+
+		fileName := fmt.Sprintf("icon-%s.png", name)
+
+		if _, err := os.Stat(fileName); os.IsNotExist(err) {
+			icon := identicon.Generate([]byte(name))
+
+			f, err := os.Create(fileName)
+			if err != nil {
+				logger.Error(err)
+			}
+			err = icon.WriteImage(f)
+			if err != nil {
+				logger.Error(err)
+			}
+			f.Close()
+			logger.Infof("rendered a new icon for: %s", name)
+		}
+		return c.SendFile(fileName)
+	})
 	app.Get("/favicon.ico", func(c *fiber.Ctx) error {
 		name := func(c *fiber.Ctx) string {
 			if c.Hostname() == "" {
@@ -80,6 +107,6 @@ func main() {
 		// matchedHostnames := onlyHostnamesContaining(allEndpoints, c.Hostname())
 		return c.JSON(matchedHostnames)
 	})
-	app.Static("/", "./frontend/public")
+	app.Static("/", "./frontend/dist")
 	logger.Fatal(app.Listen(":8000"))
 }

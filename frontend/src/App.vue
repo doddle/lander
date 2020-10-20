@@ -35,7 +35,6 @@
         <span class="mr-2"></span>
         <v-icon>mdi-open-in-new</v-icon>
       </v-btn>
-
     </v-app-bar>
 
     <v-main>
@@ -48,8 +47,8 @@
 import Home from "./components/Home";
 
 export default {
-  title () {
-    return `${this.host}`
+  title() {
+    return `${this.host}`;
   },
   name: "App",
 
@@ -61,8 +60,7 @@ export default {
     return {
       // currentUrl: location.toString(),
       host: location.host
-    }
+    };
   }
-
 };
 </script>
