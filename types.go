@@ -9,6 +9,9 @@ type Endpoint struct {
 	Class       string `json:"class"`       // name of the ingress path
 	Https       bool   `json:"https"`       // https
 	Oauth2proxy bool   `json:"oauth2proxy"` // if its secured by an oauth2proxy
+	Icon        string `json:"icon"`        // we will attempt to guess the ICON for endpoints
+	Description string `json:"description"` // if we can match this to an app, we can propogate this
+	Name        string `json:"name"`        // Application name
 }
 
 // A slice of Endpoint objects

@@ -1,5 +1,6 @@
 <template>
-  <v-card max-width="500" class="mx-auto">
+<div class="d-flex flex-column mb-6">
+  <v-card max-width="1080" class="mx-auto">
     <v-toolbar color="indigo" dark>
       <!-- <v-app-bar-nav-icon></v-app-bar-nav-icon> -->
 
@@ -30,15 +31,16 @@
 
         <v-list-item-content>
           <v-list-item-title v-text="item.address"></v-list-item-title>
-          <v-list-item-subtitle v-html="item.notes"></v-list-item-subtitle>
+          <v-list-item-subtitle v-html="item.description"></v-list-item-subtitle>
         </v-list-item-content>
 
         <v-list-item-avatar>
-          <v-img :src="item.avatar"></v-img>
+          <v-img :src="item.icon"></v-img>
         </v-list-item-avatar>
       </v-list-item>
     </v-list>
   </v-card>
+</div>
 <!-- 
     <p v-for="post in stacks" :key="post.id">
       {{ post.address }}

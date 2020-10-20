@@ -83,6 +83,9 @@ func getEndpoints(logger *log.Logger) []Endpoint {
 				for _, rule := range ingress.Spec.Rules {
 					for _, p := range rule.IngressRuleValue.HTTP.Paths {
 
+						serviceName := p.Backend.ServiceName
+						guessed := guessApp(serviceName)
+
 						// Strip out a trailing "/"
 						uri := p.Path
 						if p.Path == "/" {
@@ -93,6 +96,9 @@ func getEndpoints(logger *log.Logger) []Endpoint {
 							Https:       true,
 							Oauth2proxy: getOauth2ProxyState(logger, ingress),
 							Class:       getIngressClass(logger, ingress),
+							Icon:        guessed.Icon,
+							Description: guessed.Desc,
+							Name:        guessed.Name,
 						}
 						fakeResult = append(fakeResult, msg)
 					}
@@ -102,6 +108,68 @@ func getEndpoints(logger *log.Logger) []Endpoint {
 		cacheShort.Set(cacheObj, fakeResult, cache.DefaultExpiration)
 		return fakeResult
 	}
+}
+
+// App is a generic definition of a known, we'll use these to attempt to guess the apps
+// TODO: add some tags, slice of common service names and import the data from json/yaml maybe
+type App struct {
+	Name string `yaml:"name"`
+	Icon string `yaml:"icon"`
+	Desc string `yaml:"desc"`
+}
+
+func genApps() (fallback App, index []App) {
+	result := []App{}
+	fallback = App{
+		Name: "unknown",
+		Icon: "/assets/link.png",
+		Desc: "generic service",
+	}
+
+	x := App{
+		Name: "grafana",
+		Icon: "/assets/grafana.png",
+		Desc: "View and create all the metric data, also can view logs",
+	}
+	result = append(result, x)
+
+	x = App{
+		Name: "prometheus",
+		Icon: "/assets/prometheus.png",
+		Desc: "browse prometheus directly. Explore configured AlertRules, services discovered and run raw queries",
+	}
+	result = append(result, x)
+
+	x = App{
+		Name: "alertmanager",
+		Icon: "/assets/alertmanager.png",
+		Desc: "manage alerts and silences",
+	}
+	result = append(result, x)
+
+	x = App{
+		Name: "alertmanager",
+		Icon: "/assets/alertmanager.png",
+		Desc: "manage alerts and silences",
+	}
+	result = append(result, x)
+
+	return fallback, result
+
+}
+
+// var knownApps = KnownApps{
+// }
+
+func guessApp(svc string) App {
+	fallback, apps := genApps()
+	for _, x := range apps {
+		if strings.Contains(svc, x.Name) {
+			return x
+		}
+		fmt.Println(x.Name)
+	}
+	return fallback
 }
 
 // returns true/false if ingress Annotations contain what looks like oa2p
@@ -116,7 +184,7 @@ func getOauth2ProxyState(logger *log.Logger, ingress v1beta1.Ingress) bool {
 
 // check if a key exists in an ingress annotation
 func annotationKeyExists(ingress v1beta1.Ingress, key string) bool {
-	for k, _ := range ingress.Annotations {
+	for k := range ingress.Annotations {
 		if k == key {
 			return true
 		}
