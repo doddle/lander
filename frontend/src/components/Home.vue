@@ -2,20 +2,12 @@
   <div class="d-flex flex-column mb-6">
     <v-container>
       <v-card class="mx-auto">
-        <v-toolbar color="indigo" dark>
+        <v-toolbar v-bind:color="fuck" >
           <!-- <v-app-bar-nav-icon></v-app-bar-nav-icon> -->
 
           <v-toolbar-title>Cluster Links</v-toolbar-title>
 
           <v-spacer></v-spacer>
-
-          <!-- <v-btn icon>
-            <v-icon>mdi-magnify</v-icon>
-          </v-btn> -->
-
-          <!-- <v-btn icon>
-            <v-icon>mdi-dots-vertical</v-icon>
-          </v-btn> -->
         </v-toolbar>
         <v-list>
           <v-list-item
@@ -52,10 +44,48 @@ export default {
   name: "Home",
 
   data() {
+    var hostLocation = location.host;
+    var hostName = hostLocation.split(":")[0];
+    var fuck = "yello"
+
+    // var dict = {
+    //   "localhost": "blue",
+    //   "prod": "red",
+    //   "staging": "green"
+    // }
+
+    // fuck = dict.localhost
+    // if (hostName.contains("localhost")) {
+    //   fuck = "green"
+    // }
+
+
+
+
+    switch (hostName) {
+      case "localhost":
+        fuck = "red"
+        break;
+    
+      default:
+        fuck = "blue"
+        break;
+    }
+
     return {
-      stacks: []
+      stacks: [],
+      fuck
     };
+
+
+  // const href = window.location.href; const findTerm = (term) => { if (href.includes(term)){ return href; } }; switch (href) { case findTerm('google'): searchWithGoogle(); break; case findTerm('yahoo'): searchWithYahoo(); break; default: console.log('No search engine found'); }; 
+
+
   },
+
+  // x() {
+  //   return `${this.fuck}`;
+  // },
 
   methods: {
     async getStacks() {

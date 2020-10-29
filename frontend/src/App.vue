@@ -43,21 +43,19 @@
 import Home from "./components/Home";
 
 export default {
-  title() {
-    return `${this.host}`;
-  },
   name: "App",
-
-  components: {
-    Home
-  },
-
   data() {
     var hostLocation = location.host;
     var hostName = hostLocation.split(":")[0];
     return {
       host: hostName
     };
+  },
+  title() {
+    return `${this.host}`;
+  },
+  components: {
+    Home
   }
 };
 </script>
