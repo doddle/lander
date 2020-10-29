@@ -27,17 +27,13 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn
-        href="https://github.com/starkers/lander"
-        target="_blank"
-        text
-      >
+      <v-btn href="https://github.com/starkers/lander" target="_blank" text>
         <span class="mr-2"></span>
         <v-icon>mdi-open-in-new</v-icon>
       </v-btn>
     </v-app-bar>
-
     <v-main>
+      <br />
       <Home />
     </v-main>
   </v-app>
@@ -57,9 +53,10 @@ export default {
   },
 
   data() {
+    var hostLocation = location.host;
+    var hostName = hostLocation.split(":")[0];
     return {
-      // currentUrl: location.toString(),
-      host: location.host
+      host: hostName
     };
   }
 };

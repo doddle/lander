@@ -108,8 +108,12 @@ func main() {
 		// lets filter them for only ones matching the hostname of the context
 		matchedHostnames := onlyHostnamesContaining(allEndpoints, *flagHost, *flagExcludeEndpoints)
 		// matchedHostnames := onlyHostnamesContaining(allEndpoints, c.Hostname())
-		logger.Infof("/v1/endpoints filtered %v known endpoints and returned %v results", len(allEndpoints), len(matchedHostnames))
+		logger.Debugf("/v1/endpoints filtered %v known endpoints and returned %v results", len(allEndpoints), len(matchedHostnames))
 		return c.JSON(matchedHostnames)
+	})
+
+	app.Get("/healthz", func(c *fiber.Ctx) error {
+		return c.SendString("ok")
 	})
 
 	app.Static("/", "./frontend/dist")
