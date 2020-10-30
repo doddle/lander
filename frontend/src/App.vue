@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar app color="primary" dark>
+    <v-app-bar app color="blue-grey lighten-1">
       <div class="d-flex align-center">
         <v-img
           alt="identicon"

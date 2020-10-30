@@ -2,12 +2,15 @@ package identicon
 
 import (
 	"crypto/md5"
+	"fmt"
 	"image"
 	"image/color"
 	"image/png"
 	"io"
 
 	"github.com/llgcode/draw2d/draw2dimg"
+	// https://stackoverflow.com/questions/54197913/parse-hex-string-to-image-color
+	"github.com/icza/gox/imagex/colorx"
 )
 
 type point struct {
@@ -47,11 +50,29 @@ func (i Identicon) WriteImage(w io.Writer) error {
 
 type applyFunc func(Identicon) Identicon
 
-func Generate(input []byte) Identicon {
+// Generate is the main entrypoint to creating the identicon
+func Generate(input []byte, hex string) Identicon {
+
+	// orange #e88726
+	// color, err := colorx.ParseHexColor("#e88726")
+	color, err := colorx.ParseHexColor(fmt.Sprintf("#%s", hex))
+	// blue 26a4e8
+	// color, err := colorx.ParseHexColor("#26a4e8")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(color)
+
+	pickedColour := [3]byte{color.R, color.G, color.B}
+
 	identiconPipe := []applyFunc{
-		pickColor, buildGrid, filterOddSquares, buildPixelMap,
+		buildGrid, filterOddSquares, buildPixelMap,
 	}
 	identicon := hashInput(input)
+
+	// over-ride the color
+	identicon.color = pickedColour
+
 	for _, applyFunc := range identiconPipe {
 		identicon = applyFunc(identicon)
 	}
