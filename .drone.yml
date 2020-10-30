@@ -1,0 +1,46 @@
+kind: pipeline
+name: build
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+
+# - name: tests
+#   image: golang:1.14
+#   commands:
+#   - go get -u github.com/rakyll/gotest
+#   - gotest -v ./...
+
+- name: tags-kapitan
+  image: bitnami/git
+  commands:
+  - git fetch --tags
+  - echo "$(git describe --tags --always)-kapitan" > .tags
+  when:
+    branch:
+    - master
+
+- name: publish
+  image: plugins/docker
+  settings:
+    dockerfile: Dockerfile
+    password:
+      from_secret: dockerhub-pass
+    repo: "${CI_REPO}"
+    username: digtux
+  when:
+    branch:
+    - master
+    - develop
+    - feature/*
+
+trigger:
+  branch:
+  - develop
+  - master
+  - feature/*
+  event:
+  - push
+
