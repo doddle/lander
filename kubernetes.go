@@ -31,9 +31,10 @@ func autoClientInit(logger *log.Logger) *rest.Config {
 		return config
 	}
 
-	config, err := clientcmd.BuildConfigFromFlags("", findKubeConfig())
+	kubeconfig := findKubeConfig()
+	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
 	if err != nil {
-		logger.Fatal(err)
+		logger.Error(err)
 	}
 	return config
 }

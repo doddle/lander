@@ -2,7 +2,7 @@
   <div class="d-flex flex-column mb-6">
     <v-container>
       <v-card class="mx-auto">
-        <v-toolbar v-bind:color="settings.colorscheme">
+        <v-toolbar v-bind:color="fuck" >
           <!-- <v-app-bar-nav-icon></v-app-bar-nav-icon> -->
 
           <v-toolbar-title>Cluster Links</v-toolbar-title>
@@ -44,10 +44,43 @@ export default {
   name: "Home",
 
   data() {
+    var hostLocation = location.host;
+    var hostName = hostLocation.split(":")[0];
+    var fuck = "yello"
+
+    // var dict = {
+    //   "localhost": "blue",
+    //   "prod": "red",
+    //   "staging": "green"
+    // }
+
+    // fuck = dict.localhost
+    // if (hostName.contains("localhost")) {
+    //   fuck = "green"
+    // }
+
+
+
+
+    switch (hostName) {
+      case "localhost":
+        fuck = "red"
+        break;
+    
+      default:
+        fuck = "blue"
+        break;
+    }
+
     return {
       stacks: [],
-      settings: { colorscheme: "blue lighten-5", cluster: "unknown" }
+      fuck
     };
+
+
+  // const href = window.location.href; const findTerm = (term) => { if (href.includes(term)){ return href; } }; switch (href) { case findTerm('google'): searchWithGoogle(); break; case findTerm('yahoo'): searchWithYahoo(); break; default: console.log('No search engine found'); }; 
+
+
   },
 
   // x() {
@@ -55,16 +88,6 @@ export default {
   // },
 
   methods: {
-    async getSettings() {
-      try {
-        const resp = await fetch("/v1/settings");
-        const data = await resp.json();
-        console.log("retrieving settings");
-        this.settings = data;
-      } catch (error) {
-        console.error(error);
-      }
-    },
     async getStacks() {
       try {
         const resp = await fetch("/v1/endpoints");
@@ -83,7 +106,6 @@ export default {
   },
   beforeMount() {
     this.getStacks();
-    this.getSettings();
   }
 };
 </script>
