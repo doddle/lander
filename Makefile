@@ -11,4 +11,4 @@ clean:
 	-rm lander
 
 lander: clean
-	GO111MODULE=on CGO_ENABLED=0 $(GO) build -v -a -installsuffix cgo -ldflags="-X main.VERSION=${VERSION}" -o $@ github.com/starkers/lander
+	GO111MODULE=on CGO_ENABLED=0 $(GO) build -v -a -installsuffix cgo -ldflags="-X main.VERSION=${VERSION}" -o $@ github.com/digtux/lander

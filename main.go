@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/digtux/lander/identicon"
 	"github.com/gofiber/fiber/v2"
 	"github.com/patrickmn/go-cache"
-	"github.com/starkers/lander/identicon"
 	"github.com/withmandala/go-log"
 )
 

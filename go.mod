@@ -1,4 +1,4 @@
-module github.com/starkers/lander
+module github.com/digtux/lander
 
 go 1.14
 

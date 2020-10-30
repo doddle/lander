@@ -27,7 +27,7 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn href="https://github.com/starkers/lander" target="_blank" text>
+      <v-btn href="https://github.com/digtux/lander" target="_blank" text>
         <span class="mr-2"></span>
         <v-icon>mdi-open-in-new</v-icon>
       </v-btn>
