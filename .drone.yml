@@ -17,8 +17,8 @@ steps:
   image: bitnami/git
   commands:
   - git fetch --tags --verbose
-  - TAG="$(git describe --tags --always --dirty)" && \
-  - echo $${TAG} > .tags
+  - TAG=$(git describe --tags --always --dirty)
+  - printf $${TAG} > .tags
     # - printf "$(git describe --tags --always --dirty)" > .tags
   - cat .tags
 
