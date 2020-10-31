@@ -31,19 +31,19 @@ steps:
     event:
     - tag
 
-- name: publish
-  image: plugins/docker
-  settings:
-    dockerfile: Dockerfile
-    password:
-      from_secret: dockerhub-pass
-    repo: "${CI_REPO}"
-    username: digtux
-  when:
-    branch:
-    - master
-    - develop
-    - feature/*
+# - name: publish
+#   image: plugins/docker
+#   settings:
+#     dockerfile: Dockerfile
+#     password:
+#       from_secret: dockerhub-pass
+#     repo: "${CI_REPO}"
+#     username: digtux
+#   when:
+#     branch:
+#     - master
+#     - develop
+#     - feature/*
 
 trigger:
   branch:
