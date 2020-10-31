@@ -17,13 +17,14 @@ steps:
   image: bitnami/git
   commands:
   - git fetch --tags
-  - echo "$(git describe --tags --always)" > .tags
+  - printf "$(git describe --tags --always)" > .tags
   - cat .tags
 
 - name: tag-latest
   image: bitnami/git
   commands:
-  - printf "latest" > .tags
+  - printf ",latest" > .tags
+  - cat .tags
   when:
     branch:
     - master
