@@ -13,11 +13,17 @@ steps:
 #   - go get -u github.com/rakyll/gotest
 #   - gotest -v ./...
 
-- name: tags-kapitan
+- name: tags
   image: bitnami/git
   commands:
   - git fetch --tags
   - echo "$(git describe --tags --always)" > .tags
+  - cat .tags
+
+- name: tag-latest
+  image: bitnami/git
+  commands:
+  - printf "latest" > .tags
   when:
     branch:
     - master
