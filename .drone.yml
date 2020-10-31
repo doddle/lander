@@ -18,10 +18,10 @@ steps:
   commands:
   - git fetch --tags --verbose
   - TAG=$(git describe --tags --always --dirty)
-  - printf $${TAG} > .tags
+  - printf "$${TAG}" > .tags
   - cat .tags
 
-- name: tag-latest
+- name: tag-release
   image: bitnami/git
   commands:
   - TAG=$(git describe --tags --always --dirty)
