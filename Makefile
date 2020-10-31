@@ -4,11 +4,12 @@ GOLANGCILINT ?= golangci-lint
 BINARY := lander
 VERSION ?= $(shell git describe --always --dirty --tags 2>/dev/null || echo "undefined")
 
-run:
-	CGO_CFLAGS="-g -O2 -Wno-return-local-addr" go run .
+#"-s -w" strips debug headers
+build-go:
+	GO111MODULE=on CGO_ENABLED=0 GOOS=linux $(GO) build -v -a -installsuffix cgo -ldflags="-X main.VERSION=${VERSION} -s -w" -o lander .
+
+build-node:
+	cd frontend && npm i --from-lockfile && npm run build
 
 clean:
 	-rm lander
-
-lander: clean
-	GO111MODULE=on CGO_ENABLED=0 $(GO) build -v -a -installsuffix cgo -ldflags="-X main.VERSION=${VERSION}" -o $@ github.com/digtux/lander
