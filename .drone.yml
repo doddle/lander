@@ -18,15 +18,18 @@ steps:
   image: bitnami/git
   commands:
   - git fetch --tags --verbose
+  - SHA="${CI_COMMIT_SHA:0:7}"
   - TAG=$(git describe --tags --always --dirty)
-  - printf "$${TAG}" > .tags
+  - printf "$${SHA},$${TAG}" > .tags
   - cat .tags
 
 - name: tag-release
   image: bitnami/git
   commands:
+  - git fetch --tags --verbose
+  - SHA="${CI_COMMIT_SHA:0:7}"
   - TAG=$(git describe --tags --always --dirty)
-  - printf "release-$${TAG},latest" > .tags
+  - printf "$${SHA},release-$${TAG},latest" > .tags
   - cat .tags
   when:
     event:
