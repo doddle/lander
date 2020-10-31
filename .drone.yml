@@ -7,20 +7,30 @@ platform:
 
 steps:
 
+# TODO: tests would be a good idea
 # - name: tests
 #   image: golang:1.14
 #   commands:
 #   - go get -u github.com/rakyll/gotest
 #   - gotest -v ./...
 
-- name: tags-kapitan
+- name: tag
   image: bitnami/git
   commands:
-  - git fetch --tags
-  - echo "$(git describe --tags --always)-kapitan" > .tags
+  - git fetch --tags --verbose
+  - TAG=$(git describe --tags --always --dirty)
+  - printf "$${TAG}" > .tags
+  - cat .tags
+
+- name: tag-release
+  image: bitnami/git
+  commands:
+  - TAG=$(git describe --tags --always --dirty)
+  - printf "release-$${TAG},latest" > .tags
+  - cat .tags
   when:
-    branch:
-    - master
+    event:
+    - tag
 
 - name: publish
   image: plugins/docker
@@ -43,4 +53,5 @@ trigger:
   - feature/*
   event:
   - push
+  - tag
 
