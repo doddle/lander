@@ -52,4 +52,5 @@ trigger:
   - feature/*
   event:
   - push
+  - tag
 
