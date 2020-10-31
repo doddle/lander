@@ -19,31 +19,31 @@ steps:
   - git fetch --tags --verbose
   - TAG=$(git describe --tags --always --dirty)
   - printf $${TAG} > .tags
-    # - printf "$(git describe --tags --always --dirty)" > .tags
   - cat .tags
 
-# - name: tag-latest
-#   image: bitnami/git
-#   commands:
-#   - printf ",latest" >> .tags
-#   - cat .tags
-#   when:
-#     branch:
-#     - master
+- name: tag-latest
+  image: bitnami/git
+  commands:
+  - TAG=$(git describe --tags --always --dirty)
+  - printf "release-$${TAG},latest" > .tags
+  - cat .tags
+  when:
+    event:
+    - tag
 
-# - name: publish
-#   image: plugins/docker
-#   settings:
-#     dockerfile: Dockerfile
-#     password:
-#       from_secret: dockerhub-pass
-#     repo: "${CI_REPO}"
-#     username: digtux
-#   when:
-#     branch:
-#     - master
-#     - develop
-#     - feature/*
+- name: publish
+  image: plugins/docker
+  settings:
+    dockerfile: Dockerfile
+    password:
+      from_secret: dockerhub-pass
+    repo: "${CI_REPO}"
+    username: digtux
+  when:
+    branch:
+    - master
+    - develop
+    - feature/*
 
 trigger:
   branch:
