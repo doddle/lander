@@ -17,7 +17,7 @@ steps:
   image: bitnami/git
   commands:
   - git fetch --tags
-  - echo "$(git describe --tags --always)-kapitan" > .tags
+  - echo "$(git describe --tags --always)" > .tags
   when:
     branch:
     - master
