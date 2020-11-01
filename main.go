@@ -9,6 +9,7 @@ import (
 
 	"github.com/digtux/lander/identicon"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/redirect/v2"
 	"github.com/icza/gox/imagex/colorx"
 	"github.com/patrickmn/go-cache"
 	"github.com/withmandala/go-log"
@@ -80,14 +81,25 @@ func main() {
 
 	app := fiber.New(fiberCfg)
 
-	app.Get("*favicon*", getFavicon)
+	app.Static("/", "./frontend/dist")
+
+	app.Get("/favicon*", getFavicon)
+	app.Get("/healthz", getHealthz)
 	app.Get("/img/icons/*", getFavicon)
 	app.Get("/v1/endpoints", getEndpoints)
 	app.Get("/v1/settings", getSettings)
-	app.Get("/healthz", getHealthz)
 
-	// serve some static content from here
-	app.Static("/", "./frontend/dist")
+	// sometimes in firefox (pressing "back") you can end up with the url example.com//
+	// redirect that back
+
+	app.Use(redirect.New(redirect.Config{
+		Rules: map[string]string{
+			"//":  "/",
+			"//*": "/",
+			// "//*": "/new/$1",
+		},
+		StatusCode: 301,
+	}))
 
 	onStartup(logger)
 
