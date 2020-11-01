@@ -55,7 +55,7 @@ func Generate(input []byte, hex string) Identicon {
 
 	// orange #e88726
 	// color, err := colorx.ParseHexColor("#e88726")
-	color, err := colorx.ParseHexColor(fmt.Sprintf("#%s", hex))
+	color, err := colorx.ParseHexColor(hex)
 	// blue 26a4e8
 	// color, err := colorx.ParseHexColor("#26a4e8")
 	if err != nil {

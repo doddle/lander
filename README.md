@@ -20,9 +20,9 @@ Simple little landing homepage..
 ## back
 
 The golang app supports a few flags..:
-- `-debug` for extra logging
 - `-host` which hostname to filter for results on the main page
-- `-config` will allow you to read a `config.yaml` (see `config-example.yaml`)  **this allows you to set custom colour schemes**
+- `-hex` the hex colour to be used for the identicon.. EG: `#26c5e8`, `#123`, `#b2C`
+- `-color` the colorscheme (vuetify) to be handed to the frontend.. See: [material-colors](https://vuetifyjs.com/en/styles/colors/#material-colors)
 
 If you run this locally on your computer it will auto-detect your `$KUBECONFIG` and use the current context.
 
@@ -36,14 +36,14 @@ and in this cluster I have:
 This means I can run the app with:
 
 ```
-go run . -host "$(kubectl config current-context)" -debug
+go run . -host "$(kubectl config current-context)"
 ```
 
 
 if your "current-context" is something else.. simply over-ride it.. eg
 
 ```
-go run . -host "ingress.tosee.com"
+go run . -host "ingress.example.com"
 ```
 
 

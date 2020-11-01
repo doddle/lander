@@ -28,3 +28,4 @@ COPY --from=go   /src/lander .
 COPY --from=node /src/frontend/dist /app/frontend/dist
 RUN find /app -type d -exec du -sh {} \; ; du -sh /app/lander
 
+ENTRYPOINT [ "./lander" ]

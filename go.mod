@@ -9,6 +9,7 @@ require (
 	github.com/llgcode/draw2d v0.0.0-20200930101115-bfaf5d914d1e
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/smartystreets/goconvey v1.6.4 // indirect
+	github.com/tideland/golib v4.24.2+incompatible
 	github.com/withmandala/go-log v0.1.0
 	gopkg.in/yaml.v2 v2.3.0
 	k8s.io/api v0.19.0

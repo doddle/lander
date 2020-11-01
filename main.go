@@ -9,6 +9,7 @@ import (
 
 	"github.com/digtux/lander/identicon"
 	"github.com/gofiber/fiber/v2"
+	"github.com/icza/gox/imagex/colorx"
 	"github.com/patrickmn/go-cache"
 	"github.com/withmandala/go-log"
 )
@@ -17,9 +18,36 @@ var (
 	// create a short cache.. to prevent us hammering the kube api
 	cacheShort = cache.New(1*time.Minute, 2*time.Minute)
 
-	// lets guess a colorscheme based on strings from a hostname
+	// setup some global vars
+	flagHost = flag.String("host", "k8s.prod.example.com", "filter ingresses matching this hostname [required]")
+	// flagConfig = flag.String("config", "default", "Specify a config file (customised colour scheme)")
+	flagColor = flag.String("color", "light-blue lighten-2", "Main color scheme (See: https://vuetifyjs.com/en/styles/colors/#material-colors)")
+	flagHex   = flag.String("hex", "#26c5e8", "identicon color, hex string, eg #112233, #123, #bAC")
 
+	// TODO: ideally the logger shouldn't be global
+	logger = newLogger(false)
 )
+
+func init() {
+	flag.Parse()
+}
+
+// Endpoint is for the metadata returned to the browser/frontend
+type Endpoint struct {
+	// these are not ac
+	Address     string `json:"address"`     // combined hostname + /paths
+	Class       string `json:"class"`       // name of the ingress path
+	Https       bool   `json:"https"`       // https
+	Oauth2proxy bool   `json:"oauth2proxy"` // if its secured by an oauth2proxy
+	Icon        string `json:"icon"`        // we will attempt to guess the ICON for endpoints
+	Description string `json:"description"` // if we can match this to an app, we can propogate this
+	Name        string `json:"name"`        // Application name
+}
+
+// EndpointList is just a list/slice of Endpoint objects to make it easier to work with them
+type EndpointList struct {
+	Endpoints []Endpoint `json:"endpoints"`
+}
 
 // Settings to be returned to the browser/client
 type Settings struct {
@@ -29,91 +57,36 @@ type Settings struct {
 
 func onStartup(logger *log.Logger) {
 	logger.Info("getting some initial data bootstrapped")
-	_ = getEndpoints(logger)
+	_ = getIngressEndpoints(logger)
 }
 
 func main() {
 
-	flagHost := flag.String("host", "clustername.example.com", "filter ingresses matching this hostname")
-	flagExcludeEndpoints := flag.String("excludeEndpoints", "https://example.com/foo,https://example.com/", "exclude (comma separated) specific endpoints")
-	flagConfig := flag.String("config", "default", "Specify a config file (customised colour scheme)")
-	flagDebug := flag.Bool("debug", false, "enable or disable debug logging")
+	checkRequredFlag()
 
-	flag.Parse()
-	//fmt.Println(*flagDebug)
+	// handy hex parser: https://github.com/icza/gox/blob/7dc3510ae515f0a6e8479d9a382bc8bb04f3a37d/imagex/colorx/colorx_test.go#L10-L14
+	_, err := colorx.ParseHexColor(*flagHex)
+	if err != nil {
+		logger.Errorf("unable to parse hex value: %s", *flagHex)
+		os.Exit(1)
+	}
 
-	logger := newLogger(*flagDebug)
+	logger.Infof("hex: %s", *flagHex)
+	logger.Infof("colorscheme: %s", *flagColor)
 
 	fiberCfg := fiber.Config{
 		DisableStartupMessage: true,
 	}
 
-	//fmt.Println(*flagConfig)
-	// sets up an initial config (for colourschemes)
-	cfg := initialConfig(logger, *flagConfig)
-
-	logger.Info(cfg)
-
 	app := fiber.New(fiberCfg)
 
-	app.Get("*favicon*", func(c *fiber.Ctx) error {
-		var name string
-		configuredHostname := *flagHost
-		if configuredHostname == "clustername.example.com" {
-			if c.Hostname() == "" {
-				name = "unknown"
-			}
-			name = strings.Split(c.Hostname(), ":")[0]
-		}
-		// the -host param was used.. infer it
-		name = configuredHostname
-		fileName := fmt.Sprintf("icon-%s.png", name)
-		hex := guessHex(logger, cfg.Colorschemes, name)
-		logger.Debugf("guessed the hex: %s for %s", hex, name)
-		if _, err := os.Stat(fileName); os.IsNotExist(err) {
-			icon := identicon.Generate([]byte(name), hex)
+	app.Get("*favicon*", getFavicon)
+	app.Get("/img/icons/*", getFavicon)
+	app.Get("/v1/endpoints", getEndpoints)
+	app.Get("/v1/settings", getSettings)
+	app.Get("/healthz", getHealthz)
 
-			f, err := os.Create(fileName)
-			if err != nil {
-				logger.Error(err)
-			}
-			err = icon.WriteImage(f)
-			if err != nil {
-				logger.Error(err)
-			}
-			f.Close()
-			logger.Infof("rendered a new icon for: %s", name)
-		}
-		// logger.Debugf("served %s", fileName)
-		return c.SendFile(fileName)
-	})
-
-	app.Get("/v1/endpoints", func(c *fiber.Ctx) error {
-		// get ALL endpoints
-		allEndpoints := getEndpoints(logger)
-		// lets filter them for only ones matching the hostname of the context
-		matchedHostnames := onlyHostnamesContaining(allEndpoints, *flagHost, *flagExcludeEndpoints)
-		// matchedHostnames := onlyHostnamesContaining(allEndpoints, c.Hostname())
-		logger.Debugf("/v1/endpoints filtered %v known endpoints and returned %v results", len(allEndpoints), len(matchedHostnames))
-		return c.JSON(matchedHostnames)
-	})
-
-	app.Get("/v1/settings", func(c *fiber.Ctx) error {
-		hostname := *flagHost
-		colour := guessColour(logger, cfg.Colorschemes, hostname)
-		logger.Debugf("guessed the colour: %s", colour)
-
-		settings := Settings{
-			ColorScheme: colour,
-			Cluster:     hostname,
-		}
-		return c.JSON(settings)
-	})
-
-	app.Get("/healthz", func(c *fiber.Ctx) error {
-		return c.SendString("ok")
-	})
-
+	// serve some static content from here
 	app.Static("/", "./frontend/dist")
 
 	onStartup(logger)
@@ -137,4 +110,83 @@ func envVarExists(key string) bool {
 		return true
 	}
 	return false
+}
+
+func getSettings(c *fiber.Ctx) error {
+	settings := Settings{
+		ColorScheme: *flagColor,
+		Cluster:     *flagHost,
+	}
+	return c.JSON(settings)
+}
+
+func getHealthz(c *fiber.Ctx) error {
+	return c.SendString("ok")
+}
+
+// TODO: detect desired sizes from URI and generate smaller/bigger ones also
+func getFavicon(c *fiber.Ctx) error {
+	hex := *flagHex
+	name := *flagHost
+
+	fileName := fmt.Sprintf("/tmp/%s.png", name)
+
+	if _, err := os.Stat(fileName); os.IsNotExist(err) {
+		icon := identicon.Generate([]byte(name), hex)
+
+		f, err := os.Create(fileName)
+		if err != nil {
+			logger.Error(err)
+		}
+		err = icon.WriteImage(f)
+		if err != nil {
+			logger.Error(err)
+		}
+		f.Close()
+		logger.Infof("rendered a new icon for: %s, hex: %s", name, hex)
+	}
+	uri := c.Context().Request.URI().LastPathSegment()
+	logger.Infof("/%s served: %s", uri, fileName)
+	return c.SendFile(fileName)
+}
+func getEndpoints(c *fiber.Ctx) error {
+	// get ALL endpoints
+	allEndpoints := getIngressEndpoints(logger)
+	// lets filter them for only ones matching the hostname of the context
+	containsHostname := onlyHostnamesContaining(allEndpoints, *flagHost)
+	matchedHostnames := []Endpoint{}
+	for _, i := range containsHostname {
+		// exclude hostnames that are not identical to flagHost
+		// input here will be like: https://example.com, http://example.com/foo
+		split := strings.Split(i.Address, "/")
+
+		// len 3 includes only addresses with something after the "/" .. eg:
+		// - example.com/foo
+		// this should exclude the lander itself (designed to be on https://cluster.example.com)
+		if len(split) > 3 {
+			got := split[2]
+			want := *flagHost
+			if strings.Compare(got, want) == 0 {
+				matchedHostnames = append(matchedHostnames, i)
+
+			}
+		}
+	}
+	logger.Infof("/v1/endpoints filtered %v known endpoints and returned %v results", len(allEndpoints), len(matchedHostnames))
+	return c.JSON(matchedHostnames)
+}
+
+// using flag.Visit, check if a flag was provided
+// if not.. tell the user, print `-help` and bail
+func checkRequredFlag() {
+	required := []string{"host"}
+	seen := make(map[string]bool)
+	flag.Visit(func(f *flag.Flag) { seen[f.Name] = true })
+	for _, req := range required {
+		if !seen[req] {
+			fmt.Printf("ERROR: missing required flag: '-%s'\n-------------\n", req)
+			flag.PrintDefaults()
+			os.Exit(2)
+		}
+	}
 }

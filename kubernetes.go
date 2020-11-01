@@ -52,14 +52,11 @@ func findKubeConfig() string {
 
 // takes a slice of endpoint and only returns ones containing a hostname
 // excluded is a (optionaly comma seperated) list of endpoints to exclude (EG this landing page itself)
-func onlyHostnamesContaining(input []Endpoint, host string, excluded string) []Endpoint {
-	slicedExclude := strings.Split(excluded, ",")
+func onlyHostnamesContaining(input []Endpoint, host string) []Endpoint {
 	result := []Endpoint{}
 	for _, data := range input {
 		if strings.Contains(data.Address, host) {
-			if !existsInSlice(slicedExclude, data.Address) {
-				result = append(result, data)
-			}
+			result = append(result, data)
 		}
 	}
 	return result
@@ -76,7 +73,7 @@ func existsInSlice(slice []string, val string) bool {
 	return false
 }
 
-func getEndpoints(logger *log.Logger) []Endpoint {
+func getIngressEndpoints(logger *log.Logger) []Endpoint {
 	cacheObj := "endpoints"
 	fakeResult := []Endpoint{}
 
@@ -84,7 +81,7 @@ func getEndpoints(logger *log.Logger) []Endpoint {
 
 	if found {
 		data := cached.([]Endpoint)
-		logger.Debugf("getEndpoints retrieved %v items from cache", len(data))
+		// logger.Debugf("getEndpoints retrieved %v items from cache", len(data))
 		return data
 	} else {
 		ingressList, err := getIngressList(logger)
@@ -144,14 +141,14 @@ func genApps() (fallback App, index []App) {
 	x := App{
 		Name: "grafana",
 		Icon: "/assets/grafana.png",
-		Desc: "View and create all the metric data, also can view logs",
+		Desc: "View and create dashboards for prometheus metric data, can also view+stream logs",
 	}
 	result = append(result, x)
 
 	x = App{
 		Name: "prometheus",
 		Icon: "/assets/prometheus.png",
-		Desc: "browse prometheus directly. Explore configured AlertRules, services discovered and run raw queries",
+		Desc: "Explore prometheus Alerts, AlertRules, Service discovery and run raw queries",
 	}
 	result = append(result, x)
 
@@ -163,18 +160,15 @@ func genApps() (fallback App, index []App) {
 	result = append(result, x)
 
 	x = App{
-		Name: "alertmanager",
-		Icon: "/assets/alertmanager.png",
-		Desc: "manage alerts and silences",
+		Name: "kibana",
+		Icon: "/assets/kibana.png",
+		Desc: "aggregate and explore log data+graphs",
 	}
 	result = append(result, x)
 
 	return fallback, result
 
 }
-
-// var knownApps = KnownApps{
-// }
 
 func guessApp(svc string) App {
 	fallback, apps := genApps()
