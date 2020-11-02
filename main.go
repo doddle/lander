@@ -91,7 +91,7 @@ func main() {
 
 	app.Static("/", "./frontend/dist", fiber.Static{
 		Compress: true,
-		MaxAge:   300,
+		// MaxAge:   300,
 	})
 
 	app.Get("/favicon*", getFavicon)
