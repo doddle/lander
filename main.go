@@ -202,8 +202,9 @@ func guessSize(input string) IconSize {
 // TODO: detect desired sizes from URI and generate smaller/bigger ones also
 func getFavicon(c *fiber.Ctx) error {
 	hex := *flagHex
+	name := *flagHost
 	uri := c.Context().Request.URI()
-	name := uri.LastPathSegment()
+	uriPath := uri.LastPathSegment()
 
 	// buildPixelMap() has hard-coded sizes.. cannot use guessSize() until
 	// thats figured out I guess
@@ -233,9 +234,10 @@ func getFavicon(c *fiber.Ctx) error {
 		f.Close()
 		logger.Infof("rendered a new icon for: %s, hex: %s", name, hex)
 	}
-	logger.Infof("%s served: %s", uri.Path(), fileName)
+	logger.Infof("%s served: %s", uriPath, fileName)
 	return c.SendFile(fileName)
 }
+
 func getEndpoints(c *fiber.Ctx) error {
 	// uri := c.Context().Request.URI()
 
