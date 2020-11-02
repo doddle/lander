@@ -23,7 +23,6 @@ func autoClientInit(logger *log.Logger) *rest.Config {
 	// if the ENV vars KUBERNETES_SERVICE_HOST and KUBERNETES_SERVICE_PORT exist
 	// then we can assume this app is running inside a k8s cluster
 	if envVarExists("KUBERNETES_SERVICE_HOST") && envVarExists("KUBERNETES_SERVICE_PORT") {
-		logger.Info("running in-cluster")
 		config, err := rest.InClusterConfig()
 		if err != nil {
 			logger.Error(err)
