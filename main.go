@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -56,6 +58,11 @@ type Settings struct {
 	Cluster     string `json:"cluster"`
 }
 
+type IconSize struct {
+	Width  int
+	Height int
+}
+
 func onStartup(logger *log.Logger) {
 	logger.Info("getting some initial data bootstrapped")
 	_ = getIngressEndpoints(logger)
@@ -77,15 +84,20 @@ func main() {
 
 	fiberCfg := fiber.Config{
 		DisableStartupMessage: true,
+		StrictRouting:         true,
 	}
 
 	app := fiber.New(fiberCfg)
 
-	app.Static("/", "./frontend/dist")
+	app.Static("/", "./frontend/dist", fiber.Static{
+		Compress: true,
+		MaxAge:   300,
+	})
 
 	app.Get("/favicon*", getFavicon)
-	app.Get("/healthz", getHealthz)
 	app.Get("/img/icons/*", getFavicon)
+
+	app.Get("/healthz", getHealthz)
 	app.Get("/v1/endpoints", getEndpoints)
 	app.Get("/v1/settings", getSettings)
 
@@ -100,6 +112,10 @@ func main() {
 		},
 		StatusCode: 301,
 	}))
+
+	// app.Use(cors.New(cors.Config{
+	// 	AllowHeaders: "Cache-Control: No-Store",
+	// }))
 
 	onStartup(logger)
 
@@ -136,15 +152,65 @@ func getHealthz(c *fiber.Ctx) error {
 	return c.SendString("ok")
 }
 
+// guessSize will look at an inbound URI/path.. for example:
+// - img/icons/apple-touch-icon-152x152.png
+// - img/icons/apple-touch-icon-120x120.png
+// it will attempt to match the 152x152 (or similar) patterns
+// and return a string such as 152x152
+// if none are matched a default of 250 is returned
+func guessSize(input string) IconSize {
+
+	// defaults
+	var defaultSize = IconSize{}
+	defaultSize.Width = 250
+	defaultSize.Height = 250
+
+	patternAll := `[0-9]{1,}x[0-9]{1,}`
+	matched, err := regexp.MatchString(patternAll, input)
+
+	// error compiling.. return the default
+	if err != nil {
+		return defaultSize
+	}
+	// didn't match a regex.. return the default
+	if !matched {
+		return defaultSize
+	}
+
+	// if it did match.. lets get the value from it
+	re := regexp.MustCompile(patternAll)
+	matchedString := re.FindString(input)
+	x := strings.Split(matchedString, "x")
+
+	desiredWidth := x[0]
+	desiredHeight := x[1]
+	if desiredHeight != desiredWidth {
+		// didn't request identical Width + Height
+		// this is intended for Identicons.. lets just return the default
+		return defaultSize
+	} else {
+		w, _ := strconv.Atoi(desiredWidth)
+		if w > 250 {
+			return defaultSize
+		}
+		defaultSize.Width = w
+		defaultSize.Height = w
+		return defaultSize
+	}
+}
+
 // TODO: detect desired sizes from URI and generate smaller/bigger ones also
 func getFavicon(c *fiber.Ctx) error {
 	hex := *flagHex
 	name := *flagHost
+	uri := c.Context().Request.URI()
 
-	fileName := fmt.Sprintf("/tmp/%s.png", name)
+	size := guessSize(string(uri.LastPathSegment()))
+
+	fileName := fmt.Sprintf("/tmp/.lander-%s-%dx%d.png", name, size.Width, size.Height)
 
 	if _, err := os.Stat(fileName); os.IsNotExist(err) {
-		icon := identicon.Generate([]byte(name), hex)
+		icon := identicon.Generate([]byte(name), hex, size.Width, size.Height)
 
 		f, err := os.Create(fileName)
 		if err != nil {
@@ -157,15 +223,19 @@ func getFavicon(c *fiber.Ctx) error {
 		f.Close()
 		logger.Infof("rendered a new icon for: %s, hex: %s", name, hex)
 	}
-	uri := c.Context().Request.URI().LastPathSegment()
-	logger.Infof("/%s served: %s", uri, fileName)
+	logger.Infof("%s served: %s", uri.Path(), fileName)
 	return c.SendFile(fileName)
 }
 func getEndpoints(c *fiber.Ctx) error {
+	// uri := c.Context().Request.URI()
+
 	// get ALL endpoints
 	allEndpoints := getIngressEndpoints(logger)
+
 	// lets filter them for only ones matching the hostname of the context
 	containsHostname := onlyHostnamesContaining(allEndpoints, *flagHost)
+
+	// create an empty slice of endpoints
 	matchedHostnames := []Endpoint{}
 	for _, i := range containsHostname {
 		// exclude hostnames that are not identical to flagHost
@@ -173,18 +243,22 @@ func getEndpoints(c *fiber.Ctx) error {
 		split := strings.Split(i.Address, "/")
 
 		// len 3 includes only addresses with something after the "/" .. eg:
-		// - example.com/foo
-		// this should exclude the lander itself (designed to be on https://cluster.example.com)
+		// - example.com         <- not match
+		// - example.com/foo     <- would match
+		// this should exclude the lander itself (designed to be on https://cluster.example.com/)
 		if len(split) > 3 {
 			got := split[2]
 			want := *flagHost
 			if strings.Compare(got, want) == 0 {
 				matchedHostnames = append(matchedHostnames, i)
-
 			}
 		}
 	}
-	logger.Infof("/v1/endpoints filtered %v known endpoints and returned %v results", len(allEndpoints), len(matchedHostnames))
+	// logger.Infof("%s returned %d of %d",
+	// 	uri.Path(),
+	// 	len(matchedHostnames),
+	// 	len(allEndpoints),
+	// )
 	return c.JSON(matchedHostnames)
 }
 

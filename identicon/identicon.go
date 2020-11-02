@@ -34,11 +34,13 @@ type Identicon struct {
 	grid       []byte
 	gridPoints []gridPoint
 	pixelMap   []drawingPoint
+	width      int
+	height     int
 }
 
 // WriteTo writes the identicon image to the given writer
 func (i Identicon) WriteImage(w io.Writer) error {
-	var img = image.NewRGBA(image.Rect(0, 0, 250, 250))
+	var img = image.NewRGBA(image.Rect(0, 0, i.width, i.height))
 	col := color.RGBA{R: i.color[0], G: i.color[1], B: i.color[2], A: 255}
 
 	for _, pixel := range i.pixelMap {
@@ -51,7 +53,7 @@ func (i Identicon) WriteImage(w io.Writer) error {
 type applyFunc func(Identicon) Identicon
 
 // Generate is the main entrypoint to creating the identicon
-func Generate(input []byte, hex string) Identicon {
+func Generate(input []byte, hex string, width int, height int) Identicon {
 
 	// orange #e88726
 	// color, err := colorx.ParseHexColor("#e88726")
@@ -70,8 +72,10 @@ func Generate(input []byte, hex string) Identicon {
 	}
 	identicon := hashInput(input)
 
-	// over-ride the color
+	// over-ride the settings
 	identicon.color = pickedColour
+	identicon.width = width
+	identicon.height = height
 
 	for _, applyFunc := range identiconPipe {
 		identicon = applyFunc(identicon)
