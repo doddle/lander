@@ -84,7 +84,7 @@ func main() {
 
 	fiberCfg := fiber.Config{
 		DisableStartupMessage: true,
-		StrictRouting:         true,
+		StrictRouting:         true, // tell fabric to not try to redirect to "//" all the time with static content
 	}
 
 	app := fiber.New(fiberCfg)
