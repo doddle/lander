@@ -2,7 +2,7 @@ GO ?= go
 GOLANGCILINT ?= golangci-lint
 
 BINARY := lander
-VERSION ?= $(shell git describe --always --dirty --tags 2>/dev/null || echo "undefined")
+VERSION ?= $(shell git describe --always --tags 2>/dev/null || echo "undefined")
 
 #"-s -w" strips debug headers
 build-go:

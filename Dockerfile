@@ -1,12 +1,12 @@
 ## go backend
-FROM golang:1.14 as go
+FROM golang:1.15 as go
 
-ENV UPX_VER=3.96
 WORKDIR /src
 COPY . .
 RUN make build-go && du -sh lander
 
 ## shrink the binary
+ENV UPX_VER=3.96
 RUN apt update && \
       apt install -qy xz-utils && \
       wget https://github.com/upx/upx/releases/download/v${UPX_VER}/upx-${UPX_VER}-amd64_linux.tar.xz && \
