@@ -2,23 +2,16 @@
   <v-app>
     <v-app-bar app color="blue-grey lighten-1">
       <div class="d-flex align-center">
-        <v-img
-          alt="identicon"
-          class="shrink mr-2"
-          contain
-          src="/favicon-k8s.ico"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <!-- <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        /> -->
+        <a :href="'/favicon-' + host + '.png'">
+          <img
+            :src="`favicon-${host}.ico`"
+            alt="identicon"
+            class="shrink mr-2"
+            contain
+            transition="scale-transition"
+            width="40"
+          />
+        </a>
       </div>
 
       <v-spacer></v-spacer>
