@@ -13,6 +13,7 @@ import (
 	"github.com/icza/gox/imagex/colorx"
 	"github.com/patrickmn/go-cache"
 	"github.com/withmandala/go-log"
+	"github.com/digtux/lander/pkg/deployments"
 )
 
 var (
@@ -215,6 +216,10 @@ func getEndpoints(c *fiber.Ctx) error {
 	// 	len(allEndpoints),
 	// )
 	return c.JSON(matchedHostnames)
+}
+
+func getDeployments(c *fiber.Ctx) error {
+	allDeployments :=
 }
 
 // using flag.Visit, check if a flag was provided

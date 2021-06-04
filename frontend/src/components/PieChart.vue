@@ -5,23 +5,21 @@ export default {
   data() {
     return {
       chartData: {
-        labels: ["Italy", "India", "Japan", "USA"],
+        labels: ["Error", "Running", "Unknown"],
         datasets: [
           {
-            borderWidth: 1,
+            borderWidth: 0,
             borderColor: [
-              "rgba(255,99,132,1)",
-              "rgba(54, 162, 235, 1)",
-              "rgba(255, 206, 86, 1)",
-              "rgba(75, 192, 192, 1)"
+              "rgba(255,99,132)",
+              "rgb(65,194,93,1)",
+              "rgb(235,190,54)"
             ],
             backgroundColor: [
               "rgba(255, 99, 132, 0.2)",
-              "rgba(54, 162, 235, 0.2)",
-              "rgba(255, 206, 86, 0.2)",
-              "rgba(75, 192, 192, 0.2)"
+              "rgba(86, 255, 123, 0.2)",
+              "rgba(235,190,54,0.2)"
             ],
-            data: [1000, 500, 1500, 1000]
+            data: [5, 343, 0]
           }
         ]
       },
@@ -29,7 +27,7 @@ export default {
         legend: {
           display: true
         },
-        responsive: true,
+        responsive: false,
         maintainAspectRatio: false
       }
     };
