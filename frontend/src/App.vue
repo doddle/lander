@@ -29,7 +29,7 @@
       <br />
       <Home />
       <div class="small">
-        <pie-chart />
+        <Apex />
       </div>
     </v-main>
   </v-app>
@@ -37,13 +37,13 @@
 
 <script>
 import Home from "./components/Home";
-import PieChart from "@/components/PieChart";
+import Apex from "./components/Apex.vue";
 
 export default {
   name: "App",
   data() {
-    var hostLocation = location.host;
-    var hostName = hostLocation.split(":")[0];
+    const hostLocation = location.host;
+    const hostName = hostLocation.split(":")[0];
     return {
       host: hostName
     };
@@ -53,7 +53,7 @@ export default {
   },
   components: {
     Home,
-    PieChart
+    Apex
   }
 };
 </script>

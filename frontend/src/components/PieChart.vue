@@ -2,6 +2,8 @@
 import { Pie } from "vue-chartjs";
 
 export default {
+  extends: Pie,
+
   data() {
     return {
       chartData: {
@@ -32,7 +34,6 @@ export default {
       }
     };
   },
-  extends: Pie,
   mounted() {
     this.renderChart(this.chartData, this.options);
   }
