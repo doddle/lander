@@ -32,3 +32,5 @@ frontend-build: frontend-install
 clean:
 	-rm lander
 	-rm -rf frontend/node_modules/
+
+lint: backend-lint frontend-lint

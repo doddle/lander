@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/digtux/lander/pkg/pie-deploy"
+	"k8s.io/client-go/kubernetes"
 	"os"
 	"strings"
 	"time"
@@ -13,7 +15,6 @@ import (
 	"github.com/icza/gox/imagex/colorx"
 	"github.com/patrickmn/go-cache"
 	"github.com/withmandala/go-log"
-	"github.com/digtux/lander/pkg/deployments"
 )
 
 var (
@@ -28,6 +29,7 @@ var (
 
 	// TODO: ideally the logger shouldn't be global
 	logger = newLogger(false)
+	kubeConfig = autoClientInit(logger)
 )
 
 func init() {
@@ -94,6 +96,8 @@ func main() {
 	app.Get("/healthz", getHealthz)
 	app.Get("/v1/endpoints", getEndpoints)
 	app.Get("/v1/settings", getSettings)
+
+	app.Get("/v1/pie/deployments", getDeployments)
 
 	// sometimes in firefox (pressing "back") you can end up with the url example.com//
 	// redirect that back
@@ -182,6 +186,18 @@ func getFavicon(c *fiber.Ctx) error {
 	return c.SendFile(fileName)
 }
 
+func getDeployments(c *fiber.Ctx) error {
+	clientSet, err  := kubernetes.NewForConfig(kubeConfig)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	stuff, err := pie_deploy.AssembleDeploymentPieChart(logger, clientSet)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	return c.JSON(stuff)
+
+}
 func getEndpoints(c *fiber.Ctx) error {
 	// uri := c.Context().Request.URI()
 
@@ -216,10 +232,6 @@ func getEndpoints(c *fiber.Ctx) error {
 	// 	len(allEndpoints),
 	// )
 	return c.JSON(matchedHostnames)
-}
-
-func getDeployments(c *fiber.Ctx) error {
-	allDeployments :=
 }
 
 // using flag.Visit, check if a flag was provided

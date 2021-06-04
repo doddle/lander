@@ -82,7 +82,6 @@ func getIngressEndpoints(logger *log.Logger) []Endpoint {
 			for _, ingress := range ingressObjects {
 				for _, rule := range ingress.Spec.Rules {
 					for _, p := range rule.IngressRuleValue.HTTP.Paths {
-
 						serviceName := p.Backend.ServiceName
 						guessed := guessApp(serviceName)
 
@@ -200,7 +199,6 @@ func getIngressClass(logger *log.Logger, ingress v1beta1.Ingress) string {
 
 // Speaks to the cluster and attempt to pull an IngressList
 func getIngressList(logger *log.Logger) (*v1beta1.IngressList, error) {
-
 	config := autoClientInit(logger)
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
