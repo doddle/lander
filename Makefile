@@ -4,11 +4,18 @@ GOLANGCILINT ?= golangci-lint
 BINARY := lander
 VERSION ?= $(shell git describe --always --tags 2>/dev/null || echo "undefined")
 
+lint-go:
+	golangci-lint run
+
+lint-vue:
+	cd frontend
+	eslint --ext .js,.vue --max-warnings 0 ./src
+
 #"-s -w" strips debug headers
-build-go:
+build-go: lint-vue
 	GO111MODULE=on CGO_ENABLED=0 GOOS=linux $(GO) build -v -a -installsuffix cgo -ldflags="-X main.VERSION=${VERSION} -s -w" -o lander .
 
-build-node:
+build-node: lint-vue
 	cd frontend && npm i --from-lockfile && npm run build
 
 clean:

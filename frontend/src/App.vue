@@ -28,12 +28,16 @@
     <v-main>
       <br />
       <Home />
+      <div class="small">
+        <pie-chart />
+      </div>
     </v-main>
   </v-app>
 </template>
 
 <script>
-import Home from "./components/Home";
+import Home from './components/Home';
+import PieChart from '@/components/PieChart';
 
 export default {
   name: "App",
@@ -48,7 +52,15 @@ export default {
     return `${this.host}`;
   },
   components: {
-    Home
+    Home,
+    PieChart
   }
 };
 </script>
+
+<style>
+.small {
+  max-width: 250px;
+  margin: 150px auto;
+}
+</style>

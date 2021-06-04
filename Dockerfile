@@ -3,6 +3,7 @@ FROM golang:1.15 as go
 
 WORKDIR /src
 COPY . .
+RUN wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.40.1
 RUN make build-go && du -sh lander
 
 ## shrink the binary
@@ -14,7 +15,7 @@ RUN apt update && \
       ./upx-${UPX_VER}-amd64_linux/upx --no-progress lander
 
 ## build front
-FROM node:12.14.1 as node
+FROM node:15.14.0 as node
 
 WORKDIR /src
 COPY . .
