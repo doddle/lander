@@ -8,7 +8,7 @@ lint-go:
 	golangci-lint run --timeout 3m
 
 lint-vue:
-	npm -g i eslint
+	npm i -g eslint
 	cd frontend && eslint --ext .js,.vue --max-warnings 0 ./src
 
 #"-s -w" strips debug headers
