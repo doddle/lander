@@ -19,6 +19,7 @@ FROM node:15.14.0 as node
 
 WORKDIR /src
 COPY . .
+RUN npm -i eslint
 RUN make build-node
 
 ## pull it all together
