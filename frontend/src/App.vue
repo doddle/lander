@@ -36,8 +36,8 @@
 </template>
 
 <script>
-import Home from './components/Home';
-import PieChart from '@/components/PieChart';
+import Home from "./components/Home";
+import PieChart from "@/components/PieChart";
 
 export default {
   name: "App",

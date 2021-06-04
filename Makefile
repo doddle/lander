@@ -23,6 +23,8 @@ frontend-install:
 frontend-lint: frontend-install
 	cd frontend && npm i eslint -g && eslint --ext .js,.vue --max-warnings 0 ./src
 
+frontend-lint-fix:
+	cd frontend && npm i eslint -g && eslint --fix --ext .js,.vue --max-warnings 0 ./src
 
 frontend-build: frontend-install
 	cd frontend && npm run build
