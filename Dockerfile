@@ -3,7 +3,7 @@ FROM golang:1.15 as go
 
 WORKDIR /src
 COPY . .
-RUN wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.40.1
+RUN wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.40.1 && mv ./bin/golangci-lint /bin/.
 RUN make build-go && du -sh lander
 
 ## shrink the binary
