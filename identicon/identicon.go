@@ -91,13 +91,6 @@ func hashInput(input []byte) Identicon {
 	}
 }
 
-func pickColor(identicon Identicon) Identicon {
-	rgb := [3]byte{}
-	copy(rgb[:], identicon.hash[:3])
-	identicon.color = rgb
-	return identicon
-}
-
 func buildGrid(identicon Identicon) Identicon {
 	var grid []byte
 	for i := 0; i < len(identicon.hash) && i+3 <= len(identicon.hash)-1; i += 3 {

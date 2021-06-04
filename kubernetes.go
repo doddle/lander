@@ -44,7 +44,7 @@ func findKubeConfig() string {
 		kubeconfig := os.Getenv("KUBECONFIG")
 		return kubeconfig
 	} else {
-		kubeconfig := fmt.Sprintf(filepath.Join(home, ".kube", "config"))
+		kubeconfig := fmt.Sprint(filepath.Join(home, ".kube", "config"))
 		return kubeconfig
 	}
 }
@@ -59,17 +59,6 @@ func onlyHostnamesContaining(input []Endpoint, host string) []Endpoint {
 		}
 	}
 	return result
-}
-
-// Find takes a slice and looks for an element in it. If found
-// if returns true, otherwise false
-func existsInSlice(slice []string, val string) bool {
-	for _, item := range slice {
-		if item == val {
-			return true
-		}
-	}
-	return false
 }
 
 func getIngressEndpoints(logger *log.Logger) []Endpoint {
