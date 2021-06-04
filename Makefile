@@ -5,7 +5,7 @@ BINARY := lander
 VERSION ?= $(shell git describe --always --tags 2>/dev/null || echo "undefined")
 
 lint-go:
-	golangci-lint run
+	golangci-lint run --timeout 3m
 
 lint-vue:
 	npm -g i eslint
