@@ -21,7 +21,7 @@ frontend-install:
 	cd frontend && npm i --from-lockfile
 
 frontend-lint: frontend-install
-	cd frontend && eslint --ext .js,.vue --max-warnings 0 ./src
+	cd frontend && npm i eslint -g && eslint --ext .js,.vue --max-warnings 0 ./src
 
 
 frontend-build: frontend-install
