@@ -43,16 +43,15 @@ func findKubeConfig() string {
 	if envVarExists("KUBECONFIG") {
 		kubeconfig := os.Getenv("KUBECONFIG")
 		return kubeconfig
-	} else {
-		kubeconfig := fmt.Sprint(filepath.Join(home, ".kube", "config"))
-		return kubeconfig
 	}
+	kubeconfig := fmt.Sprint(filepath.Join(home, ".kube", "config"))
+	return kubeconfig
 }
 
 // takes a slice of endpoint and only returns ones containing a hostname
 // excluded is a (optionaly comma seperated) list of endpoints to exclude (EG this landing page itself)
 func onlyHostnamesContaining(input []Endpoint, host string) []Endpoint {
-	result := []Endpoint{}
+	var result []Endpoint
 	for _, data := range input {
 		if strings.Contains(data.Address, host) {
 			result = append(result, data)
@@ -63,50 +62,48 @@ func onlyHostnamesContaining(input []Endpoint, host string) []Endpoint {
 
 func getIngressEndpoints(logger *log.Logger) []Endpoint {
 	cacheObj := "endpoints"
-	var fakeResult []Endpoint
+	var result []Endpoint
 
 	cached, found := cacheShort.Get(cacheObj)
-
 	if found {
+		logger.Debugf("got all %s from cache", cacheObj)
 		data := cached.([]Endpoint)
-		// logger.Debugf("getEndpoints retrieved %v items from cache", len(data))
+		logger.Info(data)
 		return data
-	} else {
-		ingressList, err := getIngressList(logger)
-		if err != nil {
-			logger.Error(err)
-		}
-		ingressObjects := ingressList.Items
-		// time.Sleep(5 * time.Second)
-		if len(ingressObjects) > 0 {
-			for _, ingress := range ingressObjects {
-				for _, rule := range ingress.Spec.Rules {
-					for _, p := range rule.IngressRuleValue.HTTP.Paths {
-						serviceName := p.Backend.ServiceName
-						guessed := guessApp(serviceName)
-
-						// Strip out a trailing "/"
-						uri := p.Path
-						if p.Path == "/" {
-							uri = ""
-						}
-						msg := Endpoint{
-							Address:     "https://" + rule.Host + uri,
-							Https:       true,
-							Oauth2proxy: getOauth2ProxyState(logger, ingress),
-							Class:       getIngressClass(logger, ingress),
-							Icon:        guessed.Icon,
-							Description: guessed.Desc,
-							Name:        guessed.Name,
-						}
-						fakeResult = append(fakeResult, msg)
+	}
+	ingressList, err := getIngressList(logger)
+	if err != nil {
+		logger.Error(err)
+	}
+	ingressObjects := ingressList.Items
+	// time.Sleep(5 * time.Second)
+	if len(ingressObjects) > 0 {
+		for _, ingress := range ingressObjects {
+			for _, rule := range ingress.Spec.Rules {
+				for _, p := range rule.IngressRuleValue.HTTP.Paths {
+					serviceName := p.Backend.ServiceName
+					guessed := guessApp(serviceName)
+					// Strip out a trailing "/"
+					uri := p.Path
+					if p.Path == "/" {
+						uri = ""
 					}
+					msg := Endpoint{
+						Address:     "https://" + rule.Host + uri,
+						Https:       true,
+						Oauth2proxy: getOauth2ProxyState(logger, ingress),
+						Class:       getIngressClass(logger, ingress),
+						Icon:        guessed.Icon,
+						Description: guessed.Desc,
+						Name:        guessed.Name,
+					}
+					result = append(result, msg)
 				}
 			}
 		}
-		cacheShort.Set(cacheObj, fakeResult, cache.DefaultExpiration)
-		return fakeResult
+		cacheShort.Set(cacheObj, result, cache.DefaultExpiration)
 	}
+	return result
 }
 
 // App is a generic definition of a known, we'll use these to attempt to guess the apps
@@ -118,7 +115,7 @@ type App struct {
 }
 
 func genApps() (fallback App, index []App) {
-	result := []App{}
+	var result []App
 	fallback = App{
 		Name: "unknown",
 		Icon: "/assets/link.png",
@@ -152,9 +149,7 @@ func genApps() (fallback App, index []App) {
 		Desc: "aggregate and explore log data+graphs",
 	}
 	result = append(result, x)
-
 	return fallback, result
-
 }
 
 func guessApp(svc string) App {

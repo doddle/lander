@@ -8,6 +8,7 @@ import (
 	"time"
 
 	pie_deploy "github.com/digtux/lander/pkg/pie-deploy"
+	pie_ss "github.com/digtux/lander/pkg/pie-statefulsets"
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/digtux/lander/identicon"
@@ -30,16 +31,18 @@ var (
 
 	// flag for a list of all clusters
 	flagClusters = flag.String("clusters", "cluster1.example.com,cluster2.example.com", "comma seperated list of clusters")
-	clusterSlice []string
+
+	flagDebug = flag.Bool("debug", true, "debug")
+	clusterList  []string
 
 	// TODO: ideally the logger shouldn't be global
-	logger     = newLogger(false)
+	logger     = newLogger(*flagDebug)
 	kubeConfig = autoClientInit(logger)
 )
 
 func init() {
 	flag.Parse()
-	clusterSlice = strings.Split(*flagClusters, ",")
+	clusterList = strings.Split(*flagClusters, ",")
 }
 
 // Endpoint is for the metadata returned to the browser/frontend
@@ -56,9 +59,9 @@ type Endpoint struct {
 
 // Settings to be returned to the browser/client
 type Settings struct {
-	ColorScheme string `json:"colorscheme"`
-	Cluster     string `json:"cluster"`
-	OtherClustser []string `json:"clusters"`
+	ColorScheme string   `json:"colorscheme"`
+	Cluster     string   `json:"cluster"`
+	ClusterList []string `json:"clusters"`
 }
 
 type IconSize struct {
@@ -104,6 +107,7 @@ func main() {
 	app.Get("/v1/settings", getSettings)
 
 	app.Get("/v1/pie/deployments", getDeployments)
+	app.Get("/v1/pie/statefulsets", getStatefulSets)
 
 	// sometimes in firefox (pressing "back") you can end up with the url example.com//
 	// redirect that back
@@ -145,7 +149,7 @@ func getSettings(c *fiber.Ctx) error {
 	settings := Settings{
 		ColorScheme: *flagColor,
 		Cluster:     *flagHost,
-		OtherClustser: clusterSlice,
+		ClusterList: clusterList,
 	}
 	return c.JSON(settings)
 }
@@ -201,11 +205,24 @@ func getDeployments(c *fiber.Ctx) error {
 	if err != nil {
 		logger.Fatal(err)
 	}
-	deployStats, err := pie_deploy.AssembleDeploymentPieChart(logger, clientSet)
+	stats, err := pie_deploy.AssembleDeploymentPieChart(logger, clientSet)
 	if err != nil {
 		logger.Fatal(err)
 	}
-	return c.JSON(deployStats.Series)
+	return c.JSON(stats.Series)
+
+}
+
+func getStatefulSets(c *fiber.Ctx) error {
+	clientSet, err := kubernetes.NewForConfig(kubeConfig)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	stats, err := pie_ss.AssembleStatefulSetPieChart(logger, clientSet)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	return c.JSON(stats.Series)
 
 }
 func getEndpoints(c *fiber.Ctx) error {
