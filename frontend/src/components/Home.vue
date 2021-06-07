@@ -46,7 +46,11 @@ export default {
   data: function() {
     return {
       stacks: [],
-      settings: { colorscheme: "blue lighten-5", cluster: "unknown" }
+      settings: {
+        colorscheme: "blue lighten-5",
+        cluster: "unknown",
+        clusters: ["cluster1.acmecorp.org"]
+      }
     };
   },
 

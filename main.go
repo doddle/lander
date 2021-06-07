@@ -3,11 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/digtux/lander/pkg/pie-deploy"
-	"k8s.io/client-go/kubernetes"
 	"os"
 	"strings"
 	"time"
+
+	pie_deploy "github.com/digtux/lander/pkg/pie-deploy"
+	"k8s.io/client-go/kubernetes"
 
 	"github.com/digtux/lander/identicon"
 	"github.com/gofiber/fiber/v2"
@@ -27,13 +28,18 @@ var (
 	flagColor = flag.String("color", "light-blue lighten-2", "Main color scheme (See: https://vuetifyjs.com/en/styles/colors/#material-colors)")
 	flagHex   = flag.String("hex", "#26c5e8", "identicon color, hex string, eg #112233, #123, #bAC")
 
+	// flag for a list of all clusters
+	flagClusters = flag.String("clusters", "cluster1.example.com,cluster2.example.com", "comma seperated list of clusters")
+	clusterSlice []string
+
 	// TODO: ideally the logger shouldn't be global
-	logger = newLogger(false)
+	logger     = newLogger(false)
 	kubeConfig = autoClientInit(logger)
 )
 
 func init() {
 	flag.Parse()
+	clusterSlice = strings.Split(*flagClusters, ",")
 }
 
 // Endpoint is for the metadata returned to the browser/frontend
@@ -52,6 +58,7 @@ type Endpoint struct {
 type Settings struct {
 	ColorScheme string `json:"colorscheme"`
 	Cluster     string `json:"cluster"`
+	OtherClustser []string `json:"clusters"`
 }
 
 type IconSize struct {
@@ -65,7 +72,6 @@ func onStartup(logger *log.Logger) {
 }
 
 func main() {
-
 	checkRequredFlag()
 
 	// handy hex parser: https://github.com/icza/gox/blob/7dc3510ae515f0a6e8479d9a382bc8bb04f3a37d/imagex/colorx/colorx_test.go#L10-L14
@@ -139,6 +145,7 @@ func getSettings(c *fiber.Ctx) error {
 	settings := Settings{
 		ColorScheme: *flagColor,
 		Cluster:     *flagHost,
+		OtherClustser: clusterSlice,
 	}
 	return c.JSON(settings)
 }
@@ -190,7 +197,7 @@ func getFavicon(c *fiber.Ctx) error {
 }
 
 func getDeployments(c *fiber.Ctx) error {
-	clientSet, err  := kubernetes.NewForConfig(kubeConfig)
+	clientSet, err := kubernetes.NewForConfig(kubeConfig)
 	if err != nil {
 		logger.Fatal(err)
 	}

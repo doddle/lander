@@ -16,7 +16,8 @@
 
       <v-spacer></v-spacer>
 
-      <span class="text-center">{{ host }}</span>
+<!--      <span class="text-center">{{ host }}</span>-->
+      <ClusterLinks />
 
       <v-spacer></v-spacer>
 
@@ -43,6 +44,7 @@
 
 <script>
 import Home from "./components/Home";
+import ClusterLinks from "./components/CluserLinks";
 import OverviewPieDeployments from "./components/OverviewPieDeployments";
 
 export default {
@@ -59,7 +61,8 @@ export default {
   },
   components: {
     Home,
-    OverviewPieDeployments
+    OverviewPieDeployments,
+    ClusterLinks
   }
 };
 </script>
