@@ -36,13 +36,14 @@ var (
 	clusterList  []string
 
 	// TODO: ideally the logger shouldn't be global
-	logger     = newLogger(*flagDebug)
+	logger   *log.Logger
 	kubeConfig = autoClientInit(logger)
 )
 
 func init() {
 	flag.Parse()
 	clusterList = strings.Split(*flagClusters, ",")
+	logger = newLogger(*flagDebug)
 }
 
 // Endpoint is for the metadata returned to the browser/frontend
