@@ -63,7 +63,7 @@ func onlyHostnamesContaining(input []Endpoint, host string) []Endpoint {
 
 func getIngressEndpoints(logger *log.Logger) []Endpoint {
 	cacheObj := "endpoints"
-	fakeResult := []Endpoint{}
+	var fakeResult []Endpoint
 
 	cached, found := cacheShort.Get(cacheObj)
 

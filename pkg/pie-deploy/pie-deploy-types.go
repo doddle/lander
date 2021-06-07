@@ -13,8 +13,7 @@ func (r *DeploymentPieChart) Marshal() ([]byte, error) {
 }
 
 type DeploymentPieChart struct {
-	ChartData    ChartData    `json:"chartData"`
-	ChartOptions ChartOptions `json:"chartOptions"`
+	Series []int64 `json:"series"`
 }
 
 type ChartData struct {

@@ -1,16 +1,20 @@
 package pie_deploy
 
 import (
+	"context"
+	"github.com/patrickmn/go-cache"
+	"github.com/withmandala/go-log"
 	v1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	_ "k8s.io/client-go/plugin/pkg/client/auth"
 	"strings"
+	"time"
 )
 
-import (
-	"context"
-	"github.com/withmandala/go-log"
-	_ "k8s.io/client-go/plugin/pkg/client/auth"
+var (
+	// cache for 30sec and expire obj @ 1m
+	cacheDeployments = cache.New(30*time.Second, 1*time.Minute)
 )
 
 type DeploymentStats struct{
@@ -24,18 +28,26 @@ func getAllDeployments(
 	logger *log.Logger,
 	clientSet *kubernetes.Clientset,
 	) (*v1.DeploymentList, error) {
-	logger.Debug("getting deployment data")
-	deploymentList, err := clientSet.
-		AppsV1().
-		Deployments("").
-		List(
-		context.TODO(),
-		metav1.ListOptions{})
+	cacheObj := "deployments"
+	cached, found := cacheDeployments.Get(cacheObj)
+	if found {
+		logger.Info("got all deployments from cache")
+		return cached.(*v1.DeploymentList) , nil
+	} else {
+		deploymentList, err := clientSet.
+			AppsV1().
+			Deployments("").
+			List(
+				context.TODO(),
+				metav1.ListOptions{})
 
-	if err != nil {
-		return nil, err
+		if err != nil {
+			return nil, err
+		}
+		logger.Info("got all deployments from k8s")
+		cacheDeployments.Set(cacheObj, deploymentList, cache.DefaultExpiration)
+		return deploymentList, err
 	}
-	return deploymentList, err
 }
 
 
@@ -43,28 +55,14 @@ func AssembleDeploymentPieChart(
 	logger *log.Logger,
 	clientSet *kubernetes.Clientset,
 	) (DeploymentPieChart, error){
-	colourBad := "rgba(225, 99, 132, 1)"
-	colourBadBg := "rgba(255, 99, 132, 0.2)"
-	colourGood := "rgba(65, 194, 93, 1)"
-	colourGoodBg := "rgba(65, 194, 93, 0.2)"
-	// colourUnknown := "rgba(235, 190, 54, 1)"
-	// colourUnknownBg := "rgba(235, 190, 54, 1)"
-
 	var totalBad int64
 	var totalGood int64
-
-	opts := ChartOptions{
-			Legend: Legend{Display: true},
-			Responsive: true,
-			MaintainAspectRatio: true,
-		}
 
 	data, err := getAllDeployments(logger, clientSet)
 	if err != nil {
 		logger.Error(err)
 	}
 	for _, deployment := range data.Items{
-		logger.Info(deployment.Status)
 		if isReady(deployment) {
 			totalGood++
 		} else {
@@ -72,30 +70,7 @@ func AssembleDeploymentPieChart(
 		}
 	}
 	var result = DeploymentPieChart{
-		ChartOptions: opts,
-		ChartData: ChartData{
-			Labels: []string{
-				"bad",
-				"good",
-			},
-			Datasets: []Dataset{
-				{
-					BorderWidth: 0,
-					BackgroundColor: []string{
-						colourBadBg,
-						colourGoodBg,
-					},
-					BorderColor: []string{
-						colourBad,
-						colourGood,
-					},
-					Data: []int64{
-						totalBad,
-						totalGood,
-					},
-				},
-			},
-		},
+		Series: []int64{totalBad, totalGood},
 	}
 	return result, err
 }

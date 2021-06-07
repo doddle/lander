@@ -179,7 +179,10 @@ func getFavicon(c *fiber.Ctx) error {
 		if err != nil {
 			logger.Error(err)
 		}
-		f.Close()
+		err = f.Close()
+		if err != nil {
+			return err
+		}
 		logger.Infof("rendered a new icon for: %s, hex: %s", name, hex)
 	}
 	logger.Infof("%s served: %s", uriPath, fileName)
@@ -191,11 +194,11 @@ func getDeployments(c *fiber.Ctx) error {
 	if err != nil {
 		logger.Fatal(err)
 	}
-	stuff, err := pie_deploy.AssembleDeploymentPieChart(logger, clientSet)
+	deployStats, err := pie_deploy.AssembleDeploymentPieChart(logger, clientSet)
 	if err != nil {
 		logger.Fatal(err)
 	}
-	return c.JSON(stuff)
+	return c.JSON(deployStats.Series)
 
 }
 func getEndpoints(c *fiber.Ctx) error {
@@ -208,7 +211,7 @@ func getEndpoints(c *fiber.Ctx) error {
 	containsHostname := onlyHostnamesContaining(allEndpoints, *flagHost)
 
 	// create an empty slice of endpoints
-	matchedHostnames := []Endpoint{}
+	var matchedHostnames []Endpoint
 	for _, i := range containsHostname {
 		// exclude hostnames that are not identical to flagHost
 		// input here will be like: https://example.com, http://example.com/foo
@@ -226,11 +229,6 @@ func getEndpoints(c *fiber.Ctx) error {
 			}
 		}
 	}
-	// logger.Infof("%s returned %d of %d",
-	// 	uri.Path(),
-	// 	len(matchedHostnames),
-	// 	len(allEndpoints),
-	// )
 	return c.JSON(matchedHostnames)
 }
 

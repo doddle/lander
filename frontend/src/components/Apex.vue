@@ -16,14 +16,14 @@ import VueApexCharts from "vue-apexcharts";
 export default {
   name: "Apex",
   components: {
-    apexcharts: VueApexCharts,
+    apexcharts: VueApexCharts
   },
   data: function() {
     return {
       chartOptions: {
-        labels: ["one", "two", "three"],
+        labels: ["good", "bad"],
         chart: {
-          id: 'basic-bar',
+          id: "basic-bar"
         }
       },
       series: [30, 40, 45]
