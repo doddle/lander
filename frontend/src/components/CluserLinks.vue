@@ -53,10 +53,3 @@ export default {
   }
 };
 </script>
-
-<style>
-
-.btn {
-  text-transform: none;
-}
-</style>

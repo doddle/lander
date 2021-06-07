@@ -2,7 +2,6 @@ package pie_statefulset
 
 import (
 	"context"
-	"strings"
 	"time"
 
 	"github.com/patrickmn/go-cache"
@@ -62,7 +61,7 @@ func AssembleStatefulSetPieChart(
 		logger.Error(err)
 	}
 	for _, deployment := range data.Items {
-		if isReady(deployment) {
+		if isHappy(deployment) {
 			totalGood++
 		} else {
 			totalBad++
@@ -74,17 +73,14 @@ func AssembleStatefulSetPieChart(
 	return result, err
 }
 
-// isReady is a meta kind of job
-// isReady checks if a pod has a status condition of "Available==True"
-// TODO: possibly check for "Progressing" also?
-func isReady(deployment v1.StatefulSet) bool {
-	for _, obj := range deployment.Status.Conditions {
-		if strings.Contains(string(obj.Type), "Available") {
-			if strings.Contains(string(obj.Status), "True") {
-				return true
-			}
+func isHappy(k8sObject v1.StatefulSet) bool {
+	current := k8sObject.Status.CurrentReplicas
+	replicas := k8sObject.Status.Replicas
+	readyReplicas := k8sObject.Status.ReadyReplicas
+	if current == replicas {
+		if readyReplicas == replicas{
+			return true
 		}
-
 	}
 	return false
 }

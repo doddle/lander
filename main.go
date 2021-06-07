@@ -32,7 +32,7 @@ var (
 	// flag for a list of all clusters
 	flagClusters = flag.String("clusters", "cluster1.example.com,cluster2.example.com", "comma seperated list of clusters")
 
-	flagDebug = flag.Bool("debug", true, "debug")
+	flagDebug = flag.Bool("debug", false, "debug")
 	clusterList  []string
 
 	// TODO: ideally the logger shouldn't be global
@@ -210,7 +210,6 @@ func getDeployments(c *fiber.Ctx) error {
 		logger.Fatal(err)
 	}
 	return c.JSON(stats.Series)
-
 }
 
 func getStatefulSets(c *fiber.Ctx) error {
@@ -223,8 +222,8 @@ func getStatefulSets(c *fiber.Ctx) error {
 		logger.Fatal(err)
 	}
 	return c.JSON(stats.Series)
-
 }
+
 func getEndpoints(c *fiber.Ctx) error {
 	// uri := c.Context().Request.URI()
 

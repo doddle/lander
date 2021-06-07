@@ -32,7 +32,7 @@ func getAllDeployments(
 	cacheObj := "deployments"
 	cached, found := cacheDeployments.Get(cacheObj)
 	if found {
-		logger.Info("got all deployments from cache")
+		logger.Debugf("got all %s from cache", cacheObj)
 		return cached.(*v1.DeploymentList), nil
 	}
 	deploymentList, err := clientSet.
@@ -44,7 +44,7 @@ func getAllDeployments(
 	if err != nil {
 		return nil, err
 	}
-	logger.Info("got all deployments from k8s")
+	logger.Debugf("got all %s from k8s", cacheObj)
 	cacheDeployments.Set(cacheObj, deploymentList, cache.DefaultExpiration)
 	return deploymentList, err
 }
@@ -84,7 +84,6 @@ func isReady(deployment v1.Deployment) bool {
 				return true
 			}
 		}
-
 	}
 	return false
 }

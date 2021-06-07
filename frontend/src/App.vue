@@ -15,8 +15,6 @@
       </div>
 
       <v-spacer></v-spacer>
-
-<!--      <span class="text-center">{{ host }}</span>-->
       <ClusterLinks />
 
       <v-spacer></v-spacer>
@@ -30,12 +28,22 @@
       <br />
       <Home />
       <v-divider> </v-divider>
-      <v-container>
-        <v-row>
-          <v-col>
-            Deployments
+      <v-container class="mb-6">
+        <v-row no-gutters align-content="center">
+          <v-col sm="4" md="3" key="1">
             <OverviewPieDeployments />
           </v-col>
+          <v-col sm="4" md="3" key="2">
+            <OverviewPieStatefulSets />
+          </v-col>
+          <!--
+          <v-col sm="4" md="3" key="3">
+            <OverviewPieDeployments2 />
+          </v-col>
+          <v-col sm="4" md="3" key="4">
+            <OverviewPieStatefulSets2 />
+          </v-col>
+          -->
         </v-row>
       </v-container>
     </v-main>
@@ -46,6 +54,9 @@
 import Home from "./components/Home";
 import ClusterLinks from "./components/CluserLinks";
 import OverviewPieDeployments from "./components/OverviewPieDeployments";
+import OverviewPieStatefulSets from "./components/OverviewPieStatefulSets";
+// import OverviewPieDeployments2 from "./components/OverviewPieDeployments";
+// import OverviewPieStatefulSets2 from "./components/OverviewPieStatefulSets";
 
 export default {
   name: "App",
@@ -62,6 +73,7 @@ export default {
   components: {
     Home,
     OverviewPieDeployments,
+    OverviewPieStatefulSets,
     ClusterLinks
   }
 };

@@ -68,7 +68,6 @@ func getIngressEndpoints(logger *log.Logger) []Endpoint {
 	if found {
 		logger.Debugf("got all %s from cache", cacheObj)
 		data := cached.([]Endpoint)
-		logger.Info(data)
 		return data
 	}
 	ingressList, err := getIngressList(logger)
