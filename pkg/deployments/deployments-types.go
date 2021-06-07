@@ -1,12 +1,6 @@
-package pie_deploy
+package deployments
 
 import "encoding/json"
-
-func UnmarshalWelcome(data []byte) (DeploymentPieChart, error) {
-	var r DeploymentPieChart
-	err := json.Unmarshal(data, &r)
-	return r, err
-}
 
 func (r *DeploymentPieChart) Marshal() ([]byte, error) {
 	return json.Marshal(r)
@@ -14,6 +8,12 @@ func (r *DeploymentPieChart) Marshal() ([]byte, error) {
 
 type DeploymentPieChart struct {
 	Series []int64 `json:"series"`
+}
+
+type ChartOpts struct {
+	Chart  Chart 	`json:"chart"`
+	Colors []string `json:"colors"`
+	Labels []string `json:"labels"`
 }
 
 type ChartData struct {
@@ -36,5 +36,19 @@ type ChartOptions struct {
 
 type Legend struct {
 	Display bool `json:"display"`
+}
+
+type FinalResult struct {
+	ChartOpts ChartOpts `json:"chartOptions"`
+	Series 	  []int64   `json:"series"`
+	Total 	  int64     `json:"total"`
+}
+
+type Chart struct {
+	ID string `json:"id"`
+	DropShadow DropShadow `json:"dropShadow"`
+}
+type DropShadow struct {
+	Effect bool `json:"effect"`
 }
 

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <v-card flat="true">
+    <v-card flat>
       <v-card-title>StatefulSets</v-card-title>
-      <v-card-subtitle>total: {{ series[0] + series[1] }}</v-card-subtitle>
+      <v-card-subtitle>total: {{ total }}</v-card-subtitle>
       <apexcharts type="pie" :options="chartOptions" :series="series" />
     </v-card>
   </div>
@@ -19,12 +19,17 @@ export default {
   data: function() {
     return {
       chartOptions: {
-        labels: ["bad", "good"],
+        colors: [],
         chart: {
-          id: "statefulsets"
-        }
+          id: "pie-statefulsets",
+          dropShadow: {
+            effect: false
+          }
+        },
+        labels: []
       },
-      series: []
+      series: [],
+      total: 0
     };
   },
   methods: {
@@ -33,7 +38,10 @@ export default {
         const resp = await fetch("/v1/pie/statefulsets");
         const data = await resp.json();
         console.log("retrieving v1/pie/statefulsets");
-        this.series = data;
+        this.colors = data.colors;
+        this.chartOptions = data.chartOptions;
+        this.series = data.series;
+        this.total = data.total;
       } catch (error) {
         console.error(error);
       }

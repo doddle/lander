@@ -1,4 +1,4 @@
-package pie_statefulset
+package statefulsets
 
 import (
 	"context"
@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	// cache for 30sec and expire obj @ 1m
-	cacheStatefulSets = cache.New(30*time.Second, 1*time.Minute)
+	// hard limit cache for 15sec, expire at 15m
+	pkgCache = cache.New(15 * time.Second, 15 * time.Minute)
 )
 
 // StatefulSetStats is a simple slice/list of deployment pod numbers
@@ -23,15 +23,14 @@ type StatefulSetStats struct {
 	Unknown int `json:"unknown"`
 }
 
-// getAllStatefulSets speaks to the cluster and attempt to pull all raw StatefulSets
+// getAllStatefulSets speaks to the cluster and attempt to pull all raw statefulSets
 func getAllStatefulSets(
 	logger *log.Logger,
 	clientSet *kubernetes.Clientset,
 ) (*v1.StatefulSetList, error) {
-	cacheObj := "statefulsets"
-	cached, found := cacheStatefulSets.Get(cacheObj)
+	cacheObj := "v1/StatefulSetList"
+	cached, found := pkgCache.Get(cacheObj)
 	if found {
-		logger.Debugf("got all %s from cache", cacheObj)
 		return cached.(*v1.StatefulSetList), nil
 	}
 	deploymentList, err := clientSet.
@@ -44,7 +43,7 @@ func getAllStatefulSets(
 		return nil, err
 	}
 	logger.Debugf("got all %s from k8s", cacheObj)
-	cacheStatefulSets.Set(cacheObj, deploymentList, cache.DefaultExpiration)
+	pkgCache.Set(cacheObj, deploymentList, cache.DefaultExpiration)
 	return deploymentList, err
 }
 
@@ -52,7 +51,10 @@ func getAllStatefulSets(
 func AssembleStatefulSetPieChart(
 	logger *log.Logger,
 	clientSet *kubernetes.Clientset,
-) (StatefulSetPieChart, error) {
+) (FinalResult, error) {
+	var resultColors []string
+	var resultLabels []string
+	var resultSeries []int64
 	var totalBad int64
 	var totalGood int64
 
@@ -61,19 +63,39 @@ func AssembleStatefulSetPieChart(
 		logger.Error(err)
 	}
 	for _, deployment := range data.Items {
-		if isHappy(deployment) {
+		if isReady(deployment) {
 			totalGood++
 		} else {
 			totalBad++
 		}
 	}
-	var result = StatefulSetPieChart{
-		Series: []int64{totalBad, totalGood},
+
+	if totalBad > 0 {
+		resultLabels = append(resultLabels, "Errored")
+		resultSeries = append(resultSeries, totalBad)
+		resultColors = append(resultColors, "#E57373")
+	}
+	if totalGood > 0 {
+		resultLabels = append(resultLabels, "Healthy")
+		resultSeries = append(resultSeries, totalGood)
+		resultColors = append(resultColors, "#81C784")
+	}
+
+	result := FinalResult{
+		Total: totalBad + totalGood,
+		Series: resultSeries,
+		ChartOpts: ChartOpts{
+			Colors: resultColors,
+			Labels: resultLabels,
+			Chart: Chart{
+				ID: "pie-statefulsets",
+			},
+		},
 	}
 	return result, err
 }
 
-func isHappy(k8sObject v1.StatefulSet) bool {
+func isReady(k8sObject v1.StatefulSet) bool {
 	current := k8sObject.Status.CurrentReplicas
 	replicas := k8sObject.Status.Replicas
 	readyReplicas := k8sObject.Status.ReadyReplicas

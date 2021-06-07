@@ -1,4 +1,4 @@
-package pie_deploy
+package deployments
 
 import (
 	"context"
@@ -13,9 +13,10 @@ import (
 )
 
 var (
-	// cache for 30sec and expire obj @ 1m
-	cacheDeployments = cache.New(30*time.Second, 1*time.Minute)
+	// hard limit cache for 15sec, expire at 15m
+	pkgCache = cache.New(15 * time.Second, 15 * time.Minute)
 )
+
 
 // DeploymentStats is a simple slice/list of deployment pod numbers
 type DeploymentStats struct {
@@ -29,10 +30,9 @@ func getAllDeployments(
 	logger *log.Logger,
 	clientSet *kubernetes.Clientset,
 ) (*v1.DeploymentList, error) {
-	cacheObj := "deployments"
-	cached, found := cacheDeployments.Get(cacheObj)
+	cacheObj := "v1/DeploymentList"
+	cached, found := pkgCache.Get(cacheObj)
 	if found {
-		logger.Debugf("got all %s from cache", cacheObj)
 		return cached.(*v1.DeploymentList), nil
 	}
 	deploymentList, err := clientSet.
@@ -45,7 +45,7 @@ func getAllDeployments(
 		return nil, err
 	}
 	logger.Debugf("got all %s from k8s", cacheObj)
-	cacheDeployments.Set(cacheObj, deploymentList, cache.DefaultExpiration)
+	pkgCache.Set(cacheObj, deploymentList, cache.DefaultExpiration)
 	return deploymentList, err
 }
 
@@ -53,7 +53,10 @@ func getAllDeployments(
 func AssembleDeploymentPieChart(
 	logger *log.Logger,
 	clientSet *kubernetes.Clientset,
-) (DeploymentPieChart, error) {
+) (FinalResult, error) {
+	var resultColors []string
+	var resultLabels []string
+	var resultSeries []int64
 	var totalBad int64
 	var totalGood int64
 
@@ -68,8 +71,31 @@ func AssembleDeploymentPieChart(
 			totalBad++
 		}
 	}
-	var result = DeploymentPieChart{
-		Series: []int64{totalBad, totalGood},
+
+	// colors: https://apexcharts.com/docs/options/colors/
+	// vs https://vuetifyjs.com/en/styles/colors/#material-colors
+	if totalBad > 0 {
+		resultLabels = append(resultLabels, "Errored")
+		resultSeries = append(resultSeries, totalBad)
+		resultColors = append(resultColors, "#E57373")
+	}
+	if totalGood > 0 {
+		resultLabels = append(resultLabels, "Healthy")
+		resultSeries = append(resultSeries, totalGood)
+		resultColors = append(resultColors, "#81C784")
+	}
+
+	result := FinalResult{
+		Total: totalBad + totalGood,
+		Series: resultSeries,
+		ChartOpts: ChartOpts{
+			Colors: resultColors,
+			Chart: Chart{
+				ID: "pie-deployments",
+				DropShadow: DropShadow{Effect: false},
+			},
+			Labels: resultLabels,
+		},
 	}
 	return result, err
 }

@@ -38,7 +38,7 @@ type Identicon struct {
 	height     int
 }
 
-// WriteTo writes the identicon image to the given writer
+// WriteImage writes the identicon image to the given writer
 func (i Identicon) WriteImage(w io.Writer) error {
 	var img = image.NewRGBA(image.Rect(0, 0, i.width, i.height))
 	col := color.RGBA{R: i.color[0], G: i.color[1], B: i.color[2], A: 255}
@@ -54,18 +54,17 @@ type applyFunc func(Identicon) Identicon
 
 // Generate is the main entrypoint to creating the identicon
 func Generate(input []byte, hex string, width int, height int) Identicon {
-
 	// orange #e88726
-	// color, err := colorx.ParseHexColor("#e88726")
-	color, err := colorx.ParseHexColor(hex)
+	// parsedColour, err := colorx.ParseHexColor("#e88726")
+	parsedColour, err := colorx.ParseHexColor(hex)
 	// blue 26a4e8
-	// color, err := colorx.ParseHexColor("#26a4e8")
+	// parsedColour, err := colorx.ParseHexColor("#26a4e8")
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(color)
+	fmt.Println(parsedColour)
 
-	pickedColour := [3]byte{color.R, color.G, color.B}
+	pickedColour := [3]byte{parsedColour.R, parsedColour.G, parsedColour.B}
 
 	identiconPipe := []applyFunc{
 		buildGrid, filterOddSquares, buildPixelMap,
@@ -84,7 +83,7 @@ func Generate(input []byte, hex string, width int, height int) Identicon {
 }
 
 func hashInput(input []byte) Identicon {
-	checkSum := md5.Sum(input)
+	checkSum := md5.Sum(input) //nolint:gosec
 	return Identicon{
 		Name: string(input),
 		hash: checkSum,
@@ -99,7 +98,6 @@ func buildGrid(identicon Identicon) Identicon {
 		chunk[3] = chunk[1]
 		chunk[4] = chunk[0]
 		grid = append(grid, chunk...)
-
 	}
 	identicon.grid = grid
 	return identicon
@@ -120,8 +118,8 @@ func filterOddSquares(identicon Identicon) Identicon {
 	return identicon
 }
 
-func rect(img *image.RGBA, col color.Color, x1, y1, x2, y2 float64) {
-	gc := draw2dimg.NewGraphicContext(img)
+func rect(imageRGBA *image.RGBA, col color.Color, x1, y1, x2, y2 float64) {
+	gc := draw2dimg.NewGraphicContext(imageRGBA)
 	gc.SetFillColor(col)
 	gc.MoveTo(x1, y1)
 	gc.LineTo(x1, y1)
@@ -135,7 +133,6 @@ func rect(img *image.RGBA, col color.Color, x1, y1, x2, y2 float64) {
 
 func buildPixelMap(identicon Identicon) Identicon {
 	var drawingPoints []drawingPoint
-
 	pixelFunc := func(p gridPoint) drawingPoint {
 		horizontal := (p.index % 5) * 50
 		vertical := (p.index / 5) * 50

@@ -1,12 +1,6 @@
-package pie_statefulset
+package statefulsets
 
 import "encoding/json"
-
-func UnmarshalWelcome(data []byte) (StatefulSetPieChart, error) {
-	var r StatefulSetPieChart
-	err := json.Unmarshal(data, &r)
-	return r, err
-}
 
 func (r *StatefulSetPieChart) Marshal() ([]byte, error) {
 	return json.Marshal(r)
@@ -14,6 +8,12 @@ func (r *StatefulSetPieChart) Marshal() ([]byte, error) {
 
 type StatefulSetPieChart struct {
 	Series []int64 `json:"series"`
+}
+
+type ChartOpts struct {
+	Chart Chart 	`json:"chart"`
+	Colors []string `json:"colors"`
+	Labels []string `json:"labels"`
 }
 
 type ChartData struct {
@@ -37,3 +37,14 @@ type ChartOptions struct {
 type Legend struct {
 	Display bool `json:"display"`
 }
+
+type FinalResult struct {
+	ChartOpts ChartOpts `json:"chartOptions"`
+	Series 	  []int64   `json:"series"`
+	Total 	  int64     `json:"total"`
+}
+
+type Chart struct {
+	ID string `json:"id"`
+}
+
