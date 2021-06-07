@@ -43,16 +43,12 @@
 export default {
   name: "Home",
 
-  data() {
+  data: function() {
     return {
       stacks: [],
       settings: { colorscheme: "blue lighten-5", cluster: "unknown" }
     };
   },
-
-  // x() {
-  //   return `${this.fuck}`;
-  // },
 
   methods: {
     async getSettings() {
@@ -65,11 +61,11 @@ export default {
         console.error(error);
       }
     },
-    async getStacks() {
+    async getEndpoints() {
       try {
         const resp = await fetch("/v1/endpoints");
         const data = await resp.json();
-        console.log("retrieving endpoints");
+        console.log("retrieving v1/endpoints");
         this.stacks = data;
       } catch (error) {
         console.error(error);
@@ -77,12 +73,12 @@ export default {
     }
   },
   cron: {
-    time: 5000,
-    method: "getStacks",
+    time: 10000,
+    method: "getEndpoints",
     autoStart: true
   },
   beforeMount() {
-    this.getStacks();
+    this.getEndpoints();
     this.getSettings();
   }
 };

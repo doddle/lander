@@ -28,16 +28,22 @@
     <v-main>
       <br />
       <Home />
-      <div class="small">
-        <Apex />
-      </div>
+      <v-divider> </v-divider>
+      <v-container>
+        <v-row>
+          <v-col>
+            Deployments
+            <OverviewPieDeployments />
+          </v-col>
+        </v-row>
+      </v-container>
     </v-main>
   </v-app>
 </template>
 
 <script>
 import Home from "./components/Home";
-import Apex from "./components/Apex.vue";
+import OverviewPieDeployments from "./components/OverviewPieDeployments";
 
 export default {
   name: "App",
@@ -53,14 +59,7 @@ export default {
   },
   components: {
     Home,
-    Apex
+    OverviewPieDeployments
   }
 };
 </script>
-
-<style>
-.small {
-  max-width: 250px;
-  margin: 150px auto;
-}
-</style>
