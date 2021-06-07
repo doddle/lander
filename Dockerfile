@@ -1,5 +1,5 @@
 ## go backend
-FROM golang:1.15 as go
+FROM docker.io/library/golang:1.15 as go
 
 WORKDIR /src
 COPY . .
@@ -17,7 +17,7 @@ RUN make backend-build
 #       ./upx-${UPX_VER}-amd64_linux/upx --no-progress lander
 
 ## build front
-FROM node:15.14.0 as node
+FROM docker.io/library/node:15.14.0 as node
 
 WORKDIR /src
 COPY . .
@@ -25,7 +25,7 @@ RUN make frontend-lint
 RUN make frontend-build
 
 ## pull it all together
-FROM alpine
+FROM docker.io/library/alpine
 RUN apk --no-cache add ca-certificates
 WORKDIR /app
 COPY --from=go   /src/lander .
