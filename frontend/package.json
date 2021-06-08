@@ -23,10 +23,10 @@
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.5.13",
-    "@vue/cli-plugin-eslint": "^4.5.13",
+    "@vue/cli-plugin-eslint": "^3.1.1",
     "@vue/cli-plugin-pwa": "^4.5.13",
     "@vue/cli-plugin-router": "^4.5.13",
-    "@vue/cli-plugin-unit-jest": "^3.12.1",
+    "@vue/cli-plugin-unit-jest": "^4.5.13",
     "@vue/cli-plugin-vuex": "^4.5.13",
     "@vue/cli-service": "^3.0.5",
     "@vue/eslint-config-prettier": "^6.0.0",
