@@ -19,13 +19,6 @@ var (
 	pkgCache = cache.New(15*time.Second, 15*time.Minute)
 )
 
-//// NodeStats is a simple slice/list of deployment pod numbers
-//type NodeStats struct {
-//	Bad     int `json:"bad"`
-//	Good    int `json:"good"`
-//	Unknown int `json:"unknown"`
-//}
-
 // getAllNodes speaks to the cluster and attempt to pull all raw Nodes
 func getAllNodes(
 	logger *log.Logger,
@@ -116,7 +109,6 @@ func AssembleNodeTable(
 		{Text: "Ready", Value: "ready"},
 		{Text: "Age", Value: "age"},
 		{Text: "Age(s)", Value: "seconds"},
-		{Text: "ig", Value: "labels.zone"},
 	}
 
 	for _, customLabel := range labelSlices {

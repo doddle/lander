@@ -48,7 +48,7 @@ export default {
     }
   },
   cron: {
-    time: 10000,
+    time: 15000,
     method: "getPieDeploy",
     autoStart: true
   },

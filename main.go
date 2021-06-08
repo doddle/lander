@@ -21,7 +21,7 @@ var (
 	flagClusters = flag.String("clusters", "cluster1.example.com,cluster2.example.com", "comma seperated list of clusters")
 
 	flagNodeLabels = flag.String(
-		"node-labels",
+		"labels",
 		"kubernetes.io/role,node.kubernetes.io/instance-type,node.kubernetes.io/instancegroup,topology.kubernetes.io/zone",
 		"comma seperated list of node labels you care about",
 	)
