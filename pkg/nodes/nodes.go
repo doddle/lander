@@ -77,8 +77,10 @@ func AssembleNodeTable(
 	logger *log.Logger,
 	clientSet *kubernetes.Clientset,
 	labelSlices []string,
-) ([]NodeStats, error) {
-	var results []NodeStats //nolint:prealloc
+) (NodeTable, error) {
+	var result NodeTable
+
+	var nodeStats []NodeStats //nolint:prealloc
 	nodez, err := getAllNodes(logger, clientSet)
 	if err != nil {
 		logger.Fatal(err)
@@ -102,9 +104,39 @@ func AssembleNodeTable(
 			Name:       i.Name,
 			LabelMap:   matchedLabels,
 		}
-		results = append(results, newNode)
+		nodeStats = append(nodeStats, newNode)
 	}
-	return results, err
+
+	standardHeaders := []TableHeaders{
+		{
+			Text:  "Name",
+			Align: "start",
+			Value: "name",
+		},
+		{Text: "Ready", Value: "ready"},
+		{Text: "Age", Value: "age"},
+		{Text: "Age(s)", Value: "seconds"},
+		{Text: "ig", Value: "labels.zone"},
+	}
+
+	for _, customLabel := range labelSlices {
+		humanKey := shortLabelName(customLabel)
+		keyUpper := strings.ToUpper(humanKey)
+		dataKey := fmt.Sprintf("labels.%s", humanKey)
+		newHeader := TableHeaders{
+			Text:  keyUpper,
+			Value: dataKey,
+		}
+		standardHeaders = append(standardHeaders, newHeader)
+	}
+
+	result = NodeTable{
+		Headers: standardHeaders,
+		Nodes:   nodeStats,
+	}
+
+	// assemble headers
+	return result, err
 }
 
 func shortLabelName(input string) string {

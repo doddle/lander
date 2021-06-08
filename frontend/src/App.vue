@@ -46,6 +46,8 @@
           -->
         </v-row>
       </v-container>
+      <v-divider> </v-divider>
+      <TableNodes />
     </v-main>
   </v-app>
 </template>
@@ -55,6 +57,7 @@ import Home from "./components/Home";
 import ClusterLinks from "./components/CluserLinks";
 import OverviewPieDeployments from "./components/OverviewPieDeployments";
 import OverviewPieStatefulSets from "./components/OverviewPieStatefulSets";
+import TableNodes from "./components/TableNodes";
 // import OverviewPieDeployments2 from "./components/OverviewPieDeployments";
 // import OverviewPieStatefulSets2 from "./components/OverviewPieStatefulSets";
 
@@ -74,6 +77,7 @@ export default {
     Home,
     OverviewPieDeployments,
     OverviewPieStatefulSets,
+    TableNodes,
     ClusterLinks
   }
 };
