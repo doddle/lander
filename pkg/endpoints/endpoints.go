@@ -11,19 +11,16 @@ import (
 	"time"
 )
 
-
 var (
 	// hard limit cache for 15sec, expire at 15m
-	pkgCache = cache.New(15 * time.Second, 15 * time.Minute)
+	pkgCache = cache.New(15*time.Second, 15*time.Minute)
 )
-
-
 
 func ReallyAssemble(
 	logger *log.Logger,
 	clientSet *kubernetes.Clientset,
 	hostName string,
-	) []Endpoint{
+) []Endpoint {
 	var result []Endpoint
 	allEndpoints := gatherEndpointData(logger, clientSet)
 
@@ -50,7 +47,7 @@ func ReallyAssemble(
 	return result
 }
 
-func gatherEndpointData(logger *log.Logger, clientSet *kubernetes.Clientset, ) []Endpoint {
+func gatherEndpointData(logger *log.Logger, clientSet *kubernetes.Clientset) []Endpoint {
 	var result []Endpoint
 
 	ingressList, err := getIngressList(logger, clientSet)
@@ -196,7 +193,6 @@ func getOauth2ProxyState(ingress v1beta1.Ingress) bool {
 	}
 	return false
 }
-
 
 func filterIngressForHostname(input []Endpoint, host string) []Endpoint {
 	var result []Endpoint

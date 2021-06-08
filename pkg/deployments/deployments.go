@@ -14,9 +14,8 @@ import (
 
 var (
 	// hard limit cache for 15sec, expire at 15m
-	pkgCache = cache.New(15 * time.Second, 15 * time.Minute)
+	pkgCache = cache.New(15*time.Second, 15*time.Minute)
 )
-
 
 // DeploymentStats is a simple slice/list of deployment pod numbers
 type DeploymentStats struct {
@@ -86,12 +85,12 @@ func AssembleDeploymentPieChart(
 	}
 
 	result := FinalResult{
-		Total: totalBad + totalGood,
+		Total:  totalBad + totalGood,
 		Series: resultSeries,
 		ChartOpts: ChartOpts{
 			Colors: resultColors,
 			Chart: Chart{
-				ID: "pie-deployments",
+				ID:         "pie-deployments",
 				DropShadow: DropShadow{Effect: false},
 			},
 			Labels: resultLabels,

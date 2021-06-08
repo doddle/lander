@@ -11,7 +11,7 @@ type DeploymentPieChart struct {
 }
 
 type ChartOpts struct {
-	Chart  Chart 	`json:"chart"`
+	Chart  Chart    `json:"chart"`
 	Colors []string `json:"colors"`
 	Labels []string `json:"labels"`
 }
@@ -40,15 +40,14 @@ type Legend struct {
 
 type FinalResult struct {
 	ChartOpts ChartOpts `json:"chartOptions"`
-	Series 	  []int64   `json:"series"`
-	Total 	  int64     `json:"total"`
+	Series    []int64   `json:"series"`
+	Total     int64     `json:"total"`
 }
 
 type Chart struct {
-	ID string `json:"id"`
+	ID         string     `json:"id"`
 	DropShadow DropShadow `json:"dropShadow"`
 }
 type DropShadow struct {
 	Effect bool `json:"effect"`
 }
-

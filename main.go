@@ -20,20 +20,27 @@ var (
 	// flag for a list of all clusters
 	flagClusters = flag.String("clusters", "cluster1.example.com,cluster2.example.com", "comma seperated list of clusters")
 
-	flagDebug = flag.Bool("debug", false, "debug")
-	clusterList  []string
+	flagNodeLabels = flag.String(
+		"node-labels",
+		"kubernetes.io/role,node.kubernetes.io/instance-type,node.kubernetes.io/instancegroup,topology.kubernetes.io/zone",
+		"comma seperated list of node labels you care about",
+	)
+
+	flagDebug      = flag.Bool("debug", false, "debug")
+	clusterList    []string
+	nodeLabelSlice []string
 
 	// TODO: ideally the logger shouldn't be global
-	logger   *log.Logger
+	logger     *log.Logger
 	kubeConfig = autoClientInit(logger)
 )
 
 func init() {
 	flag.Parse()
 	clusterList = strings.Split(*flagClusters, ",")
+	nodeLabelSlice = strings.Split(*flagNodeLabels, ",")
 	logger = newLogger(*flagDebug)
 }
-
 
 // Settings to be returned to the browser/client
 type Settings struct {
@@ -46,7 +53,6 @@ type IconSize struct {
 	Width  int
 	Height int
 }
-
 
 func main() {
 	checkRequredFlag()
@@ -82,6 +88,8 @@ func main() {
 
 	app.Get("/v1/pie/deployments", getDeployments)
 	app.Get("/v1/pie/statefulsets", getStatefulSets)
+	app.Get("/v1/pie/nodes", getNodesPie)
+	app.Get("/v1/table/nodes", getNodesTable)
 
 	// sometimes in firefox (pressing "back") you can end up with the url example.com//
 	// redirect that back
@@ -104,4 +112,3 @@ func main() {
 	logger.Info("starting webserver on :8000")
 	logger.Fatal(app.Listen(":8000"))
 }
-

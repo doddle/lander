@@ -1,4 +1,5 @@
 package endpoints
+
 // Endpoint is for the metadata returned to the browser/frontend
 type Endpoint struct {
 	// these are not ac

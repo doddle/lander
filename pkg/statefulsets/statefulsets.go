@@ -13,7 +13,7 @@ import (
 
 var (
 	// hard limit cache for 15sec, expire at 15m
-	pkgCache = cache.New(15 * time.Second, 15 * time.Minute)
+	pkgCache = cache.New(15*time.Second, 15*time.Minute)
 )
 
 // StatefulSetStats is a simple slice/list of deployment pod numbers
@@ -82,7 +82,7 @@ func AssembleStatefulSetPieChart(
 	}
 
 	result := FinalResult{
-		Total: totalBad + totalGood,
+		Total:  totalBad + totalGood,
 		Series: resultSeries,
 		ChartOpts: ChartOpts{
 			Colors: resultColors,
@@ -100,7 +100,7 @@ func isReady(k8sObject v1.StatefulSet) bool {
 	replicas := k8sObject.Status.Replicas
 	readyReplicas := k8sObject.Status.ReadyReplicas
 	if current == replicas {
-		if readyReplicas == replicas{
+		if readyReplicas == replicas {
 			return true
 		}
 	}

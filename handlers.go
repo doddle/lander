@@ -5,12 +5,12 @@ import (
 	"github.com/digtux/lander/pkg/deployments"
 	"github.com/digtux/lander/pkg/endpoints"
 	"github.com/digtux/lander/pkg/identicon/identicon"
+	"github.com/digtux/lander/pkg/nodes"
 	"github.com/digtux/lander/pkg/statefulsets"
 	"github.com/gofiber/fiber/v2"
 	"k8s.io/client-go/kubernetes"
 	"os"
 )
-
 
 func getHealthz(c *fiber.Ctx) error {
 	return c.SendString("ok")
@@ -104,3 +104,26 @@ func getFavicon(c *fiber.Ctx) error {
 	return c.SendFile(fileName)
 }
 
+func getNodesPie(c *fiber.Ctx) error {
+	clientSet, err := kubernetes.NewForConfig(kubeConfig)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	stats, err := nodes.AssembleNodesPieChart(logger, clientSet)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	return c.JSON(stats)
+}
+
+func getNodesTable(c *fiber.Ctx) error {
+	clientSet, err := kubernetes.NewForConfig(kubeConfig)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	stats, err := nodes.AssembleNodeTable(logger, clientSet, nodeLabelSlice)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	return c.JSON(stats)
+}
