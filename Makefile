@@ -6,6 +6,7 @@ VERSION ?= $(shell git describe --always --tags 2>/dev/null || echo "undefined")
 
 backend-lint:
 	golangci-lint run --timeout 3m
+	go fmt ./...
 
 #"-s -w" strips debug headers
 backend-build:

@@ -79,7 +79,6 @@ func main() {
 		// MaxAge:   300,
 	})
 
-
 	// sometimes in firefox (pressing "back") you can end up with the url example.com//
 	// redirect that back
 	app.Use(redirect.New(redirect.Config{

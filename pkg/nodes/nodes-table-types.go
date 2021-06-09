@@ -19,5 +19,3 @@ type TableHeaders struct {
 	Text  string `json:"text"`
 	Value string `json:"value"`
 }
-
-

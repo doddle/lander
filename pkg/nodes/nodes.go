@@ -78,21 +78,23 @@ func AssembleNodesPieChart(
 		resultSeries = append(resultSeries, totalGood)
 		resultColors = append(resultColors, colGood)
 	}
-	logger.Info(len(resultColors))
 	result := FinalPieChart{
 		Total:  totalBad + totalGood,
 		Series: resultSeries,
 		ChartOpts: ChartOpts{
-			Legend: Legend{Show: false},
-			Theme: Theme{Palette: "palette2"},
+			Legend: Legend{Show: true},
+			//Theme:  Theme{Palette: "palette2"},
 			//Title: Title{Text: "Nodes"},
 			PlotOpt: PlotOpt{
-				Pie: PlotOptPie{ ExpandOnClick: false},
+				Pie: PlotOptPie{
+					ExpandOnClick: false,
+					Size:          120,
+				},
 			},
 			Colors: resultColors,
 			Stroke: Stroke{Width: 0},
 			Chart: Chart{
-				ID:         "pie-nodes",
+				ID: "pie-nodes",
 				//DropShadow: DropShadow{
 				//	Effect: false,
 				//},

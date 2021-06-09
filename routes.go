@@ -4,8 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-
-func startRoutes(app *fiber.App){
+func startRoutes(app *fiber.App) {
 
 	app.Get("/favicon*", getFavicon)
 	app.Get("/img/icons/*", getFavicon)

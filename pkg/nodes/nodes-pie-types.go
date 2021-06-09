@@ -5,14 +5,14 @@ type NodePieChart struct {
 }
 
 type ChartOpts struct {
-	Chart  Chart    `json:"chart"`
-	Labels []string `json:"labels"`
-	PlotOpt PlotOpt `json:"plotOptions"`
-	Legend              Legend `json:"legend"`
-	Stroke Stroke `json:"stroke"`
-	Theme Theme `json:"theme"`
-	Title Title `json:"title"`
-	Colors []string `json:"colors"`
+	Chart   Chart    `json:"chart"`
+	Labels  []string `json:"labels"`
+	PlotOpt PlotOpt  `json:"plotOptions"`
+	Legend  Legend   `json:"legend"`
+	Stroke  Stroke   `json:"stroke"`
+	Theme   Theme    `json:"theme"`
+	Title   Title    `json:"title"`
+	Colors  []string `json:"colors"`
 }
 
 type Title struct {
@@ -32,15 +32,17 @@ type Dataset struct {
 }
 
 type ChartOptions struct {
-	Responsive          bool   `json:"responsive"`
-	MaintainAspectRatio bool   `json:"maintainAspectRatio"`
+	Responsive          bool `json:"responsive"`
+	MaintainAspectRatio bool `json:"maintainAspectRatio"`
 }
 
 type PlotOpt struct {
 	Pie PlotOptPie `json:"pie"`
 }
 type PlotOptPie struct {
-	ExpandOnClick bool `json:"expandOnClick"`
+	CustomScale   float64 `json:"customScale,omitempty"`
+	ExpandOnClick bool    `json:"expandOnClick"`
+	Size          int64   `json:"size,omitempty"`
 }
 
 type Theme struct {
@@ -50,7 +52,6 @@ type Theme struct {
 type Stroke struct {
 	Width float64 `json:"width"`
 }
-
 
 type Legend struct {
 	Show bool `json:"show"`
