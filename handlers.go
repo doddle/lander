@@ -121,7 +121,7 @@ func getNodesTable(c *fiber.Ctx) error {
 	if err != nil {
 		logger.Fatal(err)
 	}
-	stats, err := nodes.AssembleNodeTable(logger, clientSet, nodeLabelSlice)
+	stats, err := nodes.AssembleTable(logger, clientSet, nodeLabelSlice)
 	if err != nil {
 		logger.Fatal(err)
 	}

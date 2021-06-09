@@ -52,7 +52,7 @@ func getAllDeployments(
 func AssembleDeploymentPieChart(
 	logger *log.Logger,
 	clientSet *kubernetes.Clientset,
-) (FinalResult, error) {
+) (FinalPieChart, error) {
 	var resultColors []string
 	var resultLabels []string
 	var resultSeries []int64
@@ -84,7 +84,7 @@ func AssembleDeploymentPieChart(
 		resultColors = append(resultColors, "#81C784")
 	}
 
-	result := FinalResult{
+	result := FinalPieChart{
 		Total:  totalBad + totalGood,
 		Series: resultSeries,
 		ChartOpts: ChartOpts{

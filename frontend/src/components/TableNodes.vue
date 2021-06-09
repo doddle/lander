@@ -18,6 +18,7 @@
       :dense="true"
       :items-per-page="50"
       :multi-sort="true"
+      :loading="loading"
       sort-by="seconds"
     ></v-data-table>
   </v-card>
@@ -28,6 +29,7 @@ export default {
 
   data: () => ({
     search: "",
+    loading: true,
     nodes: [],
     headers: [
       {
@@ -45,11 +47,13 @@ export default {
   methods: {
     async getNodes() {
       try {
+        this.loading = true;
         const resp = await fetch("/v1/table/nodes");
         const data = await resp.json();
         console.log("retrieving v1/table/nodes");
         this.nodes = data.nodes;
         this.headers = data.headers;
+        this.loading = false;
       } catch (error) {
         console.error(error);
       }

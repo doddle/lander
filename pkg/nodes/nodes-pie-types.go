@@ -1,13 +1,22 @@
-package deployments
+package nodes
 
-type DeploymentPieChart struct {
+type NodePieChart struct {
 	Series []int64 `json:"series"`
 }
 
 type ChartOpts struct {
 	Chart  Chart    `json:"chart"`
-	Colors []string `json:"colors"`
 	Labels []string `json:"labels"`
+	PlotOpt PlotOpt `json:"plotOptions"`
+	Legend              Legend `json:"legend"`
+	Stroke Stroke `json:"stroke"`
+	Theme Theme `json:"theme"`
+	Title Title `json:"title"`
+	Colors []string `json:"colors"`
+}
+
+type Title struct {
+	Text string `json:"text"`
 }
 
 type ChartData struct {
@@ -23,13 +32,28 @@ type Dataset struct {
 }
 
 type ChartOptions struct {
-	Legend              Legend `json:"legend"`
 	Responsive          bool   `json:"responsive"`
 	MaintainAspectRatio bool   `json:"maintainAspectRatio"`
 }
 
+type PlotOpt struct {
+	Pie PlotOptPie `json:"pie"`
+}
+type PlotOptPie struct {
+	ExpandOnClick bool `json:"expandOnClick"`
+}
+
+type Theme struct {
+	Palette string `json:"palette"`
+}
+
+type Stroke struct {
+	Width float64 `json:"width"`
+}
+
+
 type Legend struct {
-	Display bool `json:"display"`
+	Show bool `json:"show"`
 }
 
 type FinalPieChart struct {

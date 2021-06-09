@@ -44,29 +44,66 @@ func getAllNodes(
 func AssembleNodesPieChart(
 	logger *log.Logger,
 	clientSet *kubernetes.Clientset,
-) ([]NodeStats, error) {
-	var results []NodeStats //nolint:prealloc
-	nodez, err := getAllNodes(logger, clientSet)
+) (FinalPieChart, error) {
+	var resultColors []string
+	var resultLabels []string
+	var resultSeries []int64
+	var totalBad int64
+	var totalGood int64
+	data, err := getAllNodes(logger, clientSet)
 	if err != nil {
-		logger.Fatal(err)
+		logger.Error(err)
 	}
-	now := time.Now()
-
-	// TODO: parse readiness for piechart labels
-	for _, i := range nodez.Items {
-		age := now.Sub(i.CreationTimestamp.Time)
-		newNode := NodeStats{
-			AgeSeconds: intergerOnly(age.Seconds()),
-			AgeHuman:   humaniseDuration(age),
-			Ready:      isReady(i),
-			Name:       i.Name,
+	for _, deployment := range data.Items {
+		if isReady(deployment) {
+			totalGood++
+		} else {
+			totalBad++
 		}
-		results = append(results, newNode)
 	}
-	return results, err
+
+	// colors: https://apexcharts.com/docs/options/colors/
+	// vs https://vuetifyjs.com/en/styles/colors/#material-colors
+	// green lighten-2
+	colGood := "#81C784"
+	// red lighten-2
+	colBad := "#E57373"
+	if totalBad > 0 {
+		resultLabels = append(resultLabels, "Errored")
+		resultSeries = append(resultSeries, totalBad)
+		resultColors = append(resultColors, colBad)
+	}
+	if totalGood > 0 {
+		resultLabels = append(resultLabels, "Healthy")
+		resultSeries = append(resultSeries, totalGood)
+		resultColors = append(resultColors, colGood)
+	}
+	logger.Info(len(resultColors))
+	result := FinalPieChart{
+		Total:  totalBad + totalGood,
+		Series: resultSeries,
+		ChartOpts: ChartOpts{
+			Legend: Legend{Show: false},
+			Theme: Theme{Palette: "palette2"},
+			//Title: Title{Text: "Nodes"},
+			PlotOpt: PlotOpt{
+				Pie: PlotOptPie{ ExpandOnClick: false},
+			},
+			Colors: resultColors,
+			Stroke: Stroke{Width: 0},
+			Chart: Chart{
+				ID:         "pie-nodes",
+				//DropShadow: DropShadow{
+				//	Effect: false,
+				//},
+			},
+			Labels: resultLabels,
+		},
+	}
+	return result, err
 }
 
-func AssembleNodeTable(
+func AssembleTable(
 	logger *log.Logger,
 	clientSet *kubernetes.Clientset,
 	labelSlices []string,

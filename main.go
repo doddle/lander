@@ -79,21 +79,9 @@ func main() {
 		// MaxAge:   300,
 	})
 
-	app.Get("/favicon*", getFavicon)
-	app.Get("/img/icons/*", getFavicon)
-
-	app.Get("/healthz", getHealthz)
-	app.Get("/v1/endpoints", getEndpoints)
-	app.Get("/v1/settings", getSettings)
-
-	app.Get("/v1/pie/deployments", getDeployments)
-	app.Get("/v1/pie/statefulsets", getStatefulSets)
-	app.Get("/v1/pie/nodes", getNodesPie)
-	app.Get("/v1/table/nodes", getNodesTable)
 
 	// sometimes in firefox (pressing "back") you can end up with the url example.com//
 	// redirect that back
-
 	app.Use(redirect.New(redirect.Config{
 		Rules: map[string]string{
 			"//":  "/",
@@ -109,6 +97,7 @@ func main() {
 
 	onStartup(logger)
 
+	startRoutes(app)
 	logger.Info("starting webserver on :8000")
 	logger.Fatal(app.Listen(":8000"))
 }

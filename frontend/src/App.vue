@@ -36,6 +36,9 @@
           <v-col sm="4" md="3" key="2">
             <OverviewPieStatefulSets />
           </v-col>
+          <v-col sm="4" md="3" key="3">
+            <OverviewPieNodes />
+          </v-col>
           <!--
           <v-col sm="4" md="3" key="3">
             <OverviewPieDeployments2 />
@@ -56,10 +59,9 @@
 import Home from "./components/Home";
 import ClusterLinks from "./components/CluserLinks";
 import OverviewPieDeployments from "./components/OverviewPieDeployments";
+import OverviewPieNodes from "./components/OverviewPieNodes";
 import OverviewPieStatefulSets from "./components/OverviewPieStatefulSets";
 import TableNodes from "./components/TableNodes";
-// import OverviewPieDeployments2 from "./components/OverviewPieDeployments";
-// import OverviewPieStatefulSets2 from "./components/OverviewPieStatefulSets";
 
 export default {
   name: "App",
@@ -77,6 +79,7 @@ export default {
     Home,
     OverviewPieDeployments,
     OverviewPieStatefulSets,
+    OverviewPieNodes,
     TableNodes,
     ClusterLinks
   }

@@ -1,5 +1,7 @@
 package nodes
 
+// Types for table data
+
 type NodeStats struct {
 	Name       string            `json:"name"`
 	Ready      bool              `json:"ready"`
@@ -17,3 +19,5 @@ type TableHeaders struct {
 	Text  string `json:"text"`
 	Value string `json:"value"`
 }
+
+
