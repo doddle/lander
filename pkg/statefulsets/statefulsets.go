@@ -33,7 +33,7 @@ func getAllStatefulSets(
 	if found {
 		return cached.(*v1.StatefulSetList), nil
 	}
-	deploymentList, err := clientSet.
+	objList, err := clientSet.
 		AppsV1().
 		StatefulSets("").
 		List(
@@ -43,8 +43,8 @@ func getAllStatefulSets(
 		return nil, err
 	}
 	logger.Debugf("got all %s from k8s", cacheObj)
-	pkgCache.Set(cacheObj, deploymentList, cache.DefaultExpiration)
-	return deploymentList, err
+	pkgCache.Set(cacheObj, objList, cache.DefaultExpiration)
+	return objList, err
 }
 
 // AssembleStatefulSetPieChart is used to assemble data to be returned to the API
@@ -62,8 +62,8 @@ func AssembleStatefulSetPieChart(
 	if err != nil {
 		logger.Error(err)
 	}
-	for _, deployment := range data.Items {
-		if isReady(deployment) {
+	for _, obj := range data.Items {
+		if isReady(obj) {
 			totalGood++
 		} else {
 			totalBad++
@@ -96,11 +96,13 @@ func AssembleStatefulSetPieChart(
 }
 
 func isReady(k8sObject v1.StatefulSet) bool {
-	current := k8sObject.Status.CurrentReplicas
+	// updated replicas should be the same as "ready replicas" and the current replica total
+	// otherwise return false
 	replicas := k8sObject.Status.Replicas
-	readyReplicas := k8sObject.Status.ReadyReplicas
-	if current == replicas {
-		if readyReplicas == replicas {
+	replicasReady := k8sObject.Status.ReadyReplicas
+	replicasUpdated := k8sObject.Status.UpdatedReplicas
+	if replicas == replicasReady {
+		if replicas == replicasUpdated {
 			return true
 		}
 	}
