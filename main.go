@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/redirect/v2"
 	"github.com/icza/gox/imagex/colorx"
 	"github.com/withmandala/go-log"
 	"os"
@@ -74,21 +73,6 @@ func main() {
 
 	app := fiber.New(fiberCfg)
 
-	app.Static("/", "./frontend/dist", fiber.Static{
-		Compress: true,
-		// MaxAge:   300,
-	})
-
-	// sometimes in firefox (pressing "back") you can end up with the url example.com//
-	// redirect that back
-	app.Use(redirect.New(redirect.Config{
-		Rules: map[string]string{
-			"//":  "/",
-			"//*": "/",
-			// "//*": "/new/$1",
-		},
-		StatusCode: 301,
-	}))
 
 	// app.Use(cors.New(cors.Config{
 	// 	AllowHeaders: "Cache-Control: No-Store",
@@ -97,6 +81,13 @@ func main() {
 	onStartup(logger)
 
 	startRoutes(app)
+
+	// ensure app.Static is declared after startRoutes() (specifically as it effects the redirects)
+	app.Static("/", "./frontend/dist", fiber.Static{
+		Compress: true,
+		// MaxAge:   300,
+	})
+
 	logger.Info("starting webserver on :8000")
 	logger.Fatal(app.Listen(":8000"))
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/redirect/v2"
 )
 
 func startRoutes(app *fiber.App) {
@@ -17,4 +18,14 @@ func startRoutes(app *fiber.App) {
 	app.Get("/v1/pie/statefulsets", getStatefulSets)
 	app.Get("/v1/pie/nodes", getNodesPie)
 	app.Get("/v1/table/nodes", getNodesTable)
+
+	// redirects to capture URL paths ending in "//"
+	// .. this sometimes seems to happen when browsers arrive via their "back" buttons/history
+	app.Use(redirect.New(redirect.Config{
+		Rules: map[string]string{
+			"//":   "/",
+			"//*": "/$1",
+		},
+		StatusCode: 301,
+	}))
 }

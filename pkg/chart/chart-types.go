@@ -1,14 +1,23 @@
-package nodes
+package chart
 
-import "github.com/digtux/lander/pkg/chart"
+
 
 /*
+// These allow constructing json to tweak chart options on the front'ends piechart lib
 Example usage:
 
 import (
 	"github.com/digtux/lander/pkg/chart"
 )
 
+
+type FinalPieChart struct {
+	ChartOpts chart.ChartOpts `json:"chartOptions"`
+	Series    []int64   `json:"series"`
+	Total     int64     `json:"total"`
+}
+
+func foo(){
 	result := FinalPieChart{
 		Total: someNumber,
 		Series: resultSeries,
@@ -33,15 +42,13 @@ import (
 			Labels: resultLabels,
 		},
 	}
-
-
- */
-
-
-
-type NodePieChart struct {
-	Series []int64 `json:"series"`
 }
+
+
+*/
+
+
+
 
 type ChartOpts struct {
 	Chart   Chart    `json:"chart"`
@@ -97,7 +104,7 @@ type Legend struct {
 }
 
 type FinalPieChart struct {
-	ChartOpts chart.ChartOpts `json:"chartOptions"`
+	ChartOpts ChartOpts `json:"chartOptions"`
 	Series    []int64   `json:"series"`
 	Total     int64     `json:"total"`
 }

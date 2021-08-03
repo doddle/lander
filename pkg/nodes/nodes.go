@@ -3,6 +3,7 @@ package nodes
 import (
 	"context"
 	"fmt"
+	"github.com/digtux/lander/pkg/chart"
 	v1 "k8s.io/api/core/v1"
 	"math"
 	"strings"
@@ -81,23 +82,18 @@ func AssembleNodesPieChart(
 	result := FinalPieChart{
 		Total:  totalBad + totalGood,
 		Series: resultSeries,
-		ChartOpts: ChartOpts{
-			Legend: Legend{Show: true},
-			//Theme:  Theme{Palette: "palette2"},
-			//Title: Title{Text: "Nodes"},
-			PlotOpt: PlotOpt{
-				Pie: PlotOptPie{
+		ChartOpts: chart.ChartOpts{
+			Legend: chart.Legend{Show: true},
+			PlotOpt: chart.PlotOpt{
+				Pie: chart.PlotOptPie{
 					ExpandOnClick: false,
 					Size:          120,
 				},
 			},
 			Colors: resultColors,
-			Stroke: Stroke{Width: 0},
-			Chart: Chart{
+			Stroke: chart.Stroke{Width: 0},
+			Chart: chart.Chart{
 				ID: "pie-nodes",
-				//DropShadow: DropShadow{
-				//	Effect: false,
-				//},
 			},
 			Labels: resultLabels,
 		},
