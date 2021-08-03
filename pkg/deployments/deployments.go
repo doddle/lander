@@ -2,14 +2,14 @@ package deployments
 
 import (
 	"context"
-	"strings"
-	"time"
-
+	"github.com/digtux/lander/pkg/chart"
 	"github.com/patrickmn/go-cache"
 	"github.com/withmandala/go-log"
 	v1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	"strings"
+	"time"
 )
 
 var (
@@ -87,15 +87,23 @@ func AssembleDeploymentPieChart(
 	result := FinalPieChart{
 		Total:  totalBad + totalGood,
 		Series: resultSeries,
-		ChartOpts: ChartOpts{
+		ChartOpts: chart.ChartOpts{
+			Legend: chart.Legend{Show: true},
+			PlotOpt: chart.PlotOpt{
+				Pie: chart.PlotOptPie{
+					ExpandOnClick: false,
+					Size:          120,
+				},
+			},
 			Colors: resultColors,
-			Chart: Chart{
-				ID:         "pie-deployments",
-				DropShadow: DropShadow{Effect: false},
+			Stroke: chart.Stroke{Width: 0},
+			Chart: chart.Chart{
+				ID: "pie-deployments",
 			},
 			Labels: resultLabels,
 		},
 	}
+
 	return result, err
 }
 

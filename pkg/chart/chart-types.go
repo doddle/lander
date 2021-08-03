@@ -1,7 +1,5 @@
 package chart
 
-
-
 /*
 // These allow constructing json to tweak chart options on the front'ends piechart lib
 Example usage:
@@ -46,9 +44,6 @@ func foo(){
 
 
 */
-
-
-
 
 type ChartOpts struct {
 	Chart   Chart    `json:"chart"`

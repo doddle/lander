@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/digtux/lander/pkg/chart"
 	"github.com/patrickmn/go-cache"
 	"github.com/withmandala/go-log"
 	v1 "k8s.io/api/apps/v1"
@@ -51,7 +52,7 @@ func getAllStatefulSets(
 func AssembleStatefulSetPieChart(
 	logger *log.Logger,
 	clientSet *kubernetes.Clientset,
-) (FinalResult, error) {
+) (FinalPieChart, error) {
 	var resultColors []string
 	var resultLabels []string
 	var resultSeries []int64
@@ -81,15 +82,23 @@ func AssembleStatefulSetPieChart(
 		resultColors = append(resultColors, "#81C784")
 	}
 
-	result := FinalResult{
+	result := FinalPieChart{
 		Total:  totalBad + totalGood,
 		Series: resultSeries,
-		ChartOpts: ChartOpts{
+		ChartOpts: chart.ChartOpts{
+			Legend: chart.Legend{Show: true},
+			PlotOpt: chart.PlotOpt{
+				Pie: chart.PlotOptPie{
+					ExpandOnClick: false,
+					Size:          120,
+				},
+			},
 			Colors: resultColors,
-			Labels: resultLabels,
-			Chart: Chart{
+			Stroke: chart.Stroke{Width: 0},
+			Chart: chart.Chart{
 				ID: "pie-statefulsets",
 			},
+			Labels: resultLabels,
 		},
 	}
 	return result, err
