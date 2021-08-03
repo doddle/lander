@@ -85,7 +85,7 @@ func AssembleStatefulSetPieChart(
 	result := FinalPieChart{
 		Total:  totalBad + totalGood,
 		Series: resultSeries,
-		ChartOpts: chart.ChartOpts{
+		ChartOpts: chart.Opts{
 			Legend: chart.Legend{Show: true},
 			PlotOpt: chart.PlotOpt{
 				Pie: chart.PlotOptPie{

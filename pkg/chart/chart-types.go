@@ -1,7 +1,8 @@
 package chart
 
 /*
-// These allow constructing json to tweak chart options on the front'ends piechart lib
+// These allow constructing json to tweak chart options on the front'ends piechart lib (apexcharts)
+// See: https://apexcharts.com/docs/options/
 Example usage:
 
 import (
@@ -45,7 +46,7 @@ func foo(){
 
 */
 
-type ChartOpts struct {
+type Opts struct {
 	Chart   Chart    `json:"chart"`
 	Labels  []string `json:"labels"`
 	PlotOpt PlotOpt  `json:"plotOptions"`
@@ -60,7 +61,7 @@ type Title struct {
 	Text string `json:"text"`
 }
 
-type ChartData struct {
+type Data struct {
 	Labels   []string  `json:"labels"`
 	Datasets []Dataset `json:"datasets"`
 }
@@ -72,7 +73,7 @@ type Dataset struct {
 	Data            []int64  `json:"data"`
 }
 
-type ChartOptions struct {
+type Options struct {
 	Responsive          bool `json:"responsive"`
 	MaintainAspectRatio bool `json:"maintainAspectRatio"`
 }
@@ -96,12 +97,6 @@ type Stroke struct {
 
 type Legend struct {
 	Show bool `json:"show"`
-}
-
-type FinalPieChart struct {
-	ChartOpts ChartOpts `json:"chartOptions"`
-	Series    []int64   `json:"series"`
-	Total     int64     `json:"total"`
 }
 
 type Chart struct {
