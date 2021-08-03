@@ -73,7 +73,6 @@ func main() {
 
 	app := fiber.New(fiberCfg)
 
-
 	// app.Use(cors.New(cors.Config{
 	// 	AllowHeaders: "Cache-Control: No-Store",
 	// }))
@@ -81,12 +80,6 @@ func main() {
 	onStartup(logger)
 
 	startRoutes(app)
-
-	// ensure app.Static is declared after startRoutes() (specifically as it effects the redirects)
-	app.Static("/", "./frontend/dist", fiber.Static{
-		Compress: true,
-		// MaxAge:   300,
-	})
 
 	logger.Info("starting webserver on :8000")
 	logger.Fatal(app.Listen(":8000"))
