@@ -3,6 +3,7 @@ module github.com/digtux/lander
 go 1.14
 
 require (
+	github.com/BenJetson/humantime v0.0.0-20200514023344-f59ec2835a87
 	github.com/andybalholm/brotli v1.0.1 // indirect
 	github.com/gofiber/fiber/v2 v2.1.2
 	github.com/gofiber/redirect/v2 v2.0.1
