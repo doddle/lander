@@ -82,12 +82,8 @@ func guessApp(svc string) App {
 
 // check if a key exists in an ingress annotation
 func annotationKeyExists(ingress v1beta1.Ingress, key string) bool {
-	for k := range ingress.Annotations {
-		if k == key {
-			return true
-		}
-	}
-	return false
+	_, exists := ingress.Annotations[key]
+	return exists
 }
 
 func isAnnotatedForLander(ingress v1beta1.Ingress, annotation string) bool {

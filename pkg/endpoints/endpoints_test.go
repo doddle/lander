@@ -96,7 +96,53 @@ func Test_isAnnotatedForLander(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, isAnnotatedForLander(tt.args.ingress, tt.args.annotation), tt.want)
+			assert.Equal(t, tt.want, isAnnotatedForLander(tt.args.ingress, tt.args.annotation))
+		})
+	}
+}
+
+func Test_annotationKeyExists(t *testing.T) {
+	type args struct {
+		ingress v1beta1.Ingress
+		key     string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "annotation exists",
+			args: args{
+				ingress: v1beta1.Ingress{
+					ObjectMeta: metav1.ObjectMeta{
+						Annotations: map[string]string{
+							"annotation1": "I exist",
+						},
+					},
+				},
+				key: "annotation1",
+			},
+			want: true,
+		},
+		{
+			name: "annotation exists",
+			args: args{
+				ingress: v1beta1.Ingress{
+					ObjectMeta: metav1.ObjectMeta{
+						Annotations: map[string]string{
+							"annotation1": "I exist",
+						},
+					},
+				},
+				key: "annotation2",
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, annotationKeyExists(tt.args.ingress, tt.args.key))
 		})
 	}
 }
