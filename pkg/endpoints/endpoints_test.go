@@ -1,11 +1,11 @@
 package endpoints
 
 import (
-	"testing"
-
+	"github.com/digtux/lander/pkg/util"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"testing"
 )
 
 func Test_isAnnotatedForLander(t *testing.T) {
@@ -143,6 +143,68 @@ func Test_annotationKeyExists(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assert.Equal(t, tt.want, annotationKeyExists(tt.args.ingress, tt.args.key))
+		})
+	}
+}
+
+type WarnImp struct {
+	util.LoggerIFace
+	warnCount int
+}
+
+func (m *WarnImp) Warnf(_ string, _ ...interface{}) {
+	m.warnCount++
+}
+
+func Test_getIngressClass(t *testing.T) {
+	type args struct {
+		logger  *WarnImp
+		ingress v1beta1.Ingress
+	}
+	tests := []struct {
+		name      string
+		args      args
+		want      string
+		warnCount int
+	}{
+		{
+			name: "should return value",
+			args: args{
+				logger: new(WarnImp),
+				ingress: v1beta1.Ingress{
+					TypeMeta: metav1.TypeMeta{},
+					ObjectMeta: metav1.ObjectMeta{
+						Annotations: map[string]string{
+							"kubernetes.io/ingress.class": "testClass",
+						},
+					},
+					Spec:   v1beta1.IngressSpec{},
+					Status: v1beta1.IngressStatus{},
+				},
+			},
+			want: "testClass",
+		},
+		{
+			name: "should warn",
+			args: args{
+				logger: new(WarnImp),
+				ingress: v1beta1.Ingress{
+					TypeMeta: metav1.TypeMeta{},
+					ObjectMeta: metav1.ObjectMeta{
+						Annotations: map[string]string{},
+					},
+					Spec:   v1beta1.IngressSpec{},
+					Status: v1beta1.IngressStatus{},
+				},
+			},
+			want:      "",
+			warnCount: 1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, getIngressClass(tt.args.logger, tt.args.ingress))
+			assert.Equal(t, tt.warnCount, tt.args.logger.warnCount)
 		})
 	}
 }

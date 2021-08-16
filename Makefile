@@ -35,3 +35,6 @@ clean:
 	-rm -rf frontend/node_modules/
 
 lint: backend-lint frontend-lint
+
+test:
+	go test ./...
