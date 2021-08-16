@@ -91,14 +91,7 @@ func annotationKeyExists(ingress v1beta1.Ingress, key string) bool {
 }
 
 func isAnnotatedForLander(ingress v1beta1.Ingress, annotation string) bool {
-	for k, v := range ingress.Annotations {
-		if k == annotation {
-			if v == "true" {
-				return true
-			}
-		}
-	}
-	return false
+	return ingress.Annotations[annotation] == "true"
 }
 
 // attempts to return the ingress class (or an empty string)

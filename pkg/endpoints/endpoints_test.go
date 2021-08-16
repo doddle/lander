@@ -78,6 +78,21 @@ func Test_isAnnotatedForLander(t *testing.T) {
 			},
 			want: true,
 		},
+		{
+			name: "false for non-existant annotation",
+			args: args{
+				ingress: v1beta1.Ingress{
+					ObjectMeta: metav1.ObjectMeta{
+						Annotations: map[string]string{
+							"foo.acmecorp.org/notLander": "true",
+							"foo.acmecorp.org/lander":    "false",
+						},
+					},
+				},
+				annotation: "foo.acmecorp.org/doesNotExist",
+			},
+			want: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
