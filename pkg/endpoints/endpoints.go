@@ -3,6 +3,9 @@ package endpoints
 import (
 	"context"
 	"github.com/digtux/lander/pkg/util"
+	"io/ioutil"
+	"k8s.io/apimachinery/pkg/util/json"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -73,9 +76,9 @@ func gatherEndpointData(logger *log.Logger, clientSet *kubernetes.Clientset, lan
 
 func guessApp(svc string) App {
 	fallback, apps := genApps()
-	for _, x := range apps {
-		if strings.Contains(svc, x.Name) {
-			return x
+	for _, app := range apps {
+		if strings.Contains(svc, app.Name) {
+			return app
 		}
 	}
 	return fallback
@@ -130,58 +133,33 @@ func getIngressList(logger *log.Logger,
 	return ingressList, err
 }
 
-// TODO: read from a json file or similar
 func genApps() (fallback App, index []App) {
-	var result []App
 	fallback = App{
 		Name: "unknown",
 		Icon: "/assets/link.png",
 		Desc: "generic service",
 	}
+	//TODO: handle error in function calling this
+	var _ error
+	index, _ = readAppsFromFile()
+	return
+}
 
-	x := App{
-		Name: "grafana",
-		Icon: "/assets/grafana.png",
-		Desc: "View and create dashboards for prometheus metric data, can also view+stream logs",
+func readAppsFromFile() (apps []App, err error) {
+	type Schema struct {
+		Apps []App  `json:"apps"`
+		Test string `json:"test"`
 	}
-	result = append(result, x)
-
-	x = App{
-		Name: "prometheus",
-		Icon: "/assets/prometheus.png",
-		Desc: "Explore prometheus Alerts, AlertRules, Service discovery and run raw queries",
+	var absPath string
+	if absPath, err = filepath.Abs("../../assets/apps.json"); err == nil {
+		var body []byte
+		if body, err = ioutil.ReadFile(absPath); err == nil {
+			data := new(Schema)
+			err = json.Unmarshal(body, data)
+			apps = data.Apps
+		}
 	}
-	result = append(result, x)
-
-	x = App{
-		Name: "alertmanager",
-		Icon: "/assets/alertmanager.png",
-		Desc: "manage alerts and silences",
-	}
-	result = append(result, x)
-
-	x = App{
-		Name: "kibana",
-		Icon: "/assets/kibana.png",
-		Desc: "aggregate and explore log data+graphs",
-	}
-	result = append(result, x)
-
-	x = App{
-		Name: "rabbitmq",
-		Icon: "/assets/link.png",
-		Desc: "RabbitMQ AMPQ UI",
-	}
-	result = append(result, x)
-
-	x = App{
-		Name: "couchbase",
-		Icon: "/assets/link.png",
-		Desc: "Couchbase",
-	}
-	result = append(result, x)
-
-	return fallback, result
+	return
 }
 
 // returns true/false if ingress Annotations contain what looks like oa2p

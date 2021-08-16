@@ -208,3 +208,8 @@ func Test_getIngressClass(t *testing.T) {
 		})
 	}
 }
+
+func Test_readAppsFromFile(t *testing.T) {
+	apps, _ := readAppsFromFile()
+	assert.Equal(t, 6, len(apps))
+}
