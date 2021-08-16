@@ -13,8 +13,9 @@ var (
 	// setup some global vars
 	flagHost = flag.String("host", "k8s.prod.example.com", "filter ingresses matching this hostname [required]")
 	// flagConfig = flag.String("config", "default", "Specify a config file (customised colour scheme)")
-	flagColor = flag.String("color", "light-blue lighten-2", "Main color scheme (See: https://vuetifyjs.com/en/styles/colors/#material-colors)")
-	flagHex   = flag.String("hex", "#26c5e8", "identicon color, hex string, eg #112233, #123, #bAC")
+	flagColor             = flag.String("color", "light-blue lighten-2", "Main color scheme (See: https://vuetifyjs.com/en/styles/colors/#material-colors)")
+	flagHex               = flag.String("hex", "#26c5e8", "identicon color, hex string, eg #112233, #123, #bAC")
+	flagIngressAnnotation = flag.String("annotation", "ingress.doddle.tech/lander", "Links will be rendered for ingresses with this annotation (and the value \"true\")")
 
 	// flag for a list of all clusters
 	flagClusters = flag.String("clusters", "cluster1.example.com,cluster2.example.com", "comma seperated list of clusters")

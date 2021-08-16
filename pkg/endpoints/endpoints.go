@@ -2,13 +2,14 @@ package endpoints
 
 import (
 	"context"
+	"strings"
+	"time"
+
 	"github.com/patrickmn/go-cache"
 	"github.com/withmandala/go-log"
 	"k8s.io/api/extensions/v1beta1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"strings"
-	"time"
 )
 
 var (
@@ -19,64 +20,49 @@ var (
 func ReallyAssemble(
 	logger *log.Logger,
 	clientSet *kubernetes.Clientset,
-	hostName string,
+	landerAnnotation string,
 ) []Endpoint {
-	var result []Endpoint
-	allEndpoints := gatherEndpointData(logger, clientSet)
+	//var result []Endpoint
+	allEndpoints := gatherEndpointData(logger, clientSet, landerAnnotation)
+	return allEndpoints
 
-	// lets filter them for only ones matching the hostname of the context
-	containsHostname := filterIngressForHostname(allEndpoints, hostName)
-
-	for _, i := range containsHostname {
-		// exclude hostnames that are not identical to flagHost
-		// input here will be like: https://example.com, http://example.com/foo
-		split := strings.Split(i.Address, "/")
-
-		// len 3 includes only addresses with something after the "/" .. eg:
-		// - example.com         <- not match
-		// - example.com/foo     <- would match
-		// this should exclude the lander itself (designed to be on https://cluster.example.com/)
-		if len(split) > 3 {
-			got := split[2]
-			want := hostName
-			if strings.Compare(got, want) == 0 {
-				result = append(result, i)
-			}
-		}
-	}
-	return result
 }
 
-func gatherEndpointData(logger *log.Logger, clientSet *kubernetes.Clientset) []Endpoint {
+func gatherEndpointData(logger *log.Logger, clientSet *kubernetes.Clientset, landerAnnotation string) []Endpoint {
 	var result []Endpoint
 
 	ingressList, err := getIngressList(logger, clientSet)
 	if err != nil {
 		logger.Error(err)
 	}
+
 	ingressObjects := ingressList.Items
 	// time.Sleep(5 * time.Second)
 	if len(ingressObjects) > 0 {
 		for _, ingress := range ingressObjects {
-			for _, rule := range ingress.Spec.Rules {
-				for _, p := range rule.IngressRuleValue.HTTP.Paths {
-					serviceName := p.Backend.ServiceName
-					guessed := guessApp(serviceName)
-					// Strip out a trailing "/"
-					uri := p.Path
-					if p.Path == "/" {
-						uri = ""
+
+			// We only want to show links to ingress objects with certain annotations
+			if isAnnotatedForLander(ingress, landerAnnotation) {
+				for _, rule := range ingress.Spec.Rules {
+					for _, p := range rule.IngressRuleValue.HTTP.Paths {
+						serviceName := p.Backend.ServiceName
+						guessed := guessApp(serviceName)
+						// Strip out a trailing "/"
+						uri := p.Path
+						if p.Path == "/" {
+							uri = ""
+						}
+						msg := Endpoint{
+							Address:     "https://" + rule.Host + uri,
+							Https:       true,
+							Oauth2proxy: getOauth2ProxyState(ingress),
+							Class:       getIngressClass(logger, ingress),
+							Icon:        guessed.Icon,
+							Description: guessed.Desc,
+							Name:        guessed.Name,
+						}
+						result = append(result, msg)
 					}
-					msg := Endpoint{
-						Address:     "https://" + rule.Host + uri,
-						Https:       true,
-						Oauth2proxy: getOauth2ProxyState(ingress),
-						Class:       getIngressClass(logger, ingress),
-						Icon:        guessed.Icon,
-						Description: guessed.Desc,
-						Name:        guessed.Name,
-					}
-					result = append(result, msg)
 				}
 			}
 		}
@@ -104,6 +90,17 @@ func annotationKeyExists(ingress v1beta1.Ingress, key string) bool {
 	return false
 }
 
+func isAnnotatedForLander(ingress v1beta1.Ingress, annotation string) bool {
+	for k, v := range ingress.Annotations {
+		if k == annotation {
+			if v == "true" {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // attempts to return the ingress class (or an empty string)
 // TODO: upgrade to v1?
 func getIngressClass(logger *log.Logger, ingress v1beta1.Ingress) string {
@@ -119,7 +116,7 @@ func getIngressClass(logger *log.Logger, ingress v1beta1.Ingress) string {
 	return ""
 }
 
-// Speaks to the cluster and attempt to pull an IngressListgg
+// Speaks to the cluster and attempt to pull an IngressList
 func getIngressList(logger *log.Logger,
 	clientSet *kubernetes.Clientset,
 ) (*v1beta1.IngressList, error) {
@@ -181,6 +178,21 @@ func genApps() (fallback App, index []App) {
 		Desc: "aggregate and explore log data+graphs",
 	}
 	result = append(result, x)
+
+	x = App{
+		Name: "rabbitmq",
+		Icon: "/assets/link.png",
+		Desc: "RabbitMQ AMPQ UI",
+	}
+	result = append(result, x)
+
+	x = App{
+		Name: "couchbase",
+		Icon: "/assets/link.png",
+		Desc: "Couchbase",
+	}
+	result = append(result, x)
+
 	return fallback, result
 }
 
@@ -194,12 +206,12 @@ func getOauth2ProxyState(ingress v1beta1.Ingress) bool {
 	return false
 }
 
-func filterIngressForHostname(input []Endpoint, host string) []Endpoint {
-	var result []Endpoint
-	for _, data := range input {
-		if strings.Contains(data.Address, host) {
-			result = append(result, data)
-		}
-	}
-	return result
-}
+//func filterIngressForHostname(input []Endpoint, host string) []Endpoint {
+//	var result []Endpoint
+//	for _, data := range input {
+//		if strings.Contains(data.Address, host) {
+//			result = append(result, data)
+//		}
+//	}
+//	return result
+//}

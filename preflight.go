@@ -38,6 +38,6 @@ func onStartup(logger *log.Logger) {
 	_ = endpoints.ReallyAssemble(
 		logger,
 		clientSet,
-		*flagHost,
+		*flagIngressAnnotation,
 	)
 }

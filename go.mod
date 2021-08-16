@@ -13,6 +13,7 @@ require (
 	github.com/llgcode/draw2d v0.0.0-20200930101115-bfaf5d914d1e
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/smartystreets/goconvey v1.6.4 // indirect
+	github.com/stretchr/testify v1.4.0 // indirect
 	github.com/tideland/golib v4.24.2+incompatible
 	github.com/withmandala/go-log v0.1.0
 	golang.org/x/sys v0.0.0-20201101102859-da207088b7d1 // indirect

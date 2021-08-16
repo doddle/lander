@@ -57,7 +57,7 @@ func getEndpoints(c *fiber.Ctx) error {
 	result := endpoints.ReallyAssemble(
 		logger,
 		clientSet,
-		*flagHost,
+		*flagIngressAnnotation,
 	)
 	return c.JSON(result)
 }
