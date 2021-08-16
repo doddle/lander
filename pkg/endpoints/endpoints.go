@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"context"
+	"github.com/digtux/lander/pkg/util"
 	"strings"
 	"time"
 
@@ -92,11 +93,9 @@ func isAnnotatedForLander(ingress v1beta1.Ingress, annotation string) bool {
 
 // attempts to return the ingress class (or an empty string)
 // TODO: upgrade to v1?
-func getIngressClass(logger *log.Logger, ingress v1beta1.Ingress) string {
-	for k, v := range ingress.Annotations {
-		if k == "kubernetes.io/ingress.class" {
-			return v
-		}
+func getIngressClass(logger util.LoggerIFace, ingress v1beta1.Ingress) string {
+	if val, ok := ingress.Annotations["kubernetes.io/ingress.class"]; ok {
+		return val
 	}
 	logger.Warnf(
 		"Unable to determine ingress class for: %s/%s",
