@@ -147,8 +147,7 @@ func genApps() (fallback App, index []App) {
 
 func readAppsFromFile() (apps []App, err error) {
 	type Schema struct {
-		Apps []App  `json:"apps"`
-		Test string `json:"test"`
+		Apps []App `json:"apps"`
 	}
 	var absPath string
 	if absPath, err = filepath.Abs("../../assets/apps.json"); err == nil {
