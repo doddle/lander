@@ -6,21 +6,29 @@ develop | master
 
 Simple little landing homepage..
 
-- Indexes all the ingresses in the cluster
-- returns json with some meta-data only for ingress hostnames matching your `-host` setting
+- Search all the Ingresses in the current context cluster 
+- Show any with the appropriate Annotations 
 - simple vuejs UI to query the golang server
 - there is a lightweight cache system to ensure k8s API chatter is limited
 - guess colour scheme based on hostname
 - "identicon" favicons generated against hostname
 
-
-# running it locally
+The available annotations for an Ingress (with `-annotationBase` startup flag of lander.doddle.com)
+ - `"lander.doddle.com/show": "true"` 
+ Note string, not bool
+ - `"lander.doddle.com/name": "Kibana"` 
+ Service name, defaults to K8s Ingress service name
+ - `"lander.doddle.com/description": "A free text description"` Defaults to blank string
+ - `"lander.doddle.com/icon": "kibana.png"` 
+ A file in the ./assets directory. Defaults to matching a file with "lander.doddle.com/name" and fallsback to `link.png` if none is found
+ - `"lander.doddle.com/url": "https://doddle.com"` URL to link to. Defaults to K8s Ingress URL. 
 
 
 ## back
 
 The golang app supports a few flags..:
-- `-host` which hostname to filter for results on the main page
+- `annotationBase` the base of the annotations to use. Appended with `/show` to figure the annotations above
+- `-clusterHost` which hostname to use on Vue and in generating a favicon
 - `-hex` the hex colour to be used for the identicon.. EG: `#26c5e8`, `#123`, `#b2C`
 - `-color` the colorscheme (vuetify) to be handed to the frontend.. See: [material-colors](https://vuetifyjs.com/en/styles/colors/#material-colors)
 

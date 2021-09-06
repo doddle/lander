@@ -3,10 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"os"
+
 	"github.com/digtux/lander/pkg/endpoints"
 	"github.com/withmandala/go-log"
 	"k8s.io/client-go/kubernetes"
-	"os"
 )
 
 func envVarExists(key string) bool {
@@ -17,7 +19,7 @@ func envVarExists(key string) bool {
 // using flag.Visit, check if a flag was provided
 // if not.. tell the user, print `-help` and bail
 func checkRequredFlag() {
-	required := []string{"host"}
+	required := []string{}
 	seen := make(map[string]bool)
 	flag.Visit(func(f *flag.Flag) { seen[f.Name] = true })
 	for _, req := range required {
@@ -38,6 +40,16 @@ func onStartup(logger *log.Logger) {
 	_ = endpoints.ReallyAssemble(
 		logger,
 		clientSet,
-		*flagIngressAnnotation,
+		*flagLanderAnnotationBase,
 	)
+
+	files, err := ioutil.ReadDir(*flagAssetPath)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	for _, f := range files {
+		if !f.IsDir() {
+			availableIcons = append(availableIcons, f.Name())
+		}
+	}
 }

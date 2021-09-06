@@ -2,13 +2,9 @@ package endpoints
 
 import (
 	"context"
-	"github.com/digtux/lander/pkg/util"
-	"io/ioutil"
-	"k8s.io/apimachinery/pkg/util/json"
-	"path/filepath"
-	"strings"
 	"time"
 
+	"github.com/digtux/lander/pkg/util"
 	"github.com/patrickmn/go-cache"
 	"github.com/withmandala/go-log"
 	"k8s.io/api/extensions/v1beta1"
@@ -24,15 +20,8 @@ var (
 func ReallyAssemble(
 	logger *log.Logger,
 	clientSet *kubernetes.Clientset,
-	landerAnnotation string,
+	landerAnnotationRoot string,
 ) []Endpoint {
-	//var result []Endpoint
-	allEndpoints := gatherEndpointData(logger, clientSet, landerAnnotation)
-	return allEndpoints
-
-}
-
-func gatherEndpointData(logger *log.Logger, clientSet *kubernetes.Clientset, landerAnnotation string) []Endpoint {
 	var result []Endpoint
 
 	ingressList, err := getIngressList(logger, clientSet)
@@ -41,47 +30,49 @@ func gatherEndpointData(logger *log.Logger, clientSet *kubernetes.Clientset, lan
 	}
 
 	ingressObjects := ingressList.Items
-	// time.Sleep(5 * time.Second)
 	if len(ingressObjects) > 0 {
 		for _, ingress := range ingressObjects {
-
-			// We only want to show links to ingress objects with certain annotations
-			if isAnnotatedForLander(ingress, landerAnnotation) {
-				for _, rule := range ingress.Spec.Rules {
-					for _, p := range rule.IngressRuleValue.HTTP.Paths {
-						serviceName := p.Backend.ServiceName
-						guessed := guessApp(serviceName)
-						// Strip out a trailing "/"
-						uri := p.Path
-						if p.Path == "/" {
-							uri = ""
-						}
-						msg := Endpoint{
-							Address:     "https://" + rule.Host + uri,
-							Https:       true,
-							Oauth2proxy: getOauth2ProxyState(ingress),
-							Class:       getIngressClass(logger, ingress),
-							Icon:        guessed.Icon,
-							Description: guessed.Desc,
-							Name:        guessed.Name,
-						}
-						result = append(result, msg)
+			if !isAnnotatedForLander(ingress, landerAnnotationRoot) {
+				continue
+			}
+			for _, rule := range ingress.Spec.Rules {
+				for _, p := range rule.IngressRuleValue.HTTP.Paths {
+					serviceDescription := ""
+					if annotationKeyExists(ingress, "lander.doddle.tech/description") {
+						serviceDescription = ingress.Annotations["lander.doddle.tech/description"]
 					}
+					serviceName := p.Backend.ServiceName
+					if annotationKeyExists(ingress, "lander.doddle.tech/name") {
+						serviceName = ingress.Annotations["lander.doddle.tech/name"]
+					}
+					serviceIcon := ""
+					if annotationKeyExists(ingress, "lander.doddle.tech/icon") {
+						serviceIcon = ingress.Annotations["lander.doddle.tech/icon"]
+					}
+
+					// Strip out a trailing "/"
+					uri := p.Path
+					if p.Path == "/" {
+						uri = ""
+					}
+					serviceUrl := "https://" + rule.Host + uri
+					if annotationKeyExists(ingress, "lander.doddle.tech/url") {
+						serviceUrl = ingress.Annotations["lander.doddle.tech/url"]
+					}
+					result = append(result, Endpoint{
+						Address:     serviceUrl,
+						Https:       true,
+						Oauth2proxy: getOauth2ProxyState(ingress),
+						Class:       getIngressClass(logger, ingress),
+						Description: serviceDescription,
+						Name:        serviceName,
+						Icon:        serviceIcon,
+					})
 				}
 			}
 		}
 	}
 	return result
-}
-
-func guessApp(svc string) App {
-	fallback, apps := genApps()
-	for _, app := range apps {
-		if strings.Contains(svc, app.Name) {
-			return app
-		}
-	}
-	return fallback
 }
 
 // check if a key exists in an ingress annotation
@@ -90,8 +81,8 @@ func annotationKeyExists(ingress v1beta1.Ingress, key string) bool {
 	return exists
 }
 
-func isAnnotatedForLander(ingress v1beta1.Ingress, annotation string) bool {
-	return ingress.Annotations[annotation] == "true"
+func isAnnotatedForLander(ingress v1beta1.Ingress, annotationBase string) bool {
+	return ingress.Annotations[annotationBase+"/show"] == "true"
 }
 
 // attempts to return the ingress class (or an empty string)
@@ -130,35 +121,7 @@ func getIngressList(logger *log.Logger,
 	}
 	logger.Debugf("got all %s from k8s", cacheObj)
 	pkgCache.Set(cacheObj, ingressList, cache.DefaultExpiration)
-	return ingressList, err
-}
-
-func genApps() (fallback App, index []App) {
-	fallback = App{
-		Name: "unknown",
-		Icon: "/assets/link.png",
-		Desc: "generic service",
-	}
-	//TODO: handle error in function calling this
-	var _ error
-	index, _ = readAppsFromFile()
-	return
-}
-
-func readAppsFromFile() (apps []App, err error) {
-	type Schema struct {
-		Apps []App `json:"apps"`
-	}
-	var absPath string
-	if absPath, err = filepath.Abs("../../assets/apps.json"); err == nil {
-		var body []byte
-		if body, err = ioutil.ReadFile(absPath); err == nil {
-			data := new(Schema)
-			err = json.Unmarshal(body, data)
-			apps = data.Apps
-		}
-	}
-	return
+	return ingressList, nil
 }
 
 // returns true/false if ingress Annotations contain what looks like oa2p
@@ -170,13 +133,3 @@ func getOauth2ProxyState(ingress v1beta1.Ingress) bool {
 	}
 	return false
 }
-
-//func filterIngressForHostname(input []Endpoint, host string) []Endpoint {
-//	var result []Endpoint
-//	for _, data := range input {
-//		if strings.Contains(data.Address, host) {
-//			result = append(result, data)
-//		}
-//	}
-//	return result
-//}

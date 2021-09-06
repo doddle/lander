@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/digtux/lander/pkg/deployments"
 	"github.com/digtux/lander/pkg/endpoints"
 	"github.com/digtux/lander/pkg/identicon/identicon"
@@ -9,7 +12,6 @@ import (
 	"github.com/digtux/lander/pkg/statefulsets"
 	"github.com/gofiber/fiber/v2"
 	"k8s.io/client-go/kubernetes"
-	"os"
 )
 
 func getHealthz(c *fiber.Ctx) error {
@@ -19,7 +21,7 @@ func getHealthz(c *fiber.Ctx) error {
 func getSettings(c *fiber.Ctx) error {
 	settings := Settings{
 		ColorScheme: *flagColor,
-		Cluster:     *flagHost,
+		Cluster:     *flagClusterHost,
 		ClusterList: clusterList,
 	}
 	return c.JSON(settings)
@@ -54,18 +56,30 @@ func getEndpoints(c *fiber.Ctx) error {
 	if err != nil {
 		logger.Fatal(err)
 	}
-	result := endpoints.ReallyAssemble(
+	resp := endpoints.ReallyAssemble(
 		logger,
 		clientSet,
-		*flagIngressAnnotation,
+		*flagLanderAnnotationBase,
 	)
-	return c.JSON(result)
+
+	// if there's no Icon set, try and find one by name match
+	for _, endpoint := range resp {
+		if endpoint.Icon == "" {
+			endpoint.Icon = "link.png"
+			for _, iconFile := range availableIcons {
+				if strings.Contains(iconFile, endpoint.Name) {
+					endpoint.Icon = iconFile
+				}
+			}
+		}
+	}
+	return c.JSON(resp)
 }
 
 // TODO: detect desired sizes from URI and generate smaller/bigger ones also
 func getFavicon(c *fiber.Ctx) error {
 	hex := *flagHex
-	name := *flagHost
+	name := "Lander"
 	uri := c.Context().Request.URI()
 	uriPath := uri.LastPathSegment()
 

@@ -1,11 +1,12 @@
 package endpoints
 
 import (
+	"testing"
+
 	"github.com/digtux/lander/pkg/util"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"testing"
 )
 
 func Test_isAnnotatedForLander(t *testing.T) {
@@ -24,8 +25,8 @@ func Test_isAnnotatedForLander(t *testing.T) {
 				ingress: v1beta1.Ingress{
 					ObjectMeta: metav1.ObjectMeta{
 						Annotations: map[string]string{
-							"foo.acmecorp.org/notLander": "false",
-							"foo.acmecorp.org/lander":    "true",
+							"foo.acmecorp.org/notLander":   "false",
+							"foo.acmecorp.org/lander/show": "true",
 						},
 					},
 				},
@@ -54,8 +55,8 @@ func Test_isAnnotatedForLander(t *testing.T) {
 				ingress: v1beta1.Ingress{
 					ObjectMeta: metav1.ObjectMeta{
 						Annotations: map[string]string{
-							"foo.acmecorp.org/notLander": "false",
-							"foo.acmecorp.org/lander":    "true",
+							"foo.acmecorp.org/notLander":   "false",
+							"foo.acmecorp.org/lander/show": "true",
 						},
 					},
 				},
@@ -69,8 +70,8 @@ func Test_isAnnotatedForLander(t *testing.T) {
 				ingress: v1beta1.Ingress{
 					ObjectMeta: metav1.ObjectMeta{
 						Annotations: map[string]string{
-							"foo.acmecorp.org/notLander": "true",
-							"foo.acmecorp.org/lander":    "false",
+							"foo.acmecorp.org/notLander/show": "true",
+							"foo.acmecorp.org/lander/show":    "false",
 						},
 					},
 				},
@@ -207,9 +208,4 @@ func Test_getIngressClass(t *testing.T) {
 			assert.Equal(t, tt.warnCount, tt.args.logger.warnCount)
 		})
 	}
-}
-
-func Test_readAppsFromFile(t *testing.T) {
-	apps, _ := readAppsFromFile()
-	assert.Equal(t, 6, len(apps))
 }

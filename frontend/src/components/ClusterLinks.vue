@@ -17,7 +17,7 @@
       </v-list-item-content>
 
       <v-list-item-avatar>
-        <v-img :src="item.icon"></v-img>
+        <v-img :src="/assets/ + item.icon"></v-img>
       </v-list-item-avatar>
     </v-list-item>
   </v-list>
@@ -36,7 +36,7 @@ export default {
           address: "https://mycluster.com/alerts",
           class: "nginx",
           description: "something",
-          icon: "/assets/prometheus.png",
+          icon: "prometheus.png",
           oauth2proxy: true
         }
       ]
