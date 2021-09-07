@@ -1,40 +1,47 @@
 <template>
   <v-app>
-    <v-app-bar app color="blue-grey lighten-1">
-      <div class="d-flex align-center">
-        <a :href="'/favicon-' + host + '.png'">
-          <img
-            :src="`favicon-${host}.ico`"
-            alt="identicon"
-            class="shrink mr-2"
-            contain
-            transition="scale-transition"
-            width="40"
-          />
-        </a>
-      </div>
-      <v-spacer></v-spacer>
+    <v-app-bar app color="blue-grey lighten-1" class="align-centre">
+      <v-row class="justify-space-between">
+        <v-col cols=1>
+          <div class="d-flex">
+            <a :href="'/favicon-' + host + '.png'">
+              <img
+                :src="`favicon-${host}.ico`"
+                alt="identicon"
+                class="shrink mr-2"
+                contain
+                transition="scale-transition"
+                width="40"
+              />
+            </a>
+          </div>
+        </v-col>
 
-      <v-menu offset-y>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn color="primary" dark v-bind="attrs" v-on="on">
-            {{ settings.cluster }}
+        <v-col cols=3 class="d-flex justify-space-around"> 
+          <v-menu offset-y>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn color="primary" dark v-bind="attrs" v-on="on">
+                {{ settings.cluster }}
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item v-for="(item, index) in settings.clusters" :key="index">
+                <v-list-item-title>
+                  <a :href="'https://' + item">{{ item }}</a>
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-col>
+        
+        <v-col cols=1 style="text-align:right">
+          <v-btn href="https://github.com/digtux/lander" target="_blank" text>
+            <span class="mr-2"></span>
+            <v-icon>mdi-open-in-new</v-icon>
           </v-btn>
-        </template>
-        <v-list>
-          <v-list-item v-for="(item, index) in settings.clusters" :key="index">
-            <v-list-item-title>
-              <a :href="'https://' + item">{{ item }}</a>
-            </v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+        </v-col>
 
-      <v-spacer></v-spacer>
-      <v-btn href="https://github.com/digtux/lander" target="_blank" text>
-        <span class="mr-2"></span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
+      </v-row>
     </v-app-bar>
 
     <v-main>
