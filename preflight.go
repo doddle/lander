@@ -32,7 +32,7 @@ func checkRequredFlag() {
 }
 
 func onStartup(logger *log.Logger) {
-	logger.Info("getting some initial data bootstrapped")
+	logger.Info("Startup: Prefetch endpoints & index icons")
 	clientSet, err := kubernetes.NewForConfig(kubeConfig)
 	if err != nil {
 		logger.Fatal(err)
@@ -42,7 +42,6 @@ func onStartup(logger *log.Logger) {
 		clientSet,
 		*flagLanderAnnotationBase,
 	)
-
 	files, err := ioutil.ReadDir(*flagAssetPath)
 	if err != nil {
 		logger.Fatal(err)

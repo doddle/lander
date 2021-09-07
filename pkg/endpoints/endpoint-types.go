@@ -9,5 +9,5 @@ type Endpoint struct {
 	Oauth2proxy bool   `json:"oauth2proxy"` // if its secured by an oauth2proxy
 	Description string `json:"description"` // if we can match this to an app, we can propogate this
 	Name        string `json:"name"`        // Application name
-	Icon        string `json:"icon"`
+	Icon        string `json:"icon"`        // Appropriate file name for the Icon
 }

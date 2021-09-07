@@ -13,22 +13,22 @@ Simple little landing homepage..
 - guess colour scheme based on hostname
 - "identicon" favicons generated against hostname
 
-The available annotations for an Ingress (with `-annotationBase` startup flag of lander.doddle.com)
+The available annotations for an Ingress (with `-annotationBase` startup flag of `lander.doddle.com`)
  - `"lander.doddle.com/show": "true"` 
  Note string, not bool
  - `"lander.doddle.com/name": "Kibana"` 
  Service name, defaults to K8s Ingress service name
  - `"lander.doddle.com/description": "A free text description"` Defaults to blank string
  - `"lander.doddle.com/icon": "kibana.png"` 
- A file in the ./assets directory. Defaults to matching a file with "lander.doddle.com/name" and fallsback to `link.png` if none is found
+ A file in the ./assets directory. Defaults to matching a file with a lowercase("lander.doddle.com/name" or service name) and fallsback to `link.png` if none is found
  - `"lander.doddle.com/url": "https://doddle.com"` URL to link to. Defaults to K8s Ingress URL. 
 
 
 ## back
 
 The golang app supports a few flags..:
-- `annotationBase` the base of the annotations to use. Appended with `/show` to figure the annotations above
-- `-clusterHost` which hostname to use on Vue and in generating a favicon
+- `-annotationBase` the base of the annotations to use. Appended with `/show` to figure the annotations above
+- `-clusterName` a cluster name to use on the frontend and for generating a favicon
 - `-hex` the hex colour to be used for the identicon.. EG: `#26c5e8`, `#123`, `#b2C`
 - `-color` the colorscheme (vuetify) to be handed to the frontend.. See: [material-colors](https://vuetifyjs.com/en/styles/colors/#material-colors)
 
@@ -44,16 +44,8 @@ and in this cluster I have:
 This means I can run the app with:
 
 ```
-go run . -host "$(kubectl config current-context)"
+go run ."
 ```
-
-
-if your "current-context" is something else.. simply over-ride it.. eg
-
-```
-go run . -host "ingress.example.com"
-```
-
 
 curl it and see if u get any endpoints detected
 ```

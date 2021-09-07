@@ -3,3 +3,4 @@ lander
 frontend/node_modules
 icon-*.png
 .idea
+.vscode

@@ -21,7 +21,7 @@ func getHealthz(c *fiber.Ctx) error {
 func getSettings(c *fiber.Ctx) error {
 	settings := Settings{
 		ColorScheme: *flagColor,
-		Cluster:     *flagClusterHost,
+		Cluster:     *flagClusterName,
 		ClusterList: clusterList,
 	}
 	return c.JSON(settings)
@@ -63,12 +63,12 @@ func getEndpoints(c *fiber.Ctx) error {
 	)
 
 	// if there's no Icon set, try and find one by name match
-	for _, endpoint := range resp {
+	for i, endpoint := range resp {
 		if endpoint.Icon == "" {
-			endpoint.Icon = "link.png"
+			resp[i].Icon = "link.png"
 			for _, iconFile := range availableIcons {
-				if strings.Contains(iconFile, endpoint.Name) {
-					endpoint.Icon = iconFile
+				if strings.Contains(iconFile, strings.ToLower(endpoint.Name)) {
+					resp[i].Icon = iconFile
 				}
 			}
 		}
@@ -79,7 +79,7 @@ func getEndpoints(c *fiber.Ctx) error {
 // TODO: detect desired sizes from URI and generate smaller/bigger ones also
 func getFavicon(c *fiber.Ctx) error {
 	hex := *flagHex
-	name := "Lander"
+	name := *flagClusterName
 	uri := c.Context().Request.URI()
 	uriPath := uri.LastPathSegment()
 

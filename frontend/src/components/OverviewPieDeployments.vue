@@ -25,6 +25,9 @@ export default {
           dropShadow: {
             effect: false
           }
+        },        
+        legend: {
+          position: "bottom"
         },
         labels: []
       },

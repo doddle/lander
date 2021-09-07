@@ -12,7 +12,7 @@ import (
 
 var (
 	// setup some global vars
-	flagClusterHost = flag.String("clusterHost", "k8s.prod.example.com", "Cluster host name for displaying on lander")
+	flagClusterName = flag.String("clusterName", "k8s Lander", "Cluster name for display purposes only")
 	// flagConfig = flag.String("config", "default", "Specify a config file (customised colour scheme)")
 	flagColor                = flag.String("color", "light-blue lighten-2", "Main color scheme (See: https://vuetifyjs.com/en/styles/colors/#material-colors)")
 	flagHex                  = flag.String("hex", "#26c5e8", "identicon color, hex string, eg #112233, #123, #bAC")
@@ -27,7 +27,7 @@ var (
 		"comma seperated list of node labels you care about",
 	)
 
-	flagAssetPath  = flag.String("assetPath", "./assets", "Path to icon images for services. Relative to main.go")
+	flagAssetPath  = flag.String("assetPath", "./frontend/public/assets", "Path to icon images for services. Relative to main.go")
 	availableIcons []string
 	flagDebug      = flag.Bool("debug", false, "debug")
 	clusterList    []string
