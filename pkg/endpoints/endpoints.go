@@ -38,16 +38,16 @@ func ReallyAssemble(
 			for _, rule := range ingress.Spec.Rules {
 				for _, p := range rule.IngressRuleValue.HTTP.Paths {
 					serviceDescription := ""
-					if annotationKeyExists(ingress, "lander.doddle.tech/description") {
-						serviceDescription = ingress.Annotations["lander.doddle.tech/description"]
+					if annotationKeyExists(ingress, landerAnnotationRoot+"/description") {
+						serviceDescription = ingress.Annotations[landerAnnotationRoot+"/description"]
 					}
 					serviceName := p.Backend.ServiceName
-					if annotationKeyExists(ingress, "lander.doddle.tech/name") {
-						serviceName = ingress.Annotations["lander.doddle.tech/name"]
+					if annotationKeyExists(ingress, landerAnnotationRoot+"/name") {
+						serviceName = ingress.Annotations[landerAnnotationRoot+"/name"]
 					}
 					serviceIcon := ""
-					if annotationKeyExists(ingress, "lander.doddle.tech/icon") {
-						serviceIcon = ingress.Annotations["lander.doddle.tech/icon"]
+					if annotationKeyExists(ingress, landerAnnotationRoot+"/icon") {
+						serviceIcon = ingress.Annotations[landerAnnotationRoot+"/icon"]
 					}
 
 					// Strip out a trailing "/"
@@ -56,8 +56,8 @@ func ReallyAssemble(
 						uri = ""
 					}
 					serviceUrl := "https://" + rule.Host + uri
-					if annotationKeyExists(ingress, "lander.doddle.tech/url") {
-						serviceUrl = ingress.Annotations["lander.doddle.tech/url"]
+					if annotationKeyExists(ingress, landerAnnotationRoot+"/url") {
+						serviceUrl = ingress.Annotations[landerAnnotationRoot+"/url"]
 					}
 					result = append(result, Endpoint{
 						Address:     serviceUrl,
