@@ -11,13 +11,14 @@
       </v-list-item-icon>
 
       <v-list-item-content>
-        <v-list-item-title v-text="item.address"></v-list-item-title>
-
-        <v-list-item-subtitle v-html="item.description"></v-list-item-subtitle>
+        <v-list-item-title v-text="item.name"></v-list-item-title>
+        <v-list-item-subtitle
+          v-html="item.address + ' - ' + item.description"
+        ></v-list-item-subtitle>
       </v-list-item-content>
 
       <v-list-item-avatar>
-        <v-img :src="item.icon"></v-img>
+        <v-img :src="/assets/ + item.icon"></v-img>
       </v-list-item-avatar>
     </v-list-item>
   </v-list>
@@ -36,7 +37,7 @@ export default {
           address: "https://mycluster.com/alerts",
           class: "nginx",
           description: "something",
-          icon: "/assets/prometheus.png",
+          icon: "prometheus.png",
           oauth2proxy: true
         }
       ]

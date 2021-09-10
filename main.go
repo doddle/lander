@@ -2,19 +2,21 @@ package main
 
 import (
 	"flag"
+	"os"
+	"strings"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/icza/gox/imagex/colorx"
 	"github.com/withmandala/go-log"
-	"os"
-	"strings"
 )
 
 var (
 	// setup some global vars
-	flagHost = flag.String("host", "k8s.prod.example.com", "filter ingresses matching this hostname [required]")
+	flagClusterFQDN = flag.String("clusterFQDN", "k8s.example.com", "The cluster this lander is operating in. Used for display and identicon purposes only.")
 	// flagConfig = flag.String("config", "default", "Specify a config file (customised colour scheme)")
-	flagColor = flag.String("color", "light-blue lighten-2", "Main color scheme (See: https://vuetifyjs.com/en/styles/colors/#material-colors)")
-	flagHex   = flag.String("hex", "#26c5e8", "identicon color, hex string, eg #112233, #123, #bAC")
+	flagColor                = flag.String("color", "light-blue lighten-2", "Main color scheme (See: https://vuetifyjs.com/en/styles/colors/#material-colors)")
+	flagHex                  = flag.String("hex", "#26c5e8", "identicon color, hex string, eg #112233, #123, #bAC")
+	flagLanderAnnotationBase = flag.String("annotationBase", "lander.doddle.tech", "The base of the annotations used for lander. e.g. lander.doddle.tech for annotations like lander.doddle.tech/show")
 
 	// flag for a list of all clusters
 	flagClusters = flag.String("clusters", "cluster1.example.com,cluster2.example.com", "comma seperated list of clusters")
@@ -25,6 +27,8 @@ var (
 		"comma seperated list of node labels you care about",
 	)
 
+	flagAssetPath  = flag.String("assetPath", "./frontend/public/assets", "Path to icon images for services. Relative to main.go")
+	availableIcons []string
 	flagDebug      = flag.Bool("debug", false, "debug")
 	clusterList    []string
 	nodeLabelSlice []string

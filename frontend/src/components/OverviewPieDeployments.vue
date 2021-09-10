@@ -26,6 +26,9 @@ export default {
             effect: false
           }
         },
+        legend: {
+          position: "bottom"
+        },
         labels: []
       },
       series: [],
