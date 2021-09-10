@@ -1,7 +1,7 @@
 package statefulsets
 
 import (
-	"github.com/digtux/lander/pkg/chart"
+	"github.com/doddle/lander/pkg/chart"
 )
 
 type FinalPieChart struct {

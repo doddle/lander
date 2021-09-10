@@ -3,7 +3,7 @@ package nodes
 import (
 	"context"
 	"fmt"
-	"github.com/digtux/lander/pkg/chart"
+	"github.com/doddle/lander/pkg/chart"
 	v1 "k8s.io/api/core/v1"
 	"math"
 	"strings"

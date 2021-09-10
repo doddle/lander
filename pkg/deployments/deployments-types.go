@@ -1,6 +1,6 @@
 package deployments
 
-import "github.com/digtux/lander/pkg/chart"
+import "github.com/doddle/lander/pkg/chart"
 
 type FinalPieChart struct {
 	ChartOpts chart.Opts `json:"chartOptions"`

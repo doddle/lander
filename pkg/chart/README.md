@@ -12,7 +12,7 @@ These types allow constructing json to tweak chart options on the front'ends pie
 package foo
 
 import (
-    "github.com/digtux/lander/pkg/chart"
+    "github.com/doddle/lander/pkg/chart"
 )
 
 

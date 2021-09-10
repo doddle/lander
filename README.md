@@ -1,26 +1,35 @@
-# lander
+# Lander
 
-Simple kubernetes landing page..
+A simple kubernetes (cluster) landing page
 
-- Search all the Ingresses in the current context cluster
-- Show any with the appropriate Annotations
+- search all the Ingresses in the current context cluster
+- show any with the appropriate Annotations
 - simple vuejs UI to query the golang server
 - there is a lightweight cache system to ensure k8s API chatter is limited
-- guess colour scheme based on hostname
-- Unique "identicon" favicons generated against hostname (nicer+predictable bookmarks for multiple k8s clusters)
 - Identicons themed with the colours you decide (see: `-hex` when deploying lander)
-
-The available annotations for an Ingress (with `-annotationBase` startup flag of `lander.doddle.tech`)
- - `"lander.doddle.tech/show": "true"`
- Note string, not bool
- - `"lander.doddle.tech/name": "Kibana"`
- Service name, defaults to K8s Ingress service name
- - `"lander.doddle.tech/description": "A free text description"` Defaults to blank string
- - `"lander.doddle.tech/icon": "kibana.png"`
- A file in the ./assets directory. Defaults to matching a file with a lowercase("lander.doddle.tech/name" or service name) and fallback to `link.png` if none is found
- - `"lander.doddle.com/url": "https://doddle.com"` URL to link to. Defaults to K8s Ingress URL.
+- Unique "identicon" favicons generated against hostname (nicer+predictable bookmarks for multiple k8s clusters)
 
 
+# Runtime flags
+
+```sh
+  -annotationBase string
+    	The base of the annotations used for lander. e.g. lander.doddle.tech for annotations like lander.doddle.tech/show (default "lander.doddle.tech")
+  -clusterFQDN string
+    	The cluster this lander is operating in. Used for display and identicon purposes only. (default "k8s.example.com")
+  -clusters string
+    	comma seperated list of clusters (default "cluster1.example.com,cluster2.example.com")
+  -color string
+    	Main color scheme (See: https://vuetifyjs.com/en/styles/colors/#material-colors) (default "light-blue lighten-2")
+  -debug
+    	debug
+  -hex string
+    	identicon color, hex string, eg #112233, #123, #bAC (default "#26c5e8")
+  -labels string
+    	comma seperated list of node labels you care about (default "kubernetes.io/role,node.kubernetes.io/instance-type,node.kubernetes.io/instancegroup,topology.kubernetes.io/zone")
+```
+
+---
 # local development
 
 To run or develop lander follow the next steps:

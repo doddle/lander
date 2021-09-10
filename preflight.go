@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/digtux/lander/pkg/endpoints"
+	"github.com/doddle/lander/pkg/endpoints"
 	"github.com/withmandala/go-log"
 	"k8s.io/client-go/kubernetes"
 )

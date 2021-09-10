@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/digtux/lander/pkg/util"
+	"github.com/doddle/lander/pkg/util"
 	"github.com/patrickmn/go-cache"
 	"github.com/withmandala/go-log"
 	"k8s.io/api/extensions/v1beta1"
@@ -66,7 +66,7 @@ func ReallyAssemble(
 						Class:       getIngressClass(logger, ingress),
 						Description: serviceDescription,
 						Name:        serviceName,
-						Icon:        serviceIcon,
+						Icon:        "assets/"+serviceIcon,
 					})
 				}
 			}

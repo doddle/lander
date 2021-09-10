@@ -6,7 +6,7 @@ package chart
 Example usage:
 
 import (
-	"github.com/digtux/lander/pkg/chart"
+	"github.com/doddle/lander/pkg/chart"
 )
 
 
