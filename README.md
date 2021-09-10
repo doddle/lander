@@ -28,7 +28,7 @@ The available annotations for an Ingress (with `-annotationBase` startup flag of
 
 The golang app supports a few flags..:
 - `-annotationBase` the base of the annotations to use. Appended with `/show` to figure the annotations above
-- `-clusterName` a cluster name to use on the frontend and for generating a favicon
+- `-clusterFQDN` The cluster this lander is operating in. Used for display and identicon purposes only.
 - `-hex` the hex colour to be used for the identicon.. EG: `#26c5e8`, `#123`, `#b2C`
 - `-color` the colorscheme (vuetify) to be handed to the frontend.. See: [material-colors](https://vuetifyjs.com/en/styles/colors/#material-colors)
 

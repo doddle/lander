@@ -12,7 +12,7 @@ import (
 
 var (
 	// setup some global vars
-	flagClusterName = flag.String("clusterName", "k8s Lander", "Cluster name for display purposes only")
+	flagClusterFQDN = flag.String("clusterFQDN", "k8s.example.com", "The cluster this lander is operating in. Used for display and identicon purposes only.")
 	// flagConfig = flag.String("config", "default", "Specify a config file (customised colour scheme)")
 	flagColor                = flag.String("color", "light-blue lighten-2", "Main color scheme (See: https://vuetifyjs.com/en/styles/colors/#material-colors)")
 	flagHex                  = flag.String("hex", "#26c5e8", "identicon color, hex string, eg #112233, #123, #bAC")
