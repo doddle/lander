@@ -5,11 +5,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/digtux/lander/pkg/deployments"
-	"github.com/digtux/lander/pkg/endpoints"
-	"github.com/digtux/lander/pkg/identicon/identicon"
-	"github.com/digtux/lander/pkg/nodes"
-	"github.com/digtux/lander/pkg/statefulsets"
+	"github.com/doddle/lander/pkg/deployments"
+	"github.com/doddle/lander/pkg/endpoints"
+	"github.com/doddle/lander/pkg/identicon/identicon"
+	"github.com/doddle/lander/pkg/nodes"
+	"github.com/doddle/lander/pkg/statefulsets"
 	"github.com/gofiber/fiber/v2"
 	"k8s.io/client-go/kubernetes"
 )

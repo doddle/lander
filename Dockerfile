@@ -19,6 +19,8 @@ RUN make backend-build
 ## build front
 FROM docker.io/library/node:15.14.0 as node
 
+# This step produces /src/frontend/dist which we will COPY into the final docker image
+
 WORKDIR /src
 COPY . .
 RUN make frontend-lint
@@ -28,7 +30,10 @@ RUN make frontend-build
 FROM docker.io/library/alpine
 RUN apk --no-cache add ca-certificates
 WORKDIR /app
+
+# Copy in the lander golang binary
 COPY --from=go   /src/lander .
+# Copy in the "dist" folder from the node stage
 COPY --from=node /src/frontend/dist /app/frontend/dist
 
 ## show us the sized just for the observability

@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/digtux/lander/pkg/endpoints"
+	"github.com/doddle/lander/pkg/endpoints"
 	"github.com/withmandala/go-log"
 	"k8s.io/client-go/kubernetes"
 )
@@ -42,7 +42,7 @@ func onStartup(logger *log.Logger) {
 		clientSet,
 		*flagLanderAnnotationBase,
 	)
-	files, err := ioutil.ReadDir(*flagAssetPath)
+	files, err := ioutil.ReadDir("./frontend/dist/assets")
 	if err != nil {
 		logger.Fatal(err)
 	}

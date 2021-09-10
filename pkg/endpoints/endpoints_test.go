@@ -3,7 +3,7 @@ package endpoints
 import (
 	"testing"
 
-	"github.com/digtux/lander/pkg/util"
+	"github.com/doddle/lander/pkg/util"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

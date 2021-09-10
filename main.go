@@ -27,7 +27,6 @@ var (
 		"comma seperated list of node labels you care about",
 	)
 
-	flagAssetPath  = flag.String("assetPath", "./frontend/public/assets", "Path to icon images for services. Relative to main.go")
 	availableIcons []string
 	flagDebug      = flag.Bool("debug", false, "debug")
 	clusterList    []string
@@ -85,6 +84,6 @@ func main() {
 
 	startRoutes(app)
 
-	logger.Info("starting webserver on :8000")
+	logger.Info("starting webserver on http://0.0.0.0:8000")
 	logger.Fatal(app.Listen(":8000"))
 }

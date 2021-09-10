@@ -1,4 +1,4 @@
-module github.com/digtux/lander
+module github.com/doddle/lander
 
 go 1.14
 

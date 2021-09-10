@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/digtux/lander/pkg/chart"
+	"github.com/doddle/lander/pkg/chart"
 	"github.com/patrickmn/go-cache"
 	"github.com/withmandala/go-log"
 	v1 "k8s.io/api/apps/v1"
