@@ -66,7 +66,7 @@ func ReallyAssemble(
 						Class:       getIngressClass(logger, ingress),
 						Description: serviceDescription,
 						Name:        serviceName,
-						Icon:        "assets/"+serviceIcon,
+						Icon:        serviceIcon,
 					})
 				}
 			}
