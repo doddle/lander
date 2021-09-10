@@ -42,7 +42,7 @@ func onStartup(logger *log.Logger) {
 		clientSet,
 		*flagLanderAnnotationBase,
 	)
-	files, err := ioutil.ReadDir(*flagAssetPath)
+	files, err := ioutil.ReadDir("./frontend/dist/assets")
 	if err != nil {
 		logger.Fatal(err)
 	}
