@@ -6,32 +6,32 @@
 
 <script>
 export default {
-  name: "Home",
+  name: 'Home',
 
   data() {
     return {
       stacks: []
-    };
+    }
   },
   methods: {
     async getStacks() {
       try {
-        const resp = await fetch("/v1/endpoints");
-        const data = await resp.json();
-        console.log("retrieving endpoints");
-        this.stacks = data;
+        const resp = await fetch('/v1/endpoints')
+        const data = await resp.json()
+        console.log('retrieving endpoints')
+        this.stacks = data
       } catch (error) {
-        console.error(error);
+        console.error(error)
       }
     }
   },
   cron: {
     time: 15000,
-    method: "getStacks",
+    method: 'getStacks',
     autoStart: true
   },
   mounted() {
-    this.getStacks();
+    this.getStacks()
   }
-};
+}
 </script>

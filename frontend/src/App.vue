@@ -93,45 +93,45 @@
 
 <script>
 // import Home from "./components/Home";
-import ClusterLinks from "./components/ClusterLinks";
-import OverviewPieDeployments from "./components/OverviewPieDeployments";
-import OverviewPieNodes from "./components/OverviewPieNodes";
-import OverviewPieStatefulSets from "./components/OverviewPieStatefulSets";
-import TableNodes from "./components/TableNodes";
+import ClusterLinks from './components/ClusterLinks'
+import OverviewPieDeployments from './components/OverviewPieDeployments'
+import OverviewPieNodes from './components/OverviewPieNodes'
+import OverviewPieStatefulSets from './components/OverviewPieStatefulSets'
+import TableNodes from './components/TableNodes'
 
 export default {
-  name: "App",
+  name: 'App',
   data: function() {
-    const hostLocation = location.host;
-    const hostName = hostLocation.split(":")[0];
+    const hostLocation = location.host
+    const hostName = hostLocation.split(':')[0]
     return {
       tab: null,
       host: hostName,
       settings: {
-        colorscheme: "blue lighten-5",
-        cluster: "unknown",
-        clusters: ["cluster1.acmecorp.org"]
+        colorscheme: 'blue lighten-5',
+        cluster: 'unknown',
+        clusters: ['cluster1.acmecorp.org']
       }
-    };
+    }
   },
   title() {
-    return `${this.host}`;
+    return `${this.host}`
   },
 
   methods: {
     async getSettings() {
       try {
-        const resp = await fetch("/v1/settings");
-        const data = await resp.json();
-        console.log("retrieving settings");
-        this.settings = data;
+        const resp = await fetch('/v1/settings')
+        const data = await resp.json()
+        console.log('retrieving settings')
+        this.settings = data
       } catch (error) {
-        console.error(error);
+        console.error(error)
       }
     }
   },
   beforeMount() {
-    this.getSettings();
+    this.getSettings()
   },
   components: {
     // Home,
@@ -141,5 +141,5 @@ export default {
     TableNodes,
     ClusterLinks
   }
-};
+}
 </script>

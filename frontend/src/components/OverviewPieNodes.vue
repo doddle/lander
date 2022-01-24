@@ -9,10 +9,10 @@
 </template>
 
 <script>
-import VueApexCharts from "vue-apexcharts";
+import VueApexCharts from 'vue-apexcharts'
 
 export default {
-  name: "OverviewPieNodes",
+  name: 'OverviewPieNodes',
   components: {
     apexcharts: VueApexCharts
   },
@@ -23,46 +23,46 @@ export default {
           width: 0
         },
         theme: {
-          palette: "pallet3"
+          palette: 'pallet3'
         },
         colors: [],
         chart: {
-          id: "pie-nodes",
+          id: 'pie-nodes',
           dropShadow: {
             effect: false
           }
         },
         legend: {
-          position: "bottom"
+          position: 'bottom'
         },
         labels: []
       },
       series: [],
       total: 0
-    };
+    }
   },
   methods: {
     async getPieNodes() {
       try {
-        const resp = await fetch("/v1/pie/nodes");
-        const data = await resp.json();
-        console.log("retrieving v1/pie/nodes");
+        const resp = await fetch('/v1/pie/nodes')
+        const data = await resp.json()
+        console.log('retrieving v1/pie/nodes')
         // this.colors = data.colors;
-        this.chartOptions = data.chartOptions;
-        this.series = data.series;
-        this.total = data.total;
+        this.chartOptions = data.chartOptions
+        this.series = data.series
+        this.total = data.total
       } catch (error) {
-        console.error(error);
+        console.error(error)
       }
     }
   },
   cron: {
     time: 10000,
-    method: "getPieNodes",
+    method: 'getPieNodes',
     autoStart: true
   },
   beforeMount() {
-    this.getPieNodes();
+    this.getPieNodes()
   }
-};
+}
 </script>

@@ -9,10 +9,10 @@
 </template>
 
 <script>
-import VueApexCharts from "vue-apexcharts";
+import VueApexCharts from 'vue-apexcharts'
 
 export default {
-  name: "Apex",
+  name: 'Apex',
   components: {
     apexcharts: VueApexCharts
   },
@@ -21,42 +21,42 @@ export default {
       chartOptions: {
         colors: [],
         chart: {
-          id: "pie-statefulsets",
+          id: 'pie-statefulsets',
           dropShadow: {
             effect: false
           }
         },
         legend: {
-          position: "bottom"
+          position: 'bottom'
         },
         labels: []
       },
       series: [],
       total: 0
-    };
+    }
   },
   methods: {
     async getPieStatefulSets() {
       try {
-        const resp = await fetch("/v1/pie/statefulsets");
-        const data = await resp.json();
-        console.log("retrieving v1/pie/statefulsets");
-        this.colors = data.colors;
-        this.chartOptions = data.chartOptions;
-        this.series = data.series;
-        this.total = data.total;
+        const resp = await fetch('/v1/pie/statefulsets')
+        const data = await resp.json()
+        console.log('retrieving v1/pie/statefulsets')
+        this.colors = data.colors
+        this.chartOptions = data.chartOptions
+        this.series = data.series
+        this.total = data.total
       } catch (error) {
-        console.error(error);
+        console.error(error)
       }
     }
   },
   cron: {
     time: 10000,
-    method: "getPieStatefulSets",
+    method: 'getPieStatefulSets',
     autoStart: true
   },
   beforeMount() {
-    this.getPieStatefulSets();
+    this.getPieStatefulSets()
   }
-};
+}
 </script>

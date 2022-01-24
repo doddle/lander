@@ -28,41 +28,41 @@
 
 <script>
 export default {
-  name: "ClusterLinks",
+  name: 'ClusterLinks',
 
   data: function() {
     return {
       stacks: [
         {
-          address: "https://mycluster.com/alerts",
-          class: "nginx",
-          description: "something",
-          icon: "prometheus.png",
+          address: 'https://mycluster.com/alerts',
+          class: 'nginx',
+          description: 'something',
+          icon: 'prometheus.png',
           oauth2proxy: true
         }
       ]
-    };
+    }
   },
 
   methods: {
     async getEndpoints() {
       try {
-        const resp = await fetch("/v1/endpoints");
-        const data = await resp.json();
-        console.log("retrieving v1/endpoints");
-        this.stacks = data;
+        const resp = await fetch('/v1/endpoints')
+        const data = await resp.json()
+        console.log('retrieving v1/endpoints')
+        this.stacks = data
       } catch (error) {
-        console.error(error);
+        console.error(error)
       }
     }
   },
   cron: {
     time: 10000,
-    method: "getEndpoints",
+    method: 'getEndpoints',
     autoStart: true
   },
   beforeMount() {
-    this.getEndpoints();
+    this.getEndpoints()
   }
-};
+}
 </script>

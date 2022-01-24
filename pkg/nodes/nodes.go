@@ -3,11 +3,12 @@ package nodes
 import (
 	"context"
 	"fmt"
-	"github.com/doddle/lander/pkg/chart"
-	v1 "k8s.io/api/core/v1"
 	"math"
 	"strings"
 	"time"
+
+	"github.com/doddle/lander/pkg/chart"
+	v1 "k8s.io/api/core/v1"
 
 	"github.com/patrickmn/go-cache"
 	"github.com/withmandala/go-log"
