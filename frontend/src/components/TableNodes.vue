@@ -2,6 +2,8 @@
   <v-card class="mx-auto">
     <v-card-title>
       Nodes
+      <!--      <button v-if="running" v-on:click="stopCronJob">Notes-</button>-->
+      <!--      <button v-if="!running" v-on:click="getNodes">Notes+</button>-->
       <v-spacer></v-spacer>
       <v-text-field
         append-icon="mdi-magnify"
@@ -30,6 +32,8 @@ export default {
   data: () => ({
     search: '',
     loading: true,
+    // isActive: false,
+    // running: false,
     nodes: [],
     headers: [
       {
@@ -47,25 +51,37 @@ export default {
   methods: {
     async getNodes() {
       try {
+        const path = '/v1/table/nodes'
+        console.log('retrieving: ' + path)
+        // console.log(this.isActive())
         this.loading = true
-        const resp = await fetch('/v1/table/nodes')
+        const resp = await fetch(path)
         const data = await resp.json()
-        console.log('retrieving v1/table/nodes')
         this.nodes = data.nodes
         this.headers = data.headers
         this.loading = false
+        // this.running = true
       } catch (error) {
         console.error(error)
       }
     }
+    // stopCronJob() {
+    //   this.$cron.stop('getNodes')
+    //   this.running = false
+    // }
   },
   cron: {
-    time: 15000,
+    time: 1500,
     method: 'getNodes',
-    autoStart: false
+    autoStart: true
   },
   mounted() {
     this.getNodes()
   }
+
+  // unmounted() {
+  //   this.stopCronJob()
+  // }
+
 }
 </script>

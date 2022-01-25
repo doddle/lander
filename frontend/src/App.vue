@@ -4,13 +4,14 @@
       <v-row class="justify-space-between">
         <v-col cols="1">
           <div class="d-flex">
-            <a :href="'/favicon-' + host + '.png'">
+            <a
+                :href="'/favicon-' + host + '.png'"
+<!--                @click.prevent="downloadItem(item)"-->
+            >
               <img
                 :src="`favicon-${host}.ico`"
                 alt="identicon"
                 class="shrink mr-2"
-                contain
-                transition="scale-transition"
                 width="40"
               />
             </a>
@@ -47,57 +48,51 @@
     </v-app-bar>
 
     <v-main>
-      <!--      <div class="d-flex flex-column mb-6">-->
       <v-container>
         <v-row no-gutters align-content="center" justify="center">
-          <v-col sm="3" md="3" key="1">
-            <OverviewPieDeployments />
-          </v-col>
-          <v-col sm="3" md="3" key="2">
-            <OverviewPieStatefulSets />
-          </v-col>
-          <v-col sm="3" md="3" key="3">
-            <OverviewPieNodes />
-          </v-col>
+          <template>
+            <v-col v-for="obj in pieChartList" :key="obj.name" sm="3" md="3">
+              <component v-bind:is="obj.content"></component>
+            </v-col>
+          </template>
         </v-row>
       </v-container>
-      <v-container fluid>
-        <v-toolbar :color="settings.colorscheme" tabs>
-          <template>
-            <!--          <template v-slot:extension>-->
-            <v-tabs v-model="tab" centered slider-color="black">
-              <!--        <v-tabs-slider></v-tabs-slider>-->
-              <v-tabs-slider color="grey"></v-tabs-slider>
-              <v-tab href="#tab-1">
-                Links
-              </v-tab>
-              <v-tab href="#tab-2">
-                Nodes
+
+      <template>
+        <v-container fluid>
+          <v-toolbar :color="settings.colorscheme" tabs>
+            <v-tabs v-model="tab" slider-color="grey" centered>
+              <v-tab v-for="item in tabList" :key="item.tab">
+                {{ item.tab }}
               </v-tab>
             </v-tabs>
-          </template>
-        </v-toolbar>
-
-        <v-tabs-items v-model="tab">
-          <v-tab-item key="1" value="tab-1">
-            <ClusterLinks></ClusterLinks>
-          </v-tab-item>
-          <v-tab-item key="2" value="tab-2">
-            <TableNodes></TableNodes>
-          </v-tab-item>
-        </v-tabs-items>
-      </v-container>
+          </v-toolbar>
+        </v-container>
+      </template>
+      <template>
+        <v-container fluid>
+          <v-tabs-items v-model="tab">
+            <v-tab-item v-for="item in tabList" :key="item.tab">
+              <v-card flat>
+                <v-card-text>
+                  <component v-bind:is="item.content"></component>
+                </v-card-text>
+              </v-card>
+            </v-tab-item>
+          </v-tabs-items>
+        </v-container>
+      </template>
     </v-main>
   </v-app>
 </template>
 
 <script>
-// import Home from "./components/Home";
 import ClusterLinks from './components/ClusterLinks'
 import OverviewPieDeployments from './components/OverviewPieDeployments'
 import OverviewPieNodes from './components/OverviewPieNodes'
 import OverviewPieStatefulSets from './components/OverviewPieStatefulSets'
 import TableNodes from './components/TableNodes'
+// import axios from 'axios'
 
 export default {
   name: 'App',
@@ -106,6 +101,17 @@ export default {
     const hostName = hostLocation.split(':')[0]
     return {
       tab: null,
+
+      tabList: [
+        { tab: 'links', content: ClusterLinks },
+        { tab: 'nodes', content: TableNodes }
+      ],
+
+      pieChartList: [
+        { name: 'Deployments', content: OverviewPieDeployments },
+        { name: 'StatefulSets', content: OverviewPieStatefulSets },
+        { name: 'Nodes', content: OverviewPieNodes }
+      ],
       host: hostName,
       settings: {
         colorscheme: 'blue lighten-5',
@@ -121,20 +127,31 @@ export default {
   methods: {
     async getSettings() {
       try {
-        const resp = await fetch('/v1/settings')
-        const data = await resp.json()
-        console.log('retrieving settings')
-        this.settings = data
+        const path = '/v1/settings'
+        console.log('retrieving: ' + path)
+        const resp = await fetch(path)
+        this.settings = await resp.json()
       } catch (error) {
         console.error(error)
       }
     }
+
+    // downloadItem ({ url, label }) {
+    //   Axios.get(url, { responseType: 'blob' })
+    //       .then(response => {
+    //         const blob = new Blob([response.data], { type: 'application/pdf' })
+    //         const link = document.createElement('a')
+    //         link.href = URL.createObjectURL(blob)
+    //         link.download = label
+    //         link.click()
+    //         URL.revokeObjectURL(link.href)
+    //       }).catch(console.error)
+    // }
   },
   beforeMount() {
     this.getSettings()
   },
   components: {
-    // Home,
     OverviewPieDeployments,
     OverviewPieStatefulSets,
     OverviewPieNodes,

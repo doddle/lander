@@ -47,10 +47,10 @@ export default {
   methods: {
     async getEndpoints() {
       try {
-        const resp = await fetch('/v1/endpoints')
-        const data = await resp.json()
-        console.log('retrieving v1/endpoints')
-        this.stacks = data
+        const path = '/v1/endpoints'
+        console.debug('retrieving: ' + path)
+        const resp = await fetch(path)
+        this.stacks = await resp.json()
       } catch (error) {
         console.error(error)
       }

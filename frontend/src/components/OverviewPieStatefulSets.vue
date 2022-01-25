@@ -38,9 +38,10 @@ export default {
   methods: {
     async getPieStatefulSets() {
       try {
-        const resp = await fetch('/v1/pie/statefulsets')
+        const path = '/v1/pie/statefulsets'
+        console.debug('retrieving: ' + path)
+        const resp = await fetch(path)
         const data = await resp.json()
-        console.log('retrieving v1/pie/statefulsets')
         this.colors = data.colors
         this.chartOptions = data.chartOptions
         this.series = data.series

@@ -44,10 +44,10 @@ export default {
   methods: {
     async getPieNodes() {
       try {
-        const resp = await fetch('/v1/pie/nodes')
+        const path = '/v1/pie/nodes'
+        console.debug('retrieving: ' + path)
+        const resp = await fetch(path)
         const data = await resp.json()
-        console.log('retrieving v1/pie/nodes')
-        // this.colors = data.colors;
         this.chartOptions = data.chartOptions
         this.series = data.series
         this.total = data.total
