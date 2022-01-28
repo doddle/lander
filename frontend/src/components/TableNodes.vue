@@ -5,21 +5,32 @@
       <v-text-field
         append-icon="mdi-magnify"
         hide-details
-        label="Search"
+        label="Filter nodes"
         single-line
-        v-model="search"
+        v-model="searchProp"
       ></v-text-field>
     </v-card-title>
     <v-data-table
       :dense="true"
       :headers="headers"
-      :items-per-page="50"
+      :items-per-page="25"
       :items="nodes"
       :loading="loading"
-      :multi-sort="true"
-      :search="search"
-      sort-by="seconds"
-    ></v-data-table>
+      :search="searchProp"
+      sort-by="age"
+    >
+      <!-- mod seconds into something human readable yet still searchable -->
+      <template v-slot:item.age="{ item }">
+        {{ convertSeconds(item.age) }}
+      </template>
+
+      <!-- highlight unready node states -->
+      <template v-slot:item.ready="{ item }">
+        <v-chip :color="markReady(item.ready)" dark>
+          {{ item.ready }}
+        </v-chip>
+      </template>
+    </v-data-table>
   </v-card>
 </template>
 <script>
@@ -27,7 +38,7 @@ export default {
   name: 'TableNodes',
 
   data: () => ({
-    search: '',
+    searchProp: '',
     loading: true, // used to indicate if data is being retreived
     isActive: null,
     nodes: [],
@@ -35,12 +46,19 @@ export default {
       {
         text: 'Name',
         align: 'start',
-        // sortable: true,
         value: 'name'
       },
-      { text: 'ready', value: 'ready' },
-      { text: 'age', value: 'age' },
-      { text: 'age(s)', value: 'seconds' }
+      { text: 'ready', value: 'true' },
+      // {
+      //   text: 'age',
+      //   value: 'age'
+      //   // sortable: true
+      // },
+      {
+        sortable: true,
+        text: 'age',
+        value: 'age'
+      }
     ]
   }),
 
@@ -57,6 +75,29 @@ export default {
         this.loading = false
       } catch (error) {
         console.error(error)
+      }
+    },
+    convertSeconds(inputSeconds) {
+      const seconds = inputSeconds.toFixed(1)
+      const minutes = (inputSeconds / 60).toFixed(1)
+      const hours = (inputSeconds / (60 * 60)).toFixed(1)
+      const days = (inputSeconds / (60 * 60 * 24)).toFixed(1)
+      if (seconds < 60) {
+        return seconds + 's'
+      } else if (minutes < 60) {
+        return minutes + 'm'
+      } else if (hours < 24) {
+        return hours + 'h'
+      } else {
+        return days + 'd'
+      }
+    },
+    markReady(inputString) {
+      console.log(inputString)
+      if (inputString === true) {
+        return 'green'
+      } else {
+        return 'red'
       }
     }
   },

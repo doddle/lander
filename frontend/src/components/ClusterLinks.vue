@@ -30,7 +30,6 @@
 export default {
   name: 'ClusterLinks',
 
-  props: ['blabla'],
   data: function() {
     return {
       stacks: [
@@ -58,7 +57,7 @@ export default {
     }
   },
   cron: {
-    time: 10000,
+    time: 15000,
     method: 'getEndpoints',
     autoStart: true
   },

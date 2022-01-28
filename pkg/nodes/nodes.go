@@ -128,10 +128,10 @@ func AssembleTable(
 
 		newNode := NodeStats{
 			AgeSeconds: intergerOnly(age.Seconds()),
-			AgeHuman:   humaniseDuration(age),
-			Ready:      isReady(i),
-			Name:       i.Name,
-			LabelMap:   matchedLabels,
+			// AgeHuman:   humaniseDuration(age),
+			Ready:    isReady(i),
+			Name:     i.Name,
+			LabelMap: matchedLabels,
 		}
 		nodeStats = append(nodeStats, newNode)
 	}
@@ -144,7 +144,6 @@ func AssembleTable(
 		},
 		{Text: "Ready", Value: "ready"},
 		{Text: "Age", Value: "age"},
-		{Text: "Age(s)", Value: "seconds"},
 	}
 
 	for _, customLabel := range labelSlices {
