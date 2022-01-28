@@ -5,8 +5,8 @@
         <v-col cols="1">
           <div class="d-flex">
             <a
-                :href="'/favicon-' + host + '.png'"
-<!--                @click.prevent="downloadItem(item)"-->
+              :href="'/favicon-' + host + '.png'"
+              @click.prevent="downloadItem(item)"
             >
               <img
                 :src="`favicon-${host}.ico`"
