@@ -30,6 +30,7 @@
 export default {
   name: 'ClusterLinks',
 
+  props: ['blabla'],
   data: function() {
     return {
       stacks: [

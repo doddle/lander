@@ -21,11 +21,11 @@
             </template>
             <v-list>
               <v-list-item
-                v-for="(item, index) in settings.clusters"
+                v-for="(obj, index) in settings.clusters"
                 :key="index"
               >
                 <v-list-item-title>
-                  <a :href="'https://' + item">{{ item }}</a>
+                  <a :href="'https://' + obj">{{ obj }}</a>
                 </v-list-item-title>
               </v-list-item>
             </v-list>
@@ -52,30 +52,61 @@
         </v-row>
       </v-container>
 
+      <!-- tabs -->
       <template>
         <v-container fluid>
+          <!-- a toolbar listing available and active tabs -->
           <v-toolbar :color="settings.colorscheme" tabs>
-            <v-tabs v-model="tab" slider-color="grey" centered>
-              <v-tab v-for="item in tabList" :key="item.tab">
-                {{ item.tab }}
+            <v-tabs v-model="activeTabName" slider-color="grey" centered>
+              <v-tab
+                v-for="obj in tabList"
+                :key="obj.tabName"
+                :disabled="isDisabled"
+                @click.prevent="setActiveTabName(obj.tabName)"
+              >
+                {{ obj.tabName }}
               </v-tab>
             </v-tabs>
           </v-toolbar>
         </v-container>
       </template>
       <template>
+        <!-- content of the tab gets templated + mounted here -->
         <v-container fluid>
-          <v-tabs-items v-model="tab">
+          <v-tabs-items v-model="activeTabName">
             <v-tab-item v-for="item in tabList" :key="item.tab">
               <v-card flat>
-                <v-card-text>
+                <v-card-text v-if="blaTabName === item.tabName">
                   <component v-bind:is="item.content"></component>
                 </v-card-text>
               </v-card>
             </v-tab-item>
           </v-tabs-items>
+          <!-- <v-tab-item v-for="obj in tabList" :key="obj.tabName"> -->
+          <!-- <v-tab-item v-if="activeTabName === 'links'"> -->
+          <!-- <v-tab-item> -->
+          <!--   <v-card flat> -->
+          <!--     <template v-if="activeTabName === 'links'"> -->
+          <!--       links -->
+          <!--     </template> -->
+          <!--     <template v-if="activeTabName === 'nodes'"> -->
+          <!--       nodes -->
+          <!--     </template> -->
+          <!--     <template v-else> -->
+          <!--       unknown -->
+          <!--     </template> -->
+
+          <!-- <div v-if="displayContents(activeTabName, obj.content)"> -->
+          <!--   <component v-bind:is="obj.content"></component> -->
+          <!-- </div> -->
+          <!-- <component v-bind:is="ClusterLinks"></component> -->
+          <!-- <component v-bind:is="obj.content"></component> -->
+          <!-- </v-card-text> -->
+          <!-- </v-card> -->
+          <!-- </v-tab-item> -->
         </v-container>
       </template>
+      <!-- end tabs -->
     </v-main>
   </v-app>
 </template>
@@ -94,12 +125,14 @@ export default {
     const hostLocation = location.host
     const hostName = hostLocation.split(':')[0]
     return {
-      tab: null,
+      activeTabName: null,
+      isDisabled: null,
 
       tabList: [
-        { tab: 'links', content: ClusterLinks },
-        { tab: 'nodes', content: TableNodes }
+        { tabName: 'links', content: ClusterLinks },
+        { tabName: 'nodes', content: TableNodes }
       ],
+      blaTabName: 'links', // this value controls the currently rendered tab
 
       pieChartList: [
         { name: 'Deployments', content: OverviewPieDeployments },
@@ -118,11 +151,23 @@ export default {
     return `${this.host}`
   },
 
+  mounted() {
+    this.activeTabName = this.tabList[0].tabName
+  },
+
   methods: {
+    setActiveTabName(tabName) {
+      console.log('setActiveTabName: ' + tabName)
+      this.blaTabName = tabName
+    },
+    displayContents(tabName) {
+      return this.activeTabName === tabName
+    },
+
     async getSettings() {
       try {
         const path = '/v1/settings'
-        console.log('retrieving: ' + path)
+        console.debug('retrieving: ' + path)
         const resp = await fetch(path)
         this.settings = await resp.json()
       } catch (error) {
@@ -133,7 +178,7 @@ export default {
     // clicking the cluster favicon allows a popup to save it (including name of cluster)
     downloadItem() {
       const name = 'favicon-' + this.settings.cluster + '.png'
-      console.log(name)
+      console.debug('downloadItem: ' + name)
       axios
         .get(name, { responseType: 'blob' })
         .then(response => {
