@@ -1,13 +1,11 @@
 package nodes
 
-// Types for table data
-
 type NodeStats struct {
-	Name       string `json:"name"`
-	Ready      bool   `json:"ready"`
-	AgeSeconds int    `json:"age"`
-	// AgeHuman   string            `json:"age"`
-	LabelMap map[string]string `json:"labels"`
+	Name        string            `json:"name"`
+	Ready       bool              `json:"ready"`
+	AgeSeconds  int               `json:"age"`
+	Schedulable bool              `json:"schedulable"`
+	LabelMap    map[string]string `json:"labels"`
 }
 type NodeTable struct {
 	Nodes   []NodeStats    `json:"nodes"`

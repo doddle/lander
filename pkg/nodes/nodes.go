@@ -56,8 +56,8 @@ func AssembleNodesPieChart(
 	if err != nil {
 		logger.Error(err)
 	}
-	for _, deployment := range data.Items {
-		if isReady(deployment) {
+	for _, obj := range data.Items {
+		if isReady(obj) && isSchedulable(obj) {
 			totalGood++
 		} else {
 			totalBad++
@@ -71,7 +71,7 @@ func AssembleNodesPieChart(
 	// red lighten-2
 	colBad := "#E57373"
 	if totalBad > 0 {
-		resultLabels = append(resultLabels, "Errored")
+		resultLabels = append(resultLabels, "UnHealthy")
 		resultSeries = append(resultSeries, totalBad)
 		resultColors = append(resultColors, colBad)
 	}
@@ -127,11 +127,11 @@ func AssembleTable(
 		}
 
 		newNode := NodeStats{
-			AgeSeconds: intergerOnly(age.Seconds()),
-			// AgeHuman:   humaniseDuration(age),
-			Ready:    isReady(i),
-			Name:     i.Name,
-			LabelMap: matchedLabels,
+			AgeSeconds:  intergerOnly(age.Seconds()),
+			Ready:       isReady(i),
+			Schedulable: isSchedulable(i),
+			Name:        i.Name,
+			LabelMap:    matchedLabels,
 		}
 		nodeStats = append(nodeStats, newNode)
 	}
@@ -143,6 +143,7 @@ func AssembleTable(
 			Value: "name",
 		},
 		{Text: "Ready", Value: "ready"},
+		{Text: "Schedulable", Value: "schedulable"},
 		{Text: "Age", Value: "age"},
 	}
 
@@ -190,36 +191,6 @@ func getLabelValue(node v1.Node, label string) string {
 	return ""
 }
 
-// convert node ages into something similar to that in kubectl get nodes
-func humaniseDuration(duration time.Duration) string {
-	// most cases.. its older than a dat, we'll round it to days
-	if duration > (24 * time.Hour) {
-		num := roundTime(duration.Seconds() / 86400)
-		return fmt.Sprintf("%dd", num)
-	}
-	if duration > (1 * time.Hour) {
-		num := roundTime(duration.Seconds() / 3600)
-		return fmt.Sprintf("%dh", num)
-	}
-	if duration > (1 * time.Minute) {
-		num := roundTime(duration.Seconds() / 60)
-		return fmt.Sprintf("%dm", num)
-	}
-	seconds := intergerOnly(duration.Seconds())
-	return fmt.Sprintf("%ds", seconds)
-}
-
-func roundTime(input float64) int {
-	// credit: https://www.socketloop.com/tutorials/golang-get-time-duration-in-year-month-week-or-day
-	var result float64
-	if input < 0 {
-		result = math.Ceil(input - 0.5)
-	} else {
-		result = math.Floor(input + 0.5)
-	}
-	return intergerOnly(result)
-}
-
 func intergerOnly(input float64) int {
 	i, _ := math.Modf(input)
 	return int(i)
@@ -234,4 +205,10 @@ func isReady(k8sObject v1.Node) bool {
 		}
 	}
 	return false
+}
+
+// simple check to see if the node is schedulable
+// TODO: check for cordon (and other) taints one day?
+func isSchedulable(k8sObject v1.Node) bool {
+	return !(k8sObject.Spec.Unschedulable)
 }

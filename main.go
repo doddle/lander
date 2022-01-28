@@ -23,7 +23,7 @@ var (
 
 	flagNodeLabels = flag.String(
 		"labels",
-		"kubernetes.io/role,node.kubernetes.io/instance-type,node.kubernetes.io/instancegroup,topology.kubernetes.io/zone",
+		"kubernetes.io/role,node.kubernetes.io/instance-type,kops.k8s.io/instancegroup,topology.kubernetes.io/zone",
 		"comma seperated list of node labels you care about",
 	)
 
