@@ -40,20 +40,20 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/assets/rabbitmq.png"
   },
   {
-    "revision": "1b161da306d93df9d4da",
-    "url": "/css/chunk-vendors.0113812a.css"
+    "revision": "77e8940f6537046c125f",
+    "url": "/css/chunk-vendors.d48b9d53.css"
   },
   {
-    "revision": "85831949aa426c3d012258da916453db",
+    "revision": "ba40cfe8b6467cf7611f3bf0e45d3838",
     "url": "/index.html"
   },
   {
-    "revision": "8e3e8d3c0b300920115c",
-    "url": "/js/app.e5383de8.js"
+    "revision": "b258bd95ae533d9c7cef",
+    "url": "/js/app.0e5876d6.js"
   },
   {
-    "revision": "1b161da306d93df9d4da",
-    "url": "/js/chunk-vendors.1d1fe64c.js"
+    "revision": "77e8940f6537046c125f",
+    "url": "/js/chunk-vendors.64d937aa.js"
   },
   {
     "revision": "4b14c64efaf846819b9a229b4193c8b7",

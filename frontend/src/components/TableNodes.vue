@@ -26,8 +26,14 @@
 
       <!-- highlight unready node states -->
       <template v-slot:item.ready="{ item }">
-        <v-chip :color="markReady(item.ready)" dark>
+        <v-chip :color="markTrueGood(item.ready)" dark>
           {{ item.ready }}
+        </v-chip>
+      </template>
+      <!-- highlight unschedulable node states -->
+      <template v-slot:item.schedulable="{ item }">
+        <v-chip :color="markTrueGood(item.schedulable)" dark>
+          {{ item.schedulable }}
         </v-chip>
       </template>
     </v-data-table>
@@ -92,7 +98,7 @@ export default {
         return days + 'd'
       }
     },
-    markReady(inputString) {
+    markTrueGood(inputString) {
       console.log(inputString)
       if (inputString === true) {
         return 'green'
