@@ -3,21 +3,15 @@
     <v-app-bar app color="blue-grey lighten-1" class="align-centre">
       <v-row class="justify-space-between">
         <v-col cols="1">
-          <div class="d-flex">
-            <a
-              :href="'/favicon-' + host + '.png'"
-              @click.prevent="downloadItem(item)"
-            >
-              <img
-                :src="`favicon-${host}.ico`"
-                alt="identicon"
-                class="shrink mr-2"
-                width="40"
-              />
-            </a>
+          <div class="d-flex" v-on:click="downloadItem">
+            <img
+              :src="`favicon-${host}.ico`"
+              alt="identicon"
+              class="shrink mr-2"
+              width="40"
+            />
           </div>
         </v-col>
-
         <v-col cols="3" class="d-flex justify-space-around">
           <v-menu offset-y>
             <template v-slot:activator="{ on, attrs }">
@@ -92,7 +86,7 @@ import OverviewPieDeployments from './components/OverviewPieDeployments'
 import OverviewPieNodes from './components/OverviewPieNodes'
 import OverviewPieStatefulSets from './components/OverviewPieStatefulSets'
 import TableNodes from './components/TableNodes'
-// import axios from 'axios'
+import axios from 'axios'
 
 export default {
   name: 'App',
@@ -134,19 +128,24 @@ export default {
       } catch (error) {
         console.error(error)
       }
-    }
+    },
 
-    // downloadItem ({ url, label }) {
-    //   Axios.get(url, { responseType: 'blob' })
-    //       .then(response => {
-    //         const blob = new Blob([response.data], { type: 'application/pdf' })
-    //         const link = document.createElement('a')
-    //         link.href = URL.createObjectURL(blob)
-    //         link.download = label
-    //         link.click()
-    //         URL.revokeObjectURL(link.href)
-    //       }).catch(console.error)
-    // }
+    // clicking the cluster favicon allows a popup to save it (including name of cluster)
+    downloadItem() {
+      const name = 'favicon-' + this.settings.cluster + '.png'
+      console.log(name)
+      axios
+        .get(name, { responseType: 'blob' })
+        .then(response => {
+          const blob = new Blob([response.data], { type: 'image/png' })
+          const link = document.createElement('a')
+          link.href = URL.createObjectURL(blob)
+          link.download = name
+          link.click()
+          URL.revokeObjectURL(link.href)
+        })
+        .catch(console.error)
+    }
   },
   beforeMount() {
     this.getSettings()
