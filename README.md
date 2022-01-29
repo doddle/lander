@@ -26,6 +26,18 @@ A kubernetes (cluster) landing page
 - [ ] provide information about the api-groups and supported api's detected
 - [ ] provide basic cluster info such as the k8s version etc.. probably worth add a column for this to the `nodes` tab
 - [ ] Represent to the user any objects detected in the cluster that have weave/flux ignore annotations (EG: potential state-drift from gitops definitions.)
+- [ ] Make use of more elegant k8s APIs like long-polling or watches instead of brute-force retrieving all objects
+- [ ] Some more pragmatic support for older AND newer versions of some APIs (I'm looking at you `v1beta1/ingress`;-) )
+- [ ] a basic idea about CPU/MEM pressure on nodes would be useful, maybe its worth pulling some metrics data?
+- [ ] global setting for users to toggle for darkmode (need some state storage in browser)
+- [ ] countdown for when some data is going to be reloaded
+- [ ] configurable poll frequency?
+- [ ] "News/Status" section (pulls intel from an SRE status feed example?).. EG: `maintenance on mongodb in eu prod today at 14:00 GMT`..
+- [ ] Custom graphs where we can represent some simple prometheus queries?
+- [ ] represent some interesting data.. EG: "there are X pods with `-lruntime=golang` and Y pods with `-lruntime=nodejs`"
+      This could be extremely useful when using labels to track (for example) systems that need migration for example..
+      `There are still X apps on this cluster with the label `wip="true"`
+      Giving k8s consumers a real feeling for the progress of their work would be really cool.
 
 # Runtime flags
 
@@ -71,7 +83,7 @@ Good.. now that the front-end is running.. launch the backend:
 The backend listens on `:8000` and will read assets from a relative path of: `./frontend/dist`
 
 > NOTE: before launching the backend, either `mkdir ./frontend/dist` or run `cd frontend ; npm run build`
->       needless to say if you make an empty directory, don't expect lander render.
+>       needless to say if you make an empty directory, don't expect lander to render a pretty website (but its APIs should still work.)
 >
 
 The golang app supports a few flags..:
