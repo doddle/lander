@@ -1,14 +1,31 @@
 # Lander
 
-A simple kubernetes (cluster) landing page
+A kubernetes (cluster) landing page
 
-- search all the Ingresses in the current context cluster
-- show any with the appropriate Annotations
-- simple vuejs UI to query the golang server
-- there is a lightweight cache system to ensure k8s API chatter is limited
-- Identicons themed with the colours you decide (see: `-hex` when deploying lander)
-- Unique "identicon" favicons generated against hostname (nicer+predictable bookmarks for multiple k8s clusters)
 
+## Features/progress
+
+- [x] golang powered interactings with k8s 
+- [x] Simple server-side caching to keep kube-api calls limited.
+- [x] List nodes
+- [x] Configurable list of node labels to show table
+      (Similar to `kubectl get nodes -L beta.kubernetes.io/arch -L beta.kubernetes.io/os -L beta.kubernetes.io/instance-type` you'd run lander with `-l ,beta.kubernetes.io/instance-type`)
+- [x] VueJS based PWA/SPA
+- [x] Show links to cluster ingress endpoints based on if it has lander annotations, add the annotation `lander.doddle.tech/show="true"` to the ingress objects.
+- [x] Unique "identicon" favicons generated against hostname (nicer+predictable bookmarks for multiple k8s clusters)
+- [x] Identicons themed with the colours you decide (see: `-hex` when deploying lander)
+- [x] search all the Ingresses in the current context cluster
+- [x] "at-a-glance" piechart for **Deployments**
+- [x] "at-a-glance" piechart for **StatefulSets**
+- [x] "at-a-glance" piechart for **Nodes**
+- [x] "at-a-glance" piechart for **DaemonSets**
+- [x] Basic node information (age, labels, `Ready` and `Unscheduable`)
+- [x] front-end settings (colorscheme etc) configurable via launch options. We use different colours to hint at our kubernetes "lifecycles" (`dev`, `staging`, `prod`, etc..)
+- [x] Links will indicate a lock icon if `nginx-ingress` and `oauth2proxy` protection was detected on ingress.
+- [ ] Allow users to search all Ingress rules and see what hostnames/paths are mapped to which services
+- [ ] provide information about the api-groups and supported api's detected
+- [ ] provide basic cluster info such as the k8s version etc.. probably worth add a column for this to the `nodes` tab
+- [ ] Represent to the user any objects detected in the cluster that have weave/flux ignore annotations (EG: potential state-drift from gitops definitions.)
 
 # Runtime flags
 
@@ -50,7 +67,12 @@ Good.. now that the front-end is running.. launch the backend:
 
 ## running the backend
 
+
 The backend listens on `:8000` and will read assets from a relative path of: `./frontend/dist`
+
+> NOTE: before launching the backend, either `mkdir ./frontend/dist` or run `cd frontend ; npm run build`
+>       needless to say if you make an empty directory, don't expect lander render.
+>
 
 The golang app supports a few flags..:
 - `-annotationBase` the base of the annotations to use. Appended with `/show` to figure the annotations above
