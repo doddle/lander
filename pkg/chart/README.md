@@ -3,6 +3,10 @@
 
 These types allow constructing json to tweak chart options on the front'ends piechart lib
 
+## refs:
+- https://apexcharts.com/docs/chart-types/pie-donut/
+- https://apexcharts.com/angular-chart-demos/pie-charts/simple-pie/
+
 
 ## Example usage:
 

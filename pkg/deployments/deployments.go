@@ -2,19 +2,20 @@ package deployments
 
 import (
 	"context"
+	"strings"
+	"time"
+
 	"github.com/doddle/lander/pkg/chart"
 	"github.com/patrickmn/go-cache"
 	"github.com/withmandala/go-log"
 	v1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"strings"
-	"time"
 )
 
 var (
-	// hard limit cache for 15sec, expire at 15m
-	pkgCache = cache.New(15*time.Second, 15*time.Minute)
+	// hard limit cache for 10sec, expire at 10m
+	pkgCache = cache.New(10*time.Second, 10*time.Minute)
 )
 
 // DeploymentStats is a simple slice/list of deployment pod numbers

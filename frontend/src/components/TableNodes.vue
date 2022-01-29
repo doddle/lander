@@ -13,7 +13,7 @@
     <v-data-table
       :dense="true"
       :headers="headers"
-      :items-per-page="25"
+      :items-per-page="50"
       :items="nodes"
       :loading="loading"
       :search="searchProp"
@@ -24,13 +24,13 @@
         {{ convertSeconds(item.age) }}
       </template>
 
-      <!-- highlight unready node states -->
+      <!-- highlight and set node state colours for the "ready" states -->
       <template v-slot:item.ready="{ item }">
         <v-chip :color="markTrueGood(item.ready)" dark>
           {{ item.ready }}
         </v-chip>
       </template>
-      <!-- highlight unschedulable node states -->
+      <!-- highlight and colourise "schedulable" node states -->
       <template v-slot:item.schedulable="{ item }">
         <v-chip :color="markTrueGood(item.schedulable)" dark>
           {{ item.schedulable }}
@@ -83,6 +83,8 @@ export default {
         console.error(error)
       }
     },
+
+    // convert seconds into something vaguely human readable
     convertSeconds(inputSeconds) {
       const seconds = inputSeconds.toFixed(1)
       const minutes = (inputSeconds / 60).toFixed(1)
@@ -98,8 +100,8 @@ export default {
         return days + 'd'
       }
     },
+    // returns green or red based on if the input is input is true or false
     markTrueGood(inputString) {
-      console.log(inputString)
       if (inputString === true) {
         return 'green'
       } else {
@@ -108,7 +110,7 @@ export default {
     }
   },
   cron: {
-    time: 5000,
+    time: 10000,
     method: 'getNodes'
   },
   mounted() {

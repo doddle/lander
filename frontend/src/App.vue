@@ -4,12 +4,26 @@
       <v-row class="justify-space-between">
         <v-col cols="1">
           <div class="d-flex" v-on:click="downloadItem">
-            <img
-              :src="`favicon-${host}.ico`"
-              alt="identicon"
-              class="shrink mr-2"
-              width="40"
-            />
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <img
+                  :src="`favicon-${host}.ico`"
+                  alt="identicon"
+                  class="shrink mr-2"
+                  width="40"
+                  v-bind="attrs"
+                  v-on="on"
+                />
+              </template>
+              <span
+                >This clusters unique "identicon"<br /><br />
+                this is generated based on the clusters "hostname" and
+                "lifecycle" (EG. prod/staging/etc)
+                <br />Tip: click here to save the file to disk<br />
+                ... it might be handy to have the same icons in LENs as in your
+                browsers bookmarks/tabs
+              </span>
+            </v-tooltip>
           </div>
         </v-col>
         <v-col cols="3" class="d-flex justify-space-around">
@@ -76,34 +90,12 @@
           <v-tabs-items v-model="activeTabName">
             <v-tab-item v-for="item in tabList" :key="item.tab">
               <v-card flat>
-                <v-card-text v-if="blaTabName === item.tabName">
+                <v-card-text v-if="desiredTab === item.tabName">
                   <component v-bind:is="item.content"></component>
                 </v-card-text>
               </v-card>
             </v-tab-item>
           </v-tabs-items>
-          <!-- <v-tab-item v-for="obj in tabList" :key="obj.tabName"> -->
-          <!-- <v-tab-item v-if="activeTabName === 'links'"> -->
-          <!-- <v-tab-item> -->
-          <!--   <v-card flat> -->
-          <!--     <template v-if="activeTabName === 'links'"> -->
-          <!--       links -->
-          <!--     </template> -->
-          <!--     <template v-if="activeTabName === 'nodes'"> -->
-          <!--       nodes -->
-          <!--     </template> -->
-          <!--     <template v-else> -->
-          <!--       unknown -->
-          <!--     </template> -->
-
-          <!-- <div v-if="displayContents(activeTabName, obj.content)"> -->
-          <!--   <component v-bind:is="obj.content"></component> -->
-          <!-- </div> -->
-          <!-- <component v-bind:is="ClusterLinks"></component> -->
-          <!-- <component v-bind:is="obj.content"></component> -->
-          <!-- </v-card-text> -->
-          <!-- </v-card> -->
-          <!-- </v-tab-item> -->
         </v-container>
       </template>
       <!-- end tabs -->
@@ -132,7 +124,7 @@ export default {
         { tabName: 'links', content: ClusterLinks },
         { tabName: 'nodes', content: TableNodes }
       ],
-      blaTabName: 'links', // this value controls the currently rendered tab
+      desiredTab: 'links', // this value controls the currently rendered tab
 
       pieChartList: [
         { name: 'Deployments', content: OverviewPieDeployments },
@@ -158,7 +150,7 @@ export default {
   methods: {
     setActiveTabName(tabName) {
       console.log('setActiveTabName: ' + tabName)
-      this.blaTabName = tabName
+      this.desiredTab = tabName
     },
     displayContents(tabName) {
       return this.activeTabName === tabName

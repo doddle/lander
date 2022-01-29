@@ -13,8 +13,8 @@ import (
 )
 
 var (
-	// hard limit cache for 15sec, expire at 15m
-	pkgCache = cache.New(15*time.Second, 15*time.Minute)
+	// hard limit cache for 10sec, expire at 10m
+	pkgCache = cache.New(10*time.Second, 10*time.Minute)
 )
 
 // StatefulSetStats is a simple slice/list of deployment pod numbers
