@@ -35,13 +35,12 @@ export default {
       { name: 'bar', ns: 'ns2', created: '1h' }
     ],
     headers: [
-      {
-        text: 'Name',
-        align: 'start',
-        value: 'name'
-      },
-      // { text: 'ready', value: 'true' },
-      { text: 'namespace', value: 'ns' }
+      { text: 'namespace', value: 'ns', align: 'start' },
+      { text: 'name', value: 'name' },
+      { text: 'ready', value: 'ready' },
+      { text: 'progressing', value: 'progressing' },
+      { text: 'replicas (desired)', value: 'replicas' },
+      { text: 'replicas (available)', value: 'replicas_available' }
       // {
       //   text: 'created',
       //   value: 'created'

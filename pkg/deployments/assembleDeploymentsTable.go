@@ -5,45 +5,37 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-
-// DeploymentsMetaData is some metadata to be used to represent traffic
-type DeploymentsMetaData struct {
-	Name    string `json:"name"`
-	Namespace   string `json:"ns"`
+// MetaDataDeploymentsTable is some metadata to be used to represent traffic
+type MetaDataDeploymentsTable struct {
+	Name              string `json:"name"`
+	Namespace         string `json:"ns"`
+	Ready             bool   `json:"ready"`
+	Progressing       bool   `json:"progressing"`
+	ReplicasDesired   int32  `json:"replicas"`
+	ReplicasAvailable int32  `json:"replicas_available"`
 }
 
 // AssembleDeploymentsTable preps some data about deployments
 func AssembleDeploymentsTable(
 	logger *log.Logger,
 	clientSet *kubernetes.Clientset,
-) []DeploymentsMetaData {
-	var result []DeploymentsMetaData
+) []MetaDataDeploymentsTable {
+	var result []MetaDataDeploymentsTable
 
 	data, err := getAllDeployments(logger, clientSet)
 	if err != nil {
 		logger.Error(err)
 	}
 
-	for _, deployment := range data.Items {
+	for _, k8sObj := range data.Items {
 
-		//x := DeploymentsMetaData{
-		//	Name:      deployment.Name,
-		//	Namespace: deployment.Namespace,
-		//}
-
-		//if isHealthy(deployment) {
-		//	totalHealthy++
-		//} else {
-		//	if isPending(deployment) {
-		//		totalPending++
-		//	} else {
-		//		totalDown++
-		//	}
-		//}
-
-		result = append(result, DeploymentsMetaData{
-			Name: deployment.Name,
-			Namespace: deployment.Namespace,
+		result = append(result, MetaDataDeploymentsTable{
+			Name:              k8sObj.Name,
+			Namespace:         k8sObj.Namespace,
+			Ready:             isReady(k8sObj),
+			Progressing:       isProgressing(k8sObj),
+			ReplicasDesired:   *k8sObj.Spec.Replicas,
+			ReplicasAvailable: k8sObj.Status.AvailableReplicas,
 		})
 	}
 
