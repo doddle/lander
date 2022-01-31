@@ -76,6 +76,19 @@ func getEndpoints(c *fiber.Ctx) error {
 	return c.JSON(resp)
 }
 
+func getRoutes(c *fiber.Ctx) error {
+	clientSet, err := kubernetes.NewForConfig(kubeConfig)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	resp := endpoints.AssmebleRouteMetaData(
+		logger,
+		clientSet,
+	)
+	return c.JSON(resp)
+}
+
+
 // TODO: detect desired sizes from URI and generate smaller/bigger ones also
 func getFavicon(c *fiber.Ctx) error {
 	hex := *flagHex

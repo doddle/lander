@@ -109,6 +109,7 @@ import OverviewPieDeployments from './components/OverviewPieDeployments'
 import OverviewPieNodes from './components/OverviewPieNodes'
 import OverviewPieStatefulSets from './components/OverviewPieStatefulSets'
 import TableNodes from './components/TableNodes'
+import TableRoutes from './components/TableRoutes'
 import TableDeployments from './components/TableDeployments'
 import axios from 'axios'
 
@@ -124,6 +125,7 @@ export default {
       tabList: [
         { tabName: 'links', content: ClusterLinks },
         { tabName: 'nodes', content: TableNodes },
+        { tabName: 'routes', content: TableRoutes },
         { tabName: 'deployments', content: TableDeployments }
       ],
       desiredTab: 'links', // this value controls the currently rendered tab

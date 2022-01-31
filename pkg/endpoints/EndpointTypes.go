@@ -11,3 +11,12 @@ type Endpoint struct {
 	Name        string `json:"name"`        // Application name
 	Icon        string `json:"icon"`        // Appropriate file name for the Icon
 }
+
+// RouteMetaData is some metadata to be used to represent traffic
+type RouteMetaData struct {
+	Hostname    string `json:"hostname"`
+	Path        string `json:"path"`
+	Namespace   string `json:"ns"`
+	Service     string `json:"svc"`
+	Oauth2proxy bool   `json:"oauth2proxy"` // if its secured by an oauth2proxy
+}
