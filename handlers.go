@@ -76,12 +76,24 @@ func getEndpoints(c *fiber.Ctx) error {
 	return c.JSON(resp)
 }
 
+func getDeploymentsTable(c *fiber.Ctx) error {
+	clientSet, err := kubernetes.NewForConfig(kubeConfig)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	resp := deployments.AssembleDeploymentsTable(
+		logger,
+		clientSet,
+	)
+	return c.JSON(resp)
+}
+
 func getRoutes(c *fiber.Ctx) error {
 	clientSet, err := kubernetes.NewForConfig(kubeConfig)
 	if err != nil {
 		logger.Fatal(err)
 	}
-	resp := endpoints.AssmebleRouteMetaData(
+	resp := endpoints.AssembleRouteMetaData(
 		logger,
 		clientSet,
 	)
@@ -95,8 +107,8 @@ func getFavicon(c *fiber.Ctx) error {
 	uri := c.Context().Request.URI()
 	uriPath := uri.LastPathSegment()
 
-	// buildPixelMap() has hard-coded sizes.. cannot use guessSize() until
-	// thats figured out I guess
+	// buildPixelMap() has hard-coded sizes. cannot use guessSize() until
+	// that's figured out I guess
 	// size := guessSize(string(uri.LastPathSegment()))
 	size := IconSize{
 		Width:  250,

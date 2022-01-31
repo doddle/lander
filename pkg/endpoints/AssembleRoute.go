@@ -5,7 +5,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-func AssmebleRouteMetaData(
+func AssembleRouteMetaData(
 	logger *log.Logger,
 	clientSet *kubernetes.Clientset,
 ) []RouteMetaData {

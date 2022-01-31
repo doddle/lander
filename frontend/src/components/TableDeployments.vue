@@ -28,11 +28,11 @@ export default {
 
   data: () => ({
     searchProp: '',
-    loading: true, // used to indicate if data is being retreived
+    loading: true, // used to indicate if data is being retrieved
     isActive: null,
     deployments: [
-      { name: 'foo', ready: true, ns: 'ns1', age: '12m' },
-      { name: 'bar', ready: false, ns: 'ns2', age: '1h' }
+      { name: 'foo', ns: 'ns1', created: '12m' },
+      { name: 'bar', ns: 'ns2', created: '1h' }
     ],
     headers: [
       {
@@ -40,12 +40,12 @@ export default {
         align: 'start',
         value: 'name'
       },
-      { text: 'ready', value: 'true' },
-      { text: 'namespace', value: 'ns' },
-      {
-        text: 'age',
-        value: 'age'
-      }
+      // { text: 'ready', value: 'true' },
+      { text: 'namespace', value: 'ns' }
+      // {
+      //   text: 'created',
+      //   value: 'created'
+      // }
     ]
   }),
 
@@ -55,10 +55,8 @@ export default {
         this.loading = true
         const path = '/v1/table/deployments'
         console.debug('retrieving: ' + path)
-        // const resp = await fetch(path)
-        // const data = await resp.json()
-        // this.deployments = data.deployments
-        // this.headers = data.headers
+        const resp = await fetch(path)
+        this.deployments = await resp.json()
         this.loading = false
       } catch (error) {
         console.error(error)
