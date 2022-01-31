@@ -88,7 +88,6 @@ func getRoutes(c *fiber.Ctx) error {
 	return c.JSON(resp)
 }
 
-
 // TODO: detect desired sizes from URI and generate smaller/bigger ones also
 func getFavicon(c *fiber.Ctx) error {
 	hex := *flagHex

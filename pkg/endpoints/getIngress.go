@@ -15,7 +15,6 @@ var (
 	pkgCache = cache.New(10*time.Second, 10*time.Minute)
 )
 
-
 // Speaks to the cluster and attempt to pull an IngressList
 func getIngressList(logger *log.Logger,
 	clientSet *kubernetes.Clientset,

@@ -22,15 +22,14 @@ func AssmebleRouteMetaData(
 			for _, p := range rule.IngressRuleValue.HTTP.Paths {
 				path := p.Path
 				result = append(result, RouteMetaData{
-					Hostname: rule.Host,
-					Namespace: ingress.Namespace,
+					Hostname:    rule.Host,
+					Namespace:   ingress.Namespace,
 					Oauth2proxy: getOauth2ProxyState(ingress),
-					Path: path,
-					Service: p.Backend.ServiceName,
+					Path:        path,
+					Service:     p.Backend.ServiceName,
 				})
 			}
 		}
 	}
 	return result
 }
-
