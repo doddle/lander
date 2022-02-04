@@ -108,7 +108,7 @@ import ClusterLinks from './components/ClusterLinks'
 import OverviewPieDeployments from './components/OverviewPieDeployments'
 import OverviewPieNodes from './components/OverviewPieNodes'
 import OverviewPieStatefulSets from './components/OverviewPieStatefulSets'
-import TableAPIGroups from './components/TableAPIGroups'
+// import TableAPIGroups from './components/TableAPIGroups'
 import TableFluxIgnored from './components/TableFluxIgnored'
 import TableNodes from './components/TableNodes'
 import TableRoutes from './components/TableRoutes'
@@ -129,7 +129,7 @@ export default {
         { tabName: 'nodes', content: TableNodes },
         { tabName: 'routes', content: TableRoutes },
         { tabName: 'deployments', content: TableDeployments },
-        { tabName: 'api-groups', content: TableAPIGroups },
+        // { tabName: 'api-groups', content: TableAPIGroups },
         { tabName: 'flux-ignored', content: TableFluxIgnored }
       ],
       desiredTab: 'links', // this value controls the currently rendered tab
