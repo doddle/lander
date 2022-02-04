@@ -53,7 +53,7 @@ export default {
       try {
         this.loading = true
         const path = '/v1/table/inventory-flux-ignored'
-        console.log('retrieving: ' + path)
+        console.debug('retrieving: ' + path)
         const resp = await fetch(path)
         this.apiGroups = await resp.json()
         this.loading = false
@@ -64,7 +64,7 @@ export default {
   },
 
   cron: {
-    time: 10000,
+    time: 30000,
     method: 'getFluxIgnored'
   },
 
