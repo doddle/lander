@@ -108,6 +108,7 @@ import ClusterLinks from './components/ClusterLinks'
 import OverviewPieDeployments from './components/OverviewPieDeployments'
 import OverviewPieNodes from './components/OverviewPieNodes'
 import OverviewPieStatefulSets from './components/OverviewPieStatefulSets'
+import TableFluxIgnored from './components/TableFluxIgnored'
 import TableNodes from './components/TableNodes'
 import TableRoutes from './components/TableRoutes'
 import TableDeployments from './components/TableDeployments'
@@ -126,7 +127,8 @@ export default {
         { tabName: 'links', content: ClusterLinks },
         { tabName: 'nodes', content: TableNodes },
         { tabName: 'routes', content: TableRoutes },
-        { tabName: 'deployments', content: TableDeployments }
+        { tabName: 'deployments', content: TableDeployments },
+        { tabName: 'flux-ignored', content: TableFluxIgnored }
       ],
       desiredTab: 'links', // this value controls the currently rendered tab
 
@@ -195,6 +197,7 @@ export default {
     OverviewPieDeployments,
     OverviewPieStatefulSets,
     OverviewPieNodes,
+    // TableFluxIgnored,
     TableNodes,
     // TableDeployments,
     ClusterLinks
