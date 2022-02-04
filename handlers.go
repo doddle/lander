@@ -8,6 +8,7 @@ import (
 	"github.com/doddle/lander/pkg/deployments"
 	"github.com/doddle/lander/pkg/endpoints"
 	"github.com/doddle/lander/pkg/identicon/identicon"
+	"github.com/doddle/lander/pkg/inventory"
 	"github.com/doddle/lander/pkg/nodes"
 	"github.com/doddle/lander/pkg/statefulsets"
 	"github.com/gofiber/fiber/v2"
@@ -164,4 +165,16 @@ func getNodesTable(c *fiber.Ctx) error {
 		logger.Fatal(err)
 	}
 	return c.JSON(stats)
+}
+
+func getFluxIgnored(c *fiber.Ctx) error {
+	//clientSet, err := kubernetes.NewForConfig(kubeConfig)
+	//if err != nil {
+	//	logger.Fatal(err)
+	//}
+	data := inventory.AssembleFluxIgnored()
+	//if err != nil {
+	//	logger.Fatal(err)
+	//}
+	return c.JSON(data)
 }

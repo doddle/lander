@@ -14,7 +14,7 @@
       :dense="true"
       :headers="headers"
       :items-per-page="50"
-      :items="fluxIgnored"
+      :items="apiGroups"
       :loading="loading"
       :search="searchProp"
       sort-by="age"
@@ -30,20 +30,20 @@ export default {
     searchProp: '',
     loading: true, // used to indicate if data is being retrieved
     isActive: null,
-    fluxIgnored: [
-      { ns: 'default', name: 'exampleResource', kind: 'deployment' }
-    ],
+    apiGroups: [],
     headers: [
       {
         text: 'Namespace',
         align: 'start',
-        value: 'ns'
+        value: 'Namespace'
       },
       {
-        text: 'Name',
-        value: 'name'
+        text: 'Resource',
+        value: 'Resource'
       },
-      { text: 'Kind', value: 'kind' }
+      { text: 'Kind', value: 'Kind' },
+      { text: 'APIGroup', value: 'APIGroup' },
+      { text: 'APIGroupVersion', value: 'APIGroupVersion' }
     ]
   }),
 
@@ -51,11 +51,10 @@ export default {
     async getFluxIgnored() {
       try {
         this.loading = true
-        const path = '/v1/table/apiGroups'
+        const path = '/v1/table/inventory-flux-ignored'
         console.log('retrieving: ' + path)
-        // const resp = await fetch(path)
-        // this.apiGroups = await resp.json()
-        // this.headers = data.headers
+        const resp = await fetch(path)
+        this.apiGroups = await resp.json()
         this.loading = false
       } catch (error) {
         console.error(error)

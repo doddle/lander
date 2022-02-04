@@ -22,6 +22,7 @@ func startRoutes(app *fiber.App) {
 	app.Get("/v1/pie/statefulsets", getStatefulSets)
 	app.Get("/v1/pie/nodes", getNodesPie)
 	app.Get("/v1/table/nodes", getNodesTable)
+	app.Get("/v1/table/inventory-flux-ignored", getFluxIgnored)
 
 	// redirects to capture URL paths ending in "//"
 	// .. this sometimes seems to happen when browsers arrive via their "back" buttons/history
