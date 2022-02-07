@@ -2,18 +2,16 @@ package inventory
 
 import (
 	"context"
-	"fmt"
+	"strings"
+	"time"
+
 	"github.com/patrickmn/go-cache"
+	"github.com/withmandala/go-log"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/client-go/util/homedir"
-	"path/filepath"
-	"strings"
-	"time"
 )
 
 type resourceObj struct {
@@ -42,27 +40,22 @@ func contains(s []string, str string) bool {
 }
 
 func AssembleFluxIgnored(
-//clientSet *kubernetes.Clientset,
-) *resourceObjList {
-	config, err := clientcmd.BuildConfigFromFlags("", filepath.Join(homedir.HomeDir(), ".kube", "config"))
+	logger *log.Logger,
+	config *rest.Config) *resourceObjList {
+
+	apiGroupList, err := GetAPIGroupList(logger, config)
 	if err != nil {
-		panic(err)
+		logger.Fatal(err)
 	}
 
-	apiGroupList, err := GetAPIGroupList(config)
+	susResourceObjList, err := ProcessApiGroupList(logger, config, apiGroupList)
 	if err != nil {
-		panic(err)
+		logger.Fatal(err)
 	}
-
-	susResourceObjList, err := ProcessApiGroupList(config, apiGroupList)
-	if err != nil {
-		panic(err)
-	}
-
 	return susResourceObjList
 }
 
-func splitGroupVersion(s string) (string, string) {
+func splitGroupVersion(logger *log.Logger, s string) (string, string) {
 	sep := "/"
 	gv := strings.Split(s, sep)
 	if len(gv) == 2 {
@@ -70,30 +63,42 @@ func splitGroupVersion(s string) (string, string) {
 	} else if len(gv) == 1 {
 		return "", gv[0]
 	} else {
-		fmt.Printf("Couldn't unpack %s into group and version", s)
+		logger.Errorf("Couldn't unpack '%s' into group and version\n", s)
 		//TODO: I don't know how to just "fail" and don't return anything
 		return "", ""
 	}
 }
 
-func GetAPIGroupList(config *rest.Config) ([]*metav1.APIResourceList, error) {
+func GetAPIGroupList(
+	logger *log.Logger,
+	config *rest.Config,
+) (
+	[]*metav1.APIResourceList,
+	error,
+) {
 	clientKubernetes, err := kubernetes.NewForConfig(config)
 	if err != nil {
-		panic(err)
+		logger.Fatal(err)
 	}
 
 	apiGroupList, err := clientKubernetes.ServerPreferredResources()
 	if err != nil {
-		panic(err)
+		logger.Fatal(err)
 	}
 
 	if len(apiGroupList) == 0 {
-		fmt.Println("ApiGroupList had no items. Likely something went wrong.")
+		logger.Warn("ApiGroupList had no items. Likely something went wrong.")
 	}
 	return apiGroupList, nil
 }
 
-func checkGroupAPIResourceAnnotations(config *rest.Config, resourceObjList *resourceObjList, g *metav1.APIResourceList) {
+func checkGroupAPIResourceAnnotations(
+	logger *log.Logger,
+	config *rest.Config,
+	resourceObjList *resourceObjList,
+	g *metav1.APIResourceList,
+) {
+	// its OK to ignore these kinds of objects as they're driven/managed by others
 	ignoredKinds := []string{
 		"ControllerRevision",
 		"ReplicaSet",
@@ -103,7 +108,7 @@ func checkGroupAPIResourceAnnotations(config *rest.Config, resourceObjList *reso
 		panic(err)
 	}
 
-	group, version := splitGroupVersion(g.GroupVersion)
+	group, version := splitGroupVersion(logger, g.GroupVersion)
 
 	// unpack the info that we need into our custom struct
 	for _, a := range g.APIResources {
@@ -116,7 +121,12 @@ func checkGroupAPIResourceAnnotations(config *rest.Config, resourceObjList *reso
 		// we use the dynamic client instead of plain k8s to be able to query CRDs
 		rs, err := clientDynamic.Resource(objectKind).Namespace("").List(context.TODO(), metav1.ListOptions{})
 		if err != nil {
-			fmt.Printf("K8s Dynamic client failed to get resources for: APIGROUP: '%s', APIGROUPVERSION: '%s', KIND: '%s'", group, version, a.Name)
+			// this err could simply be because there are no resources of this object kind
+			// TODO: evaluate the actual error
+			logger.Warnf(
+				"APIGROUP: '%s', APIGROUPVERSION: '%s', KIND: '%s', err: %s",
+				group, version, a.Name, err,
+			)
 			continue
 		}
 		// go over all resources and check for the annotation of interest
@@ -131,13 +141,6 @@ func checkGroupAPIResourceAnnotations(config *rest.Config, resourceObjList *reso
 					for k, v := range annotations {
 						if strings.Contains(k, "flux.weave.works/ignore") {
 							if strings.Contains(v, "true") {
-								//log.Infow("WARNING!",
-								//	"resource", name,
-								//	"kind", kind,
-								//	"namespace", ns,
-								//	"apiGroup", group,
-								//	"apiGroupVersion", version,
-								//)
 								*resourceObjList = append(*resourceObjList, resourceObj{
 									Resource:        name,
 									Kind:            kind,
@@ -157,7 +160,11 @@ func checkGroupAPIResourceAnnotations(config *rest.Config, resourceObjList *reso
 	}
 }
 
-func ProcessApiGroupList(config *rest.Config, apiGroupList []*metav1.APIResourceList) (*resourceObjList, error) {
+func ProcessApiGroupList(
+	logger *log.Logger,
+	config *rest.Config,
+	apiGroupList []*metav1.APIResourceList,
+) (*resourceObjList, error) {
 	var susResourceObjList resourceObjList
 
 	cacheObj := "v1/apiGroups"
@@ -168,22 +175,14 @@ func ProcessApiGroupList(config *rest.Config, apiGroupList []*metav1.APIResource
 
 	for _, g := range apiGroupList {
 		// k8s api returns `group/version`, this helper function helps to split/unpack these
-		group, version := splitGroupVersion(g.GroupVersion)
+		group, version := splitGroupVersion(logger, g.GroupVersion)
 
-		if len(g.APIResources) == 0 {
-			fmt.Println("discovered resources-less api",
-				"apiGroup", group,
-				"apiGroupVersion", version,
-			)
-			continue
-		}
-
-		fmt.Println("discovered api",
-			"apiGroup", group,
-			"apiGroupVersion", version,
-		)
-
-		checkGroupAPIResourceAnnotations(config, &susResourceObjList, g)
+		logger.Debugf("discovered apiGroup: %s, v: %s\n", group, version)
+		//if len(g.APIResources) == 0 {
+		//	logger.Debugf("discovered 0 resources for apiGroup: %s, v: %s\n", group , version)
+		//	continue
+		//}
+		checkGroupAPIResourceAnnotations(logger, config, &susResourceObjList, g)
 	}
 
 	pkgCache.Set(cacheObj, &susResourceObjList, cache.DefaultExpiration)

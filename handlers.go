@@ -33,11 +33,11 @@ func getDeployments(c *fiber.Ctx) error {
 	if err != nil {
 		logger.Fatal(err)
 	}
-	stats, err := deployments.AssembleDeploymentPieChart(logger, clientSet)
+	resp, err := deployments.AssembleDeploymentPieChart(logger, clientSet)
 	if err != nil {
 		logger.Fatal(err)
 	}
-	return c.JSON(stats)
+	return c.JSON(resp)
 }
 
 func getStatefulSets(c *fiber.Ctx) error {
@@ -45,11 +45,11 @@ func getStatefulSets(c *fiber.Ctx) error {
 	if err != nil {
 		logger.Fatal(err)
 	}
-	stats, err := statefulsets.AssembleStatefulSetPieChart(logger, clientSet)
+	resp, err := statefulsets.AssembleStatefulSetPieChart(logger, clientSet)
 	if err != nil {
 		logger.Fatal(err)
 	}
-	return c.JSON(stats)
+	return c.JSON(resp)
 }
 
 func getEndpoints(c *fiber.Ctx) error {
@@ -74,6 +74,9 @@ func getEndpoints(c *fiber.Ctx) error {
 			}
 		}
 	}
+	if len(resp) < 1 {
+		return c.JSON([]string{})
+	}
 	return c.JSON(resp)
 }
 
@@ -86,6 +89,9 @@ func getDeploymentsTable(c *fiber.Ctx) error {
 		logger,
 		clientSet,
 	)
+	if len(resp) < 1 {
+		return c.JSON([]string{})
+	}
 	return c.JSON(resp)
 }
 
@@ -98,6 +104,9 @@ func getRoutes(c *fiber.Ctx) error {
 		logger,
 		clientSet,
 	)
+	if len(resp) < 1 {
+		return c.JSON([]string{})
+	}
 	return c.JSON(resp)
 }
 
@@ -139,7 +148,7 @@ func getFavicon(c *fiber.Ctx) error {
 		}
 		logger.Infof("rendered a new icon for: %s, hex: %s", name, hex)
 	}
-	logger.Infof("%s served: %s", uriPath, fileName)
+	logger.Debugf("%s served: %s", uriPath, fileName)
 	return c.SendFile(fileName)
 }
 
@@ -148,11 +157,11 @@ func getNodesPie(c *fiber.Ctx) error {
 	if err != nil {
 		logger.Fatal(err)
 	}
-	stats, err := nodes.AssembleNodesPieChart(logger, clientSet)
+	resp, err := nodes.AssembleNodesPieChart(logger, clientSet)
 	if err != nil {
 		logger.Fatal(err)
 	}
-	return c.JSON(stats)
+	return c.JSON(resp)
 }
 
 func getNodesTable(c *fiber.Ctx) error {
@@ -160,21 +169,20 @@ func getNodesTable(c *fiber.Ctx) error {
 	if err != nil {
 		logger.Fatal(err)
 	}
-	stats, err := nodes.AssembleTable(logger, clientSet, nodeLabelSlice)
+	resp, err := nodes.AssembleTable(logger, clientSet, nodeLabelSlice)
 	if err != nil {
 		logger.Fatal(err)
 	}
-	return c.JSON(stats)
+	return c.JSON(resp)
 }
 
 func getFluxIgnored(c *fiber.Ctx) error {
-	//clientSet, err := kubernetes.NewForConfig(kubeConfig)
-	//if err != nil {
-	//	logger.Fatal(err)
-	//}
-	data := inventory.AssembleFluxIgnored()
-	//if err != nil {
-	//	logger.Fatal(err)
-	//}
+	data := inventory.AssembleFluxIgnored(logger, kubeConfig)
+	// if the data received is empty, at least return an empty nodeLabelSlice
+	// c.JSON will convert an empty slice into a valid `[]`
+	// ... if we don't do this the endpoint returns `null` which isn't valid json
+	if len(*data) < 1 {
+		return c.JSON([]string{})
+	}
 	return c.JSON(data)
 }

@@ -2,12 +2,13 @@ package endpoints
 
 import (
 	"context"
+	"time"
+
 	"github.com/patrickmn/go-cache"
 	"github.com/withmandala/go-log"
 	"k8s.io/api/extensions/v1beta1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"time"
 )
 
 var (

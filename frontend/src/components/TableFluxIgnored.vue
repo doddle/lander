@@ -3,22 +3,22 @@
     <v-card-title>
       <v-spacer></v-spacer>
       <v-text-field
-          append-icon="mdi-magnify"
-          hide-details
-          label="Filter Flux Ignored"
-          single-line
-          v-model="searchProp"
+        append-icon="mdi-magnify"
+        hide-details
+        label="Filter Flux Ignored"
+        single-line
+        v-model="searchProp"
       ></v-text-field>
     </v-card-title>
     <v-data-table
-        :dense="true"
-        :headers="headers"
-        :items-per-page="50"
-        :items="apiGroups"
-        :loading="loading"
-        :search="searchProp"
-        :sort-by="['Namespace', 'Resource']"
-        multi-sort
+      :dense="true"
+      :headers="headers"
+      :items-per-page="50"
+      :items="apiGroups"
+      :loading="loading"
+      :search="searchProp"
+      :sort-by="['Namespace', 'Resource']"
+      multi-sort
     >
     </v-data-table>
   </v-card>
