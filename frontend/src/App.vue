@@ -15,8 +15,10 @@
                   v-on="on"
                 />
               </template>
-              <span
-                >This clusters unique "identicon"<br /><br />
+              <span>
+                <br />
+                This clusters unique "identicon"<br /><br />
+
                 this is generated based on the clusters "hostname" and
                 "lifecycle" (EG. prod/staging/etc)
                 <br />Tip: click here to save the file to disk<br />
@@ -113,6 +115,7 @@ import TableFluxIgnored from './components/TableFluxIgnored'
 import TableNodes from './components/TableNodes'
 import TableRoutes from './components/TableRoutes'
 import TableDeployments from './components/TableDeployments'
+import TableStatefulSets from './components/TableStatefulSets'
 import axios from 'axios'
 
 export default {
@@ -127,8 +130,9 @@ export default {
       tabList: [
         { tabName: 'links', content: ClusterLinks },
         { tabName: 'nodes', content: TableNodes },
-        { tabName: 'routes', content: TableRoutes },
+        { tabName: 'ingress', content: TableRoutes },
         { tabName: 'deployments', content: TableDeployments },
+        { tabName: 'statefulsets', content: TableStatefulSets },
         // { tabName: 'api-groups', content: TableAPIGroups },
         { tabName: 'flux-ignored', content: TableFluxIgnored }
       ],

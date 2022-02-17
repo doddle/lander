@@ -4,10 +4,22 @@
   <!--    <v-card class="mx-auto">-->
   <v-list>
     <v-list-item v-for="item in stacks" :key="item.title" :href="item.address">
+      <!--oauth2 secured?-->
       <v-list-item-icon>
-        <v-icon v-if="item.oauth2proxy" color="green">
-          mdi-account-lock
-        </v-icon>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon
+              v-if="item.oauth2proxy"
+              color="green"
+              v-bind="attrs"
+              v-on="on"
+              dark
+            >
+              mdi-account-lock
+            </v-icon>
+          </template>
+          <span>This endpoint is secured by oauth2proxy</span>
+        </v-tooltip>
       </v-list-item-icon>
 
       <v-list-item-content>
@@ -22,8 +34,6 @@
       </v-list-item-avatar>
     </v-list-item>
   </v-list>
-  <!--    </v-card>-->
-  <!--  </div>-->
 </template>
 
 <script>
