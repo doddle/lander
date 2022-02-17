@@ -16,6 +16,7 @@ func startRoutes(app *fiber.App) {
 	app.Get("/v1/endpoints", getEndpoints)
 	app.Get("/v1/routes", getRoutes)
 	app.Get("/v1/table/deployments", getDeploymentsTable)
+	app.Get("/v1/table/statefulsets", getStatefulSetsTable)
 	app.Get("/v1/settings", getSettings)
 
 	app.Get("/v1/pie/deployments", getDeployments)
