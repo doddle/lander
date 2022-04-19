@@ -88,6 +88,7 @@ func getDeploymentsTable(c *fiber.Ctx) error {
 	resp := deployments.AssembleDeploymentsTable(
 		logger,
 		clientSet,
+		filteredTags,
 	)
 	if len(resp) < 1 {
 		return c.JSON([]string{})

@@ -32,21 +32,21 @@ export default {
     isActive: null,
     routes: [
       { hostname: 'foo.acme.org', path: '/', ns: 'ns1', svc: 'svc1' },
-      { hostname: 'bar.acme.org', path: '/', ns: 'ns2', svc: 'svc2' }
+      { hostname: 'bar.acme.org', path: '/', ns: 'ns2', svc: 'svc2' },
     ],
     headers: [
       {
         text: 'HostName',
         align: 'start',
-        value: 'hostname'
+        value: 'hostname',
       },
       { text: 'path', value: 'path' },
       { text: 'namespace', value: 'ns' },
       {
         text: 'service',
-        value: 'svc'
-      }
-    ]
+        value: 'svc',
+      },
+    ],
   }),
 
   methods: {
@@ -71,16 +71,16 @@ export default {
       } else {
         return 'red'
       }
-    }
+    },
   },
 
   cron: {
     time: 10000,
-    method: 'getRoutes'
+    method: 'getRoutes',
   },
 
   mounted() {
     this.getRoutes()
-  }
+  },
 }
 </script>

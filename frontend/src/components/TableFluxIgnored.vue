@@ -36,16 +36,16 @@ export default {
       {
         text: 'Namespace',
         align: 'start',
-        value: 'Namespace'
+        value: 'Namespace',
       },
       {
         text: 'Resource',
-        value: 'Resource'
+        value: 'Resource',
       },
       { text: 'Kind', value: 'Kind' },
       { text: 'APIGroup', value: 'APIGroup' },
-      { text: 'APIGroupVersion', value: 'APIGroupVersion' }
-    ]
+      { text: 'APIGroupVersion', value: 'APIGroupVersion' },
+    ],
   }),
 
   methods: {
@@ -60,16 +60,16 @@ export default {
       } catch (error) {
         console.error(error)
       }
-    }
+    },
   },
 
   cron: {
     time: 30000,
-    method: 'getFluxIgnored'
+    method: 'getFluxIgnored',
   },
 
   mounted() {
     this.getFluxIgnored()
-  }
+  },
 }
 </script>

@@ -10,5 +10,5 @@ export default {
     if (title) {
       document.title = title
     }
-  }
+  },
 }

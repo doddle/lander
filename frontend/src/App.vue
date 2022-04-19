@@ -134,21 +134,21 @@ export default {
         { tabName: 'deployments', content: TableDeployments },
         { tabName: 'statefulsets', content: TableStatefulSets },
         // { tabName: 'api-groups', content: TableAPIGroups },
-        { tabName: 'flux-ignored', content: TableFluxIgnored }
+        { tabName: 'flux-ignored', content: TableFluxIgnored },
       ],
       desiredTab: 'links', // this value controls the currently rendered tab
 
       pieChartList: [
         { name: 'Deployments', content: OverviewPieDeployments },
         { name: 'StatefulSets', content: OverviewPieStatefulSets },
-        { name: 'Nodes', content: OverviewPieNodes }
+        { name: 'Nodes', content: OverviewPieNodes },
       ],
       host: hostName,
       settings: {
         colorscheme: 'blue lighten-5',
         cluster: 'unknown',
-        clusters: ['cluster1.acmecorp.org']
-      }
+        clusters: ['cluster1.acmecorp.org'],
+      },
     }
   },
   title() {
@@ -194,7 +194,7 @@ export default {
           URL.revokeObjectURL(link.href)
         })
         .catch(console.error)
-    }
+    },
   },
   beforeMount() {
     this.getSettings()
@@ -206,7 +206,7 @@ export default {
     // TableFluxIgnored,
     TableNodes,
     // TableDeployments,
-    ClusterLinks
-  }
+    ClusterLinks,
+  },
 }
 </script>

@@ -48,9 +48,9 @@ export default {
           class: 'nginx',
           description: 'something',
           icon: 'prometheus.png',
-          oauth2proxy: true
-        }
-      ]
+          oauth2proxy: true,
+        },
+      ],
     }
   },
 
@@ -64,15 +64,15 @@ export default {
       } catch (error) {
         console.error(error)
       }
-    }
+    },
   },
   cron: {
     time: 10000,
     method: 'getEndpoints',
-    autoStart: true
+    autoStart: true,
   },
   beforeMount() {
     this.getEndpoints()
-  }
+  },
 }
 </script>

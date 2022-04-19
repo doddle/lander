@@ -100,11 +100,12 @@ export default {
     headers: [
       { text: 'namespace', value: 'ns', align: 'start' },
       { text: 'name', value: 'name' },
+      { text: 'version', value: 'tag' },
       { text: 'ready', value: 'ready' },
       { text: 'progressing', value: 'progressing' },
       { text: 'replicas (desired)', value: 'replicas' },
-      { text: 'replicas (available)', value: 'replicas_available' }
-    ]
+      { text: 'replicas (available)', value: 'replicas_available' },
+    ],
   }),
 
   methods: {
@@ -137,16 +138,16 @@ export default {
       } else {
         return 'red'
       }
-    }
+    },
   },
 
   cron: {
     time: 10000,
-    method: 'getDeployments'
+    method: 'getDeployments',
   },
 
   mounted() {
     this.getDeployments()
-  }
+  },
 }
 </script>

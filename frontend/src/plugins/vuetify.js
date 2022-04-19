@@ -13,8 +13,8 @@ export default new Vuetify({
         error: '#f44336',
         warning: '#ffc107',
         info: '#cddc39',
-        success: '#8bc34a'
-      }
-    }
-  }
+        success: '#8bc34a',
+      },
+    },
+  },
 })

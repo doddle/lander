@@ -54,8 +54,8 @@ export default {
       { text: 'progressing', value: 'progressing' },
       { text: 'replicas (desired)', value: 'replicas' },
       { text: 'replicas (updated)', value: 'replicas_updated' },
-      { text: 'replicas (current)', value: 'replicas_current' }
-    ]
+      { text: 'replicas (current)', value: 'replicas_current' },
+    ],
   }),
 
   methods: {
@@ -88,16 +88,16 @@ export default {
       } else {
         return 'red'
       }
-    }
+    },
   },
 
   cron: {
     time: 10000,
-    method: 'getStatefulSets'
+    method: 'getStatefulSets',
   },
 
   mounted() {
     this.getStatefulSets()
-  }
+  },
 }
 </script>
