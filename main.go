@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/doddle/lander/pkg/deployments"
 	"github.com/gofiber/fiber/v2"
 	"github.com/icza/gox/imagex/colorx"
 	"github.com/withmandala/go-log"
@@ -21,6 +22,8 @@ var (
 	// flag for a list of all clusters
 	flagClusters = flag.String("clusters", "cluster1.example.com,cluster2.example.com", "comma seperated list of clusters")
 
+	flagShowTagsFor = flag.String("show-tags-for", "ecr=1122334455.dkr.ecr.eu-west-1.amazonaws.com/acmecorp/,gcr=blabla", "show tags for images matching this string in the Deployment tables")
+
 	flagNodeLabels = flag.String(
 		"labels",
 		"kubernetes.io/role,node.kubernetes.io/instance-type,kops.k8s.io/instancegroup,topology.kubernetes.io/zone",
@@ -31,6 +34,7 @@ var (
 	flagDebug      = flag.Bool("debug", false, "debug")
 	clusterList    []string
 	nodeLabelSlice []string
+	filteredTags   []deployments.TagFilters
 
 	// TODO: ideally the logger shouldn't be global
 	logger     *log.Logger
@@ -39,6 +43,7 @@ var (
 
 func init() {
 	flag.Parse()
+	filteredTags = deployments.ParseShowTagsFor(*flagShowTagsFor)
 	clusterList = strings.Split(*flagClusters, ",")
 	nodeLabelSlice = strings.Split(*flagNodeLabels, ",")
 	logger = newLogger(*flagDebug)

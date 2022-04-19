@@ -10,7 +10,7 @@ export default {
 
   data() {
     return {
-      stacks: []
+      stacks: [],
     }
   },
   methods: {
@@ -23,15 +23,15 @@ export default {
       } catch (error) {
         console.error(error)
       }
-    }
+    },
   },
   cron: {
     time: 15000,
     method: 'getStacks',
-    autoStart: true
+    autoStart: true,
   },
   mounted() {
     this.getStacks()
-  }
+  },
 }
 </script>

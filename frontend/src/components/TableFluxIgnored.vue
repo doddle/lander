@@ -5,7 +5,7 @@
       <v-text-field
         append-icon="mdi-magnify"
         hide-details
-        label="Filter routes"
+        label="Filter Flux Ignored"
         single-line
         v-model="searchProp"
       ></v-text-field>
@@ -14,73 +14,62 @@
       :dense="true"
       :headers="headers"
       :items-per-page="50"
-      :items="routes"
+      :items="apiGroups"
       :loading="loading"
       :search="searchProp"
-      sort-by="age"
+      :sort-by="['Namespace', 'Resource']"
+      multi-sort
     >
     </v-data-table>
   </v-card>
 </template>
 <script>
 export default {
-  name: 'TableRoutes',
+  name: 'TableFluxIgnored',
 
   data: () => ({
     searchProp: '',
     loading: true, // used to indicate if data is being retrieved
     isActive: null,
-    routes: [
-      { hostname: 'foo.acme.org', path: '/', ns: 'ns1', svc: 'svc1' },
-      { hostname: 'bar.acme.org', path: '/', ns: 'ns2', svc: 'svc2' },
-    ],
+    apiGroups: [],
     headers: [
       {
-        text: 'HostName',
+        text: 'Namespace',
         align: 'start',
-        value: 'hostname',
+        value: 'Namespace',
       },
-      { text: 'path', value: 'path' },
-      { text: 'namespace', value: 'ns' },
       {
-        text: 'service',
-        value: 'svc',
+        text: 'Resource',
+        value: 'Resource',
       },
+      { text: 'Kind', value: 'Kind' },
+      { text: 'APIGroup', value: 'APIGroup' },
+      { text: 'APIGroupVersion', value: 'APIGroupVersion' },
     ],
   }),
 
   methods: {
-    async getRoutes() {
+    async getFluxIgnored() {
       try {
         this.loading = true
-        const path = '/v1/routes'
+        const path = '/v1/table/inventory-flux-ignored'
         console.debug('retrieving: ' + path)
         const resp = await fetch(path)
-        this.routes = await resp.json()
-        // this.headers = data.headers
+        this.apiGroups = await resp.json()
         this.loading = false
       } catch (error) {
         console.error(error)
       }
     },
-
-    // returns green or red based on if the input is input is true or false
-    markTrueGood(inputString) {
-      if (inputString === true) {
-        return 'green'
-      } else {
-        return 'red'
-      }
-    },
   },
 
   cron: {
-    time: 10000,
-    method: 'getRoutes',
+    time: 30000,
+    method: 'getFluxIgnored',
   },
 
   mounted() {
-    this.getRoutes()
+    this.getFluxIgnored()
   },
 }
 </script>

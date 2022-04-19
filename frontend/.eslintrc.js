@@ -13,7 +13,7 @@ module.exports = {
     'prettier/prettier': [
       1,
       {
-        // trailingComma: 'es5',
+        trailingComma: 'es5',
         //to enable single quotes
         singleQuote: true,
         semi: false

@@ -4,9 +4,16 @@ GOLANGCILINT ?= golangci-lint
 BINARY := lander
 VERSION ?= $(shell git describe --always --tags 2>/dev/null || echo "undefined")
 
+fmt:
+	gofmt -s -w .
+	goimports -w .
+	golangci-lint run --timeout 3m --fix
+
 backend-lint:
+	gofmt -s -l .
+	goimports -l .
 	golangci-lint run --timeout 3m
-	go fmt ./...
+	@echo run \'make fmt\' if lint returned changes to stdout
 
 #"-s -w" strips debug headers
 backend-build:

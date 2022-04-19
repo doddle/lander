@@ -14,31 +14,31 @@ import VueApexCharts from 'vue-apexcharts'
 export default {
   name: 'OverviewPieNodes',
   components: {
-    apexcharts: VueApexCharts
+    apexcharts: VueApexCharts,
   },
   data: function() {
     return {
       chartOptions: {
         stroke: {
-          width: 0
+          width: 0,
         },
         theme: {
-          palette: 'pallet3'
+          palette: 'pallet3',
         },
         colors: [],
         chart: {
           id: 'pie-nodes',
           dropShadow: {
-            effect: false
-          }
+            effect: false,
+          },
         },
         legend: {
-          position: 'bottom'
+          position: 'bottom',
         },
-        labels: []
+        labels: [],
       },
       series: [],
-      total: 0
+      total: 0,
     }
   },
   methods: {
@@ -54,15 +54,15 @@ export default {
       } catch (error) {
         console.error(error)
       }
-    }
+    },
   },
   cron: {
     time: 10000,
     method: 'getPieNodes',
-    autoStart: true
+    autoStart: true,
   },
   beforeMount() {
     this.getPieNodes()
-  }
+  },
 }
 </script>

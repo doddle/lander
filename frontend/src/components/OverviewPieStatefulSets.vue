@@ -14,7 +14,7 @@ import VueApexCharts from 'vue-apexcharts'
 export default {
   name: 'Apex',
   components: {
-    apexcharts: VueApexCharts
+    apexcharts: VueApexCharts,
   },
   data: function() {
     return {
@@ -23,16 +23,16 @@ export default {
         chart: {
           id: 'pie-statefulsets',
           dropShadow: {
-            effect: false
-          }
+            effect: false,
+          },
         },
         legend: {
-          position: 'bottom'
+          position: 'bottom',
         },
-        labels: []
+        labels: [],
       },
       series: [],
-      total: 0
+      total: 0,
     }
   },
   methods: {
@@ -49,15 +49,15 @@ export default {
       } catch (error) {
         console.error(error)
       }
-    }
+    },
   },
   cron: {
     time: 10000,
     method: 'getPieStatefulSets',
-    autoStart: true
+    autoStart: true,
   },
   beforeMount() {
     this.getPieStatefulSets()
-  }
+  },
 }
 </script>

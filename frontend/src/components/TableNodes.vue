@@ -52,7 +52,7 @@ export default {
       {
         text: 'Name',
         align: 'start',
-        value: 'name'
+        value: 'name',
       },
       { text: 'ready', value: 'true' },
       // {
@@ -63,9 +63,9 @@ export default {
       {
         sortable: true,
         text: 'age',
-        value: 'age'
-      }
-    ]
+        value: 'age',
+      },
+    ],
   }),
 
   methods: {
@@ -107,14 +107,14 @@ export default {
       } else {
         return 'red'
       }
-    }
+    },
   },
   cron: {
     time: 10000,
-    method: 'getNodes'
+    method: 'getNodes',
   },
   mounted() {
     this.getNodes()
-  }
+  },
 }
 </script>

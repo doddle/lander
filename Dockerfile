@@ -1,10 +1,18 @@
 ## go backend
-FROM docker.io/library/golang:1.15 as go
+FROM docker.io/library/golang:1.17 as go
+
+
+WORKDIR /temp
+## install goimports
+RUN go mod init temp
+RUN go get golang.org/x/tools/cmd/goimports@latest && go install golang.org/x/tools/cmd/goimports
+# install golangci-lint
+RUN wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.40.1 && \
+      mv ./bin/golangci-lint /bin/.
 
 WORKDIR /src
 COPY . .
-RUN wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.40.1 && \
-      mv ./bin/golangci-lint /bin/.
+RUN find . -type f
 RUN make backend-lint
 RUN make backend-build
 

@@ -15,8 +15,10 @@
                   v-on="on"
                 />
               </template>
-              <span
-                >This clusters unique "identicon"<br /><br />
+              <span>
+                <br />
+                This clusters unique "identicon"<br /><br />
+
                 this is generated based on the clusters "hostname" and
                 "lifecycle" (EG. prod/staging/etc)
                 <br />Tip: click here to save the file to disk<br />
@@ -108,9 +110,12 @@ import ClusterLinks from './components/ClusterLinks'
 import OverviewPieDeployments from './components/OverviewPieDeployments'
 import OverviewPieNodes from './components/OverviewPieNodes'
 import OverviewPieStatefulSets from './components/OverviewPieStatefulSets'
+// import TableAPIGroups from './components/TableAPIGroups'
+import TableFluxIgnored from './components/TableFluxIgnored'
 import TableNodes from './components/TableNodes'
 import TableRoutes from './components/TableRoutes'
 import TableDeployments from './components/TableDeployments'
+import TableStatefulSets from './components/TableStatefulSets'
 import axios from 'axios'
 
 export default {
@@ -125,22 +130,25 @@ export default {
       tabList: [
         { tabName: 'links', content: ClusterLinks },
         { tabName: 'nodes', content: TableNodes },
-        { tabName: 'routes', content: TableRoutes },
-        { tabName: 'deployments', content: TableDeployments }
+        { tabName: 'ingress', content: TableRoutes },
+        { tabName: 'deployments', content: TableDeployments },
+        { tabName: 'statefulsets', content: TableStatefulSets },
+        // { tabName: 'api-groups', content: TableAPIGroups },
+        { tabName: 'flux-ignored', content: TableFluxIgnored },
       ],
       desiredTab: 'links', // this value controls the currently rendered tab
 
       pieChartList: [
         { name: 'Deployments', content: OverviewPieDeployments },
         { name: 'StatefulSets', content: OverviewPieStatefulSets },
-        { name: 'Nodes', content: OverviewPieNodes }
+        { name: 'Nodes', content: OverviewPieNodes },
       ],
       host: hostName,
       settings: {
         colorscheme: 'blue lighten-5',
         cluster: 'unknown',
-        clusters: ['cluster1.acmecorp.org']
-      }
+        clusters: ['cluster1.acmecorp.org'],
+      },
     }
   },
   title() {
@@ -186,7 +194,7 @@ export default {
           URL.revokeObjectURL(link.href)
         })
         .catch(console.error)
-    }
+    },
   },
   beforeMount() {
     this.getSettings()
@@ -195,9 +203,10 @@ export default {
     OverviewPieDeployments,
     OverviewPieStatefulSets,
     OverviewPieNodes,
+    // TableFluxIgnored,
     TableNodes,
     // TableDeployments,
-    ClusterLinks
-  }
+    ClusterLinks,
+  },
 }
 </script>

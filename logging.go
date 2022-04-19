@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/withmandala/go-log"
 	"os"
+
+	"github.com/withmandala/go-log"
 )
 
 func newLogger(debug bool) *log.Logger {

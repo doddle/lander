@@ -8,8 +8,8 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
-  }
+    component: Home,
+  },
   // {
   //   path: "/about",
   //   name: "About",
@@ -25,7 +25,7 @@ const router = new VueRouter({
   mode: 'history',
   // eslint-disable-next-line
   base: process.env.BASE_URL,
-  routes
+  routes,
 })
 
 export default router
