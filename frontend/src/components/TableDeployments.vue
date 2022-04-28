@@ -105,6 +105,7 @@ export default {
       { text: 'progressing', value: 'progressing' },
       { text: 'replicas (desired)', value: 'replicas' },
       { text: 'replicas (available)', value: 'replicas_available' },
+      { text: 'changed', value: 'changed' },
     ],
   }),
 
