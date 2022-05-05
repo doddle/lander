@@ -3,19 +3,21 @@ package deployments
 import (
 	"github.com/withmandala/go-log"
 	v1 "k8s.io/api/apps/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"strings"
 )
 
 // MetaDataDeploymentsTable is some metadata to be used to represent traffic
 type MetaDataDeploymentsTable struct {
-	Name              string `json:"name"`
-	Namespace         string `json:"ns"`
-	Ready             bool   `json:"ready"`
-	Progressing       bool   `json:"progressing"`
-	ReplicasDesired   int32  `json:"replicas"`
-	ReplicasAvailable int32  `json:"replicas_available"`
-	Tag               string `json:"tag"`
+	Name              string      `json:"name"`
+	Namespace         string      `json:"ns"`
+	Ready             bool        `json:"ready"`
+	Progressing       bool        `json:"progressing"`
+	ReplicasDesired   int32       `json:"replicas"`
+	ReplicasAvailable int32       `json:"replicas_available"`
+	Tag               string      `json:"tag"`
+	Changed           metav1.Time `json:"changed"`
 }
 
 type TagFilters struct {
@@ -47,10 +49,22 @@ func AssembleDeploymentsTable(
 			ReplicasDesired:   *k8sObj.Spec.Replicas,
 			ReplicasAvailable: k8sObj.Status.AvailableReplicas,
 			Tag:               tag,
+			Changed:           lastDeployUpdate(k8sObj),
 		})
 	}
 
 	return result
+}
+
+// lastDeployUpdate tries to guess the last time a new replicaset was created for a deployment
+// otherwise returns an empty struct
+func lastDeployUpdate(deployment v1.Deployment) metav1.Time {
+	for _, conditions := range deployment.Status.Conditions {
+		if conditions.Reason == "NewReplicaSetAvailable" {
+			return conditions.LastUpdateTime
+		}
+	}
+	return metav1.Time{}
 }
 
 func guessTheImportantTag(
