@@ -128,6 +128,7 @@ func AssembleTable(
 
 		// We're going to assume the node is this version (of k8s)
 		kubeletVersion := i.Status.NodeInfo.KubeletVersion
+		kernel := i.Status.NodeInfo.KernelVersion
 
 		newNode := NodeStats{
 			AgeSeconds:  intergerOnly(age.Seconds()),
@@ -136,6 +137,7 @@ func AssembleTable(
 			Name:        i.Name,
 			Version:     kubeletVersion,
 			LabelMap:    matchedLabels,
+			Kernel:      kernel,
 		}
 		nodeStats = append(nodeStats, newNode)
 	}
@@ -150,6 +152,7 @@ func AssembleTable(
 		{Text: "Schedulable", Value: "schedulable"},
 		{Text: "Age", Value: "age"},
 		{Text: "Version", Value: "version"},
+		{Text: "Kernel", Value: "kernel"},
 	}
 
 	for _, customLabel := range labelSlices {
