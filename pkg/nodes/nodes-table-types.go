@@ -7,6 +7,7 @@ type NodeStats struct {
 	Schedulable bool              `json:"schedulable"`
 	LabelMap    map[string]string `json:"labels"`
 	Version     string            `json:"version"`
+	Kernel      string            `json:"kernel"`
 }
 type NodeTable struct {
 	Nodes   []NodeStats    `json:"nodes"`
