@@ -26,7 +26,7 @@ func getIngressListV1(logger *log.Logger,
 		return cached.(*networkingv1.IngressList), nil
 	}
 
-	// find ALL Ingressess
+	// find ALL Ingresses (Yes we know we can watch them, but this is ok)
 	ingressList, err := clientSet.
 		NetworkingV1().
 		Ingresses("").

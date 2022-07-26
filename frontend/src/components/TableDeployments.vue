@@ -17,7 +17,8 @@
       :items="deployments"
       :loading="loading"
       :search="searchProp"
-      sort-by="age"
+      :sort-by="['changed']"
+      :sort-desc="[true]"
     >
       <!-- highlight and set node state colours for the "ready" states -->
       <template v-slot:item.ready="{ item }">

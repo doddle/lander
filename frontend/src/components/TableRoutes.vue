@@ -31,14 +31,30 @@ export default {
     loading: true, // used to indicate if data is being retrieved
     isActive: null,
     routes: [
-      { hostname: 'foo.acme.org', path: '/', ns: 'ns1', svc: 'svc1' },
-      { hostname: 'bar.acme.org', path: '/', ns: 'ns2', svc: 'svc2' },
+      {
+        hostname: 'foo.acme.org',
+        path: '/',
+        ns: 'ns1',
+        svc: 'svc1',
+        class: 'private',
+      },
+      {
+        hostname: 'bar.acme.org',
+        path: '/',
+        ns: 'ns2',
+        svc: 'svc2',
+        class: 'public',
+      },
     ],
     headers: [
       {
         text: 'HostName',
         align: 'start',
         value: 'hostname',
+      },
+      {
+        text: 'IngressClass',
+        value: 'class',
       },
       { text: 'path', value: 'path' },
       { text: 'namespace', value: 'ns' },

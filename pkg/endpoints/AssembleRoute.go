@@ -23,6 +23,7 @@ func AssembleRouteMetaData(
 				path := p.Path
 				result = append(result, RouteMetaData{
 					Hostname:    rule.Host,
+					Class:       getIngressClass(logger, ingress),
 					Namespace:   ingress.Namespace,
 					Oauth2proxy: getOauth2ProxyState(ingress),
 					Path:        path,

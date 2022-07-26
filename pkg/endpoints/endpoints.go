@@ -1,10 +1,10 @@
 package endpoints
 
 import (
+	"fmt"
+
 	"github.com/doddle/lander/pkg/util"
 	"github.com/withmandala/go-log"
-	//networkingv1beta1 "k8s.io/api/extensions/v1beta1"
-	// networkingv1 "k8s.io/api/networking/v1"
 	networkingv1 "k8s.io/api/networking/v1"
 	"k8s.io/client-go/kubernetes"
 )
@@ -24,6 +24,8 @@ func ReallyAssemble(
 	ingressObjects := ingressList.Items
 	if len(ingressObjects) > 0 {
 		for _, ingress := range ingressObjects {
+
+			className := getIngressClass(logger, ingress)
 			if !isAnnotatedForLander(ingress, landerAnnotationRoot) {
 				continue
 			}
@@ -55,7 +57,7 @@ func ReallyAssemble(
 						Address:     serviceUrl,
 						Https:       true,
 						Oauth2proxy: getOauth2ProxyState(ingress),
-						Class:       getIngressClass(logger, ingress),
+						Class:       className,
 						Description: serviceDescription,
 						Name:        serviceName,
 						Icon:        serviceIcon,
@@ -77,19 +79,6 @@ func isAnnotatedForLander(ingress networkingv1.Ingress, annotationBase string) b
 	return ingress.Annotations[annotationBase+"/show"] == "true"
 }
 
-// attempts to return the ingress class (or an empty string)
-// TODO: upgrade to v1?
-func getIngressClass(logger util.LoggerIFace, ingress networkingv1.Ingress) string {
-	if val, ok := ingress.Annotations["kubernetes.io/ingress.class"]; ok {
-		return val
-	}
-	logger.Warnf(
-		"Unable to determine ingress class for: %s/%s",
-		ingress.Namespace,
-		ingress.Name)
-	return ""
-}
-
 // returns true/false if ingress Annotations contain what looks like oa2p
 func getOauth2ProxyState(ingress networkingv1.Ingress) bool {
 	if annotationKeyExists(ingress, "nginx.ingress.kubernetes.io/auth-signin") {
@@ -98,4 +87,16 @@ func getOauth2ProxyState(ingress networkingv1.Ingress) bool {
 		}
 	}
 	return false
+}
+
+// attempts to return the ingress class (or an empty string)
+func getIngressClass(logger util.LoggerIFace, ingress networkingv1.Ingress) string {
+	if ingress.Spec.IngressClassName == nil {
+		logger.Warnf(
+			"spec.ingressClassName missing for ingress: %s/%s",
+			ingress.Namespace,
+			ingress.Name)
+		return ""
+	}
+	return fmt.Sprint(*ingress.Spec.IngressClassName)
 }

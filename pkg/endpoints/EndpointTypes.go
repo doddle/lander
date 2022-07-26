@@ -19,4 +19,5 @@ type RouteMetaData struct {
 	Namespace   string `json:"ns"`
 	Service     string `json:"svc"`
 	Oauth2proxy bool   `json:"oauth2proxy"` // if its secured by an oauth2proxy
+	Class       string `json:"class"`
 }
