@@ -11,7 +11,7 @@ func AssembleRouteMetaData(
 ) []RouteMetaData {
 	var result []RouteMetaData
 
-	ingressList, err := getIngressList(logger, clientSet)
+	ingressList, err := getIngressListV1(logger, clientSet)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -26,7 +26,7 @@ func AssembleRouteMetaData(
 					Namespace:   ingress.Namespace,
 					Oauth2proxy: getOauth2ProxyState(ingress),
 					Path:        path,
-					Service:     p.Backend.ServiceName,
+					Service:     p.Backend.Service.Name,
 				})
 			}
 		}
