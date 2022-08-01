@@ -17,7 +17,7 @@
       :items="deployments"
       :loading="loading"
       :search="searchProp"
-      :sort-by="['changed']"
+      :sort-by="['lastChangedTimestamp']"
       :sort-desc="[true]"
     >
       <!-- highlight and set node state colours for the "ready" states -->
@@ -86,6 +86,10 @@
           <span>available pods (running)</span>
         </v-tooltip>
       </template>
+
+      <template v-slot:item.lastChangedTimestamp="{ item }">
+        {{ howManySecondsAgoFriendly(item.lastChangedTimestamp) }}
+      </template>
     </v-data-table>
   </v-card>
 </template>
@@ -106,11 +110,43 @@ export default {
       { text: 'progressing', value: 'progressing' },
       { text: 'replicas (desired)', value: 'replicas' },
       { text: 'replicas (available)', value: 'replicas_available' },
-      { text: 'changed', value: 'changed' },
+      { text: 'last changed', value: 'lastChangedTimestamp' },
     ],
   }),
 
   methods: {
+    // quick and dirty, just show "how long ago" it was till something changed
+    // the input timestamp is a UTC timestamp string, if the users
+    // browser's timestamp is far off in the past bad things could happen here however
+    // so maybe fall back to just showing the timestamp?
+    howManySecondsAgoFriendly(timestamp) {
+      const seconds = this.howManySecondsAgo(timestamp)
+      return this.convertSeconds(seconds)
+    },
+
+    howManySecondsAgo(timestamp) {
+      const secondsNow = new Date().getTime()
+      const secondsThen = new Date(timestamp).getTime()
+
+      return Math.floor((secondsNow - secondsThen) / 1000)
+    },
+
+    convertSeconds(inputSeconds) {
+      const seconds = inputSeconds.toFixed(1)
+      const minutes = (inputSeconds / 60).toFixed(1)
+      const hours = (inputSeconds / (60 * 60)).toFixed(1)
+      const days = (inputSeconds / (60 * 60 * 24)).toFixed(1)
+      if (seconds < 60) {
+        return seconds + 's'
+      } else if (minutes < 60) {
+        return minutes + 'm'
+      } else if (hours < 24) {
+        return hours + 'h'
+      } else {
+        return days + 'd'
+      }
+    },
+
     async getDeployments() {
       try {
         this.loading = true

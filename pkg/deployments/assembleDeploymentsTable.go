@@ -18,7 +18,7 @@ type MetaDataDeploymentsTable struct {
 	ReplicasDesired   int32       `json:"replicas"`
 	ReplicasAvailable int32       `json:"replicas_available"`
 	Tag               string      `json:"tag"`
-	Changed           metav1.Time `json:"changed"`
+	Changed           metav1.Time `json:"lastChangedTimestamp"`
 }
 
 type TagFilters struct {
@@ -42,6 +42,7 @@ func AssembleDeploymentsTable(
 	for _, k8sObj := range data.Items {
 		tag := guessTheImportantTag(logger, k8sObj, filteredTags)
 
+		lastDeployTime := lastDeployUpdate(k8sObj)
 		result = append(result, MetaDataDeploymentsTable{
 			Name:              k8sObj.Name,
 			Namespace:         k8sObj.Namespace,
@@ -50,7 +51,7 @@ func AssembleDeploymentsTable(
 			ReplicasDesired:   *k8sObj.Spec.Replicas,
 			ReplicasAvailable: k8sObj.Status.AvailableReplicas,
 			Tag:               tag,
-			Changed:           lastDeployUpdate(k8sObj),
+			Changed:           lastDeployTime,
 		})
 	}
 
