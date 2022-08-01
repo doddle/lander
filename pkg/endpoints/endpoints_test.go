@@ -163,6 +163,7 @@ func Test_getIngressClass(t *testing.T) {
 		logger  *WarnImp
 		ingress networkingv1.Ingress
 	}
+	ingressClassName := "testClass"
 	tests := []struct {
 		name      string
 		args      args
@@ -177,9 +178,8 @@ func Test_getIngressClass(t *testing.T) {
 					TypeMeta:   metav1.TypeMeta{},
 					ObjectMeta: metav1.ObjectMeta{},
 					Spec: networkingv1.IngressSpec{
-						IngressClassName: string{
-							"foo",
-						}},
+						IngressClassName: &ingressClassName,
+					},
 					Status: networkingv1.IngressStatus{},
 				},
 			},
