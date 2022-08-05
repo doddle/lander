@@ -11,19 +11,18 @@ func startRoutes(app *fiber.App) {
 
 	app.Get("/favicon*", getFavicon)
 	app.Get("/img/icons/*", getFavicon)
-
 	app.Get("/healthz", getHealthz)
-	app.Get("/v1/endpoints", getEndpoints)
-	app.Get("/v1/routes", getRoutes)
-	app.Get("/v1/table/deployments", getDeploymentsTable)
-	app.Get("/v1/table/statefulsets", getStatefulSetsTable)
-	app.Get("/v1/settings", getSettings)
 
-	app.Get("/v1/pie/deployments", getDeployments)
-	app.Get("/v1/pie/statefulsets", getStatefulSets)
-	app.Get("/v1/pie/nodes", getNodesPie)
-	app.Get("/v1/table/nodes", getNodesTable)
+	app.Get("/v1/clusterLinks", getClusterLinks)
+	app.Get("/v1/deploymentPieChart", getDeployments)
+	app.Get("/v1/deploymentTable", getDeploymentsTable)
+	app.Get("/v1/nodePieChart", getNodesPie)
+	app.Get("/v1/ingressTable", getRoutes)
+	app.Get("/v1/settings", getSettings)
+	app.Get("/v1/statefulSetPieChart", getStatefulSets)
+	app.Get("/v1/statefulSetTable", getStatefulSetsTable)
 	app.Get("/v1/table/inventory-flux-ignored", getFluxIgnored)
+	app.Get("/v1/nodeTable", getNodesTable)
 
 	// redirects to capture URL paths ending in "//"
 	// .. this sometimes seems to happen when browsers arrive via their "back" buttons/history

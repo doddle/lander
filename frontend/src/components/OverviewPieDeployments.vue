@@ -38,7 +38,7 @@ export default {
   methods: {
     async getPieDeploy() {
       try {
-        const path = '/v1/pie/deployments'
+        const path = '/v1/deploymentPieChart'
         console.debug('retrieving: ' + path)
         const resp = await fetch(path)
         const data = await resp.json()

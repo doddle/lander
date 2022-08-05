@@ -16,7 +16,7 @@ export default {
   methods: {
     async getStacks() {
       try {
-        const resp = await fetch('/v1/endpoints')
+        const resp = await fetch('/v1/clusterLinks')
         const data = await resp.json()
         console.log('retrieving endpoints')
         this.stacks = data

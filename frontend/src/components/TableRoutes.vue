@@ -69,7 +69,7 @@ export default {
     async getRoutes() {
       try {
         this.loading = true
-        const path = '/v1/routes'
+        const path = '/v1/ingressTable'
         console.debug('retrieving: ' + path)
         const resp = await fetch(path)
         this.routes = await resp.json()

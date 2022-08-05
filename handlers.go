@@ -52,7 +52,7 @@ func getStatefulSets(c *fiber.Ctx) error {
 	return c.JSON(resp)
 }
 
-func getEndpoints(c *fiber.Ctx) error {
+func getClusterLinks(c *fiber.Ctx) error {
 	clientSet, err := kubernetes.NewForConfig(kubeConfig)
 	if err != nil {
 		logger.Fatal(err)

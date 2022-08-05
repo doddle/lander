@@ -57,7 +57,7 @@ export default {
   methods: {
     async getEndpoints() {
       try {
-        const path = '/v1/endpoints'
+        const path = '/v1/clusterLinks'
         console.debug('retrieving: ' + path)
         const resp = await fetch(path)
         this.stacks = await resp.json()

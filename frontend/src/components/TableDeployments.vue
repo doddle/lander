@@ -14,6 +14,7 @@
       :dense="true"
       :headers="headers"
       :items-per-page="50"
+      :dark="true"
       :items="deployments"
       :loading="loading"
       :search="searchProp"
@@ -150,7 +151,7 @@ export default {
     async getDeployments() {
       try {
         this.loading = true
-        const path = '/v1/table/deployments'
+        const path = '/v1/deploymentTable'
         console.debug('retrieving: ' + path)
         const resp = await fetch(path)
         this.deployments = await resp.json()
