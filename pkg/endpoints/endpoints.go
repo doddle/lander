@@ -24,7 +24,6 @@ func ReallyAssemble(
 	ingressObjects := ingressList.Items
 	if len(ingressObjects) > 0 {
 		for _, ingress := range ingressObjects {
-
 			className := getIngressClass(logger, ingress)
 			if !isAnnotatedForLander(ingress, landerAnnotationRoot) {
 				continue
@@ -49,13 +48,13 @@ func ReallyAssemble(
 					if p.Path == "/" {
 						uri = ""
 					}
-					serviceUrl := "https://" + rule.Host + uri
+					serviceURL := "https://" + rule.Host + uri
 					if annotationKeyExists(ingress, landerAnnotationRoot+"/url") {
-						serviceUrl = ingress.Annotations[landerAnnotationRoot+"/url"]
+						serviceURL = ingress.Annotations[landerAnnotationRoot+"/url"]
 					}
 					result = append(result, Endpoint{
-						Address:     serviceUrl,
-						Https:       true,
+						Address:     serviceURL,
+						HTTPS:       true,
 						Oauth2proxy: getOauth2ProxyState(ingress),
 						Class:       className,
 						Description: serviceDescription,

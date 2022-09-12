@@ -8,7 +8,6 @@ import (
 )
 
 func startRoutes(app *fiber.App) {
-
 	app.Get("/favicon*", getFavicon)
 	app.Get("/img/icons/*", getFavicon)
 	app.Get("/healthz", getHealthz)

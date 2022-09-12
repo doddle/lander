@@ -32,7 +32,6 @@ func AssembleDeploymentsTable(
 	}
 
 	for _, k8sObj := range data.Items {
-
 		result = append(result, MetaDataDeploymentsTable{
 			Name:            k8sObj.Name,
 			Namespace:       k8sObj.Namespace,

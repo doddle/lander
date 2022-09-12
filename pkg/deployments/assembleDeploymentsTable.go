@@ -79,16 +79,15 @@ func guessTheImportantTag(
 		logger.Debugf("deploy: %s, image: %s\n", deploy.Name, obj.Image)
 		if matchImageToReg(obj.Image, filteredTags) {
 			return parseMatchingTag(obj.Image, filteredTags)
+		}
+		// try to split the image by :
+		imageSplit := strings.Split(obj.Image, ":")
+		// if there was a : to split by, return that image
+		if len(imageSplit) > 1 {
+			fallback = imageSplit[1]
 		} else {
-			// try to split the image by :
-			imageSplit := strings.Split(obj.Image, ":")
-			// if there was a : to split by, return that image
-			if len(imageSplit) > 1 {
-				fallback = imageSplit[1]
-			} else {
-				// otherwise the fallback tag must be the docker image :latest
-				fallback = "latest"
-			}
+			// otherwise the fallback tag must be the docker image :latest
+			fallback = "latest"
 		}
 	}
 	return fallback
@@ -105,7 +104,6 @@ func matchImageToReg(image string, filters []TagFilters) (result bool) {
 		if strings.Contains(image, i.Registry) {
 			return true
 		}
-
 	}
 	return false
 }
