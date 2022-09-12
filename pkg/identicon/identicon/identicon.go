@@ -83,7 +83,7 @@ func Generate(input []byte, hex string, width int, height int) Identicon {
 }
 
 func hashInput(input []byte) Identicon {
-	checkSum := md5.Sum(input) //nolint:gosec
+	checkSum := md5.Sum(input)
 	return Identicon{
 		Name: string(input),
 		hash: checkSum,

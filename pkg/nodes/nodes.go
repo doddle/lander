@@ -109,7 +109,7 @@ func AssembleTable(
 ) (NodeTable, error) {
 	var result NodeTable
 
-	var nodeStats []NodeStats //nolint:prealloc
+	var nodeStats []NodeStats
 	nodez, err := getAllNodes(logger, clientSet)
 	if err != nil {
 		logger.Fatal(err)

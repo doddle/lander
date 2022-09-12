@@ -62,7 +62,7 @@ export default {
     async getStatefulSets() {
       try {
         this.loading = true
-        const path = '/v1/table/statefulsets'
+        const path = '/v1/statefulSetTable'
         console.debug('retrieving: ' + path)
         const resp = await fetch(path)
         this.objects = await resp.json()

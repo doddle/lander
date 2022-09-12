@@ -5,13 +5,13 @@ import (
 
 	"github.com/doddle/lander/pkg/util"
 	"github.com/stretchr/testify/assert"
-	"k8s.io/api/extensions/v1beta1"
+	networkingv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func Test_isAnnotatedForLander(t *testing.T) {
 	type args struct {
-		ingress    v1beta1.Ingress
+		ingress    networkingv1.Ingress
 		annotation string
 	}
 	tests := []struct {
@@ -22,7 +22,7 @@ func Test_isAnnotatedForLander(t *testing.T) {
 		{
 			name: "should return true for annotation 1",
 			args: args{
-				ingress: v1beta1.Ingress{
+				ingress: networkingv1.Ingress{
 					ObjectMeta: metav1.ObjectMeta{
 						Annotations: map[string]string{
 							"foo.acmecorp.org/notLander":   "false",
@@ -37,7 +37,7 @@ func Test_isAnnotatedForLander(t *testing.T) {
 		{
 			name: "should return false for annotation 1",
 			args: args{
-				ingress: v1beta1.Ingress{
+				ingress: networkingv1.Ingress{
 					ObjectMeta: metav1.ObjectMeta{
 						Annotations: map[string]string{
 							"foo.acmecorp.org/notLander": "true",
@@ -52,7 +52,7 @@ func Test_isAnnotatedForLander(t *testing.T) {
 		{
 			name: "should return true for annotation 1",
 			args: args{
-				ingress: v1beta1.Ingress{
+				ingress: networkingv1.Ingress{
 					ObjectMeta: metav1.ObjectMeta{
 						Annotations: map[string]string{
 							"foo.acmecorp.org/notLander":   "false",
@@ -67,7 +67,7 @@ func Test_isAnnotatedForLander(t *testing.T) {
 		{
 			name: "should return false for annotation 1",
 			args: args{
-				ingress: v1beta1.Ingress{
+				ingress: networkingv1.Ingress{
 					ObjectMeta: metav1.ObjectMeta{
 						Annotations: map[string]string{
 							"foo.acmecorp.org/notLander/show": "true",
@@ -82,7 +82,7 @@ func Test_isAnnotatedForLander(t *testing.T) {
 		{
 			name: "false for non-existant annotation",
 			args: args{
-				ingress: v1beta1.Ingress{
+				ingress: networkingv1.Ingress{
 					ObjectMeta: metav1.ObjectMeta{
 						Annotations: map[string]string{
 							"foo.acmecorp.org/notLander": "true",
@@ -104,7 +104,7 @@ func Test_isAnnotatedForLander(t *testing.T) {
 
 func Test_annotationKeyExists(t *testing.T) {
 	type args struct {
-		ingress v1beta1.Ingress
+		ingress networkingv1.Ingress
 		key     string
 	}
 	tests := []struct {
@@ -115,7 +115,7 @@ func Test_annotationKeyExists(t *testing.T) {
 		{
 			name: "annotation exists",
 			args: args{
-				ingress: v1beta1.Ingress{
+				ingress: networkingv1.Ingress{
 					ObjectMeta: metav1.ObjectMeta{
 						Annotations: map[string]string{
 							"annotation1": "I exist",
@@ -129,7 +129,7 @@ func Test_annotationKeyExists(t *testing.T) {
 		{
 			name: "annotation exists",
 			args: args{
-				ingress: v1beta1.Ingress{
+				ingress: networkingv1.Ingress{
 					ObjectMeta: metav1.ObjectMeta{
 						Annotations: map[string]string{
 							"annotation1": "I exist",
@@ -160,8 +160,9 @@ func (m *WarnImp) Warnf(_ string, _ ...interface{}) {
 func Test_getIngressClass(t *testing.T) {
 	type args struct {
 		logger  *WarnImp
-		ingress v1beta1.Ingress
+		ingress networkingv1.Ingress
 	}
+	ingressClassName := "testClass"
 	tests := []struct {
 		name      string
 		args      args
@@ -172,15 +173,13 @@ func Test_getIngressClass(t *testing.T) {
 			name: "should return value",
 			args: args{
 				logger: new(WarnImp),
-				ingress: v1beta1.Ingress{
-					TypeMeta: metav1.TypeMeta{},
-					ObjectMeta: metav1.ObjectMeta{
-						Annotations: map[string]string{
-							"kubernetes.io/ingress.class": "testClass",
-						},
+				ingress: networkingv1.Ingress{
+					TypeMeta:   metav1.TypeMeta{},
+					ObjectMeta: metav1.ObjectMeta{},
+					Spec: networkingv1.IngressSpec{
+						IngressClassName: &ingressClassName,
 					},
-					Spec:   v1beta1.IngressSpec{},
-					Status: v1beta1.IngressStatus{},
+					Status: networkingv1.IngressStatus{},
 				},
 			},
 			want: "testClass",
@@ -189,13 +188,13 @@ func Test_getIngressClass(t *testing.T) {
 			name: "should warn",
 			args: args{
 				logger: new(WarnImp),
-				ingress: v1beta1.Ingress{
+				ingress: networkingv1.Ingress{
 					TypeMeta: metav1.TypeMeta{},
 					ObjectMeta: metav1.ObjectMeta{
 						Annotations: map[string]string{},
 					},
-					Spec:   v1beta1.IngressSpec{},
-					Status: v1beta1.IngressStatus{},
+					Spec:   networkingv1.IngressSpec{},
+					Status: networkingv1.IngressStatus{},
 				},
 			},
 			want:      "",

@@ -44,7 +44,7 @@ export default {
   methods: {
     async getPieNodes() {
       try {
-        const path = '/v1/pie/nodes'
+        const path = '/v1/nodePieChart'
         console.debug('retrieving: ' + path)
         const resp = await fetch(path)
         const data = await resp.json()

@@ -6,7 +6,7 @@ import (
 
 	"github.com/patrickmn/go-cache"
 	"github.com/withmandala/go-log"
-	"k8s.io/api/extensions/v1beta1"
+	networkingv1 "k8s.io/api/networking/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 )
@@ -16,19 +16,19 @@ var (
 	pkgCache = cache.New(10*time.Second, 10*time.Minute)
 )
 
-// Speaks to the cluster and attempt to pull an IngressList
-func getIngressList(logger *log.Logger,
+// Speaks to the cluster and attempt to pull an IngressList using standard networking/v1
+func getIngressListV1(logger *log.Logger,
 	clientSet *kubernetes.Clientset,
-) (*v1beta1.IngressList, error) {
-	cacheObj := "v1beta/ingress"
+) (*networkingv1.IngressList, error) {
+	cacheObj := "networkingv1/ingress"
 	cached, found := pkgCache.Get(cacheObj)
 	if found {
-		return cached.(*v1beta1.IngressList), nil
+		return cached.(*networkingv1.IngressList), nil
 	}
 
-	// find ALL Ingressess
+	// find ALL Ingresses (Yes we know we can watch them, but this is ok)
 	ingressList, err := clientSet.
-		ExtensionsV1beta1().
+		NetworkingV1().
 		Ingresses("").
 		List(
 			context.TODO(),

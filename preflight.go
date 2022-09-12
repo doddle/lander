@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/doddle/lander/pkg/endpoints"
@@ -42,7 +41,7 @@ func onStartup(logger *log.Logger) {
 		clientSet,
 		*flagLanderAnnotationBase,
 	)
-	files, err := ioutil.ReadDir("./frontend/dist/assets")
+	files, err := os.ReadDir("./frontend/dist/assets")
 	if err != nil {
 		logger.Fatal(err)
 	}

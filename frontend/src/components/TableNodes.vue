@@ -19,7 +19,6 @@
       :search="searchProp"
       sort-by="age"
     >
-      <!-- mod seconds into something human readable yet still searchable -->
       <template v-slot:item.age="{ item }">
         {{ convertSeconds(item.age) }}
       </template>
@@ -72,7 +71,7 @@ export default {
     async getNodes() {
       try {
         this.loading = true
-        const path = '/v1/table/nodes'
+        const path = '/v1/nodeTable'
         console.debug('retrieving: ' + path)
         const resp = await fetch(path)
         const data = await resp.json()

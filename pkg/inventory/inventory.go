@@ -42,13 +42,12 @@ func contains(s []string, str string) bool {
 func AssembleFluxIgnored(
 	logger *log.Logger,
 	config *rest.Config) *resourceObjList {
-
 	apiGroupList, err := GetAPIGroupList(logger, config)
 	if err != nil {
 		logger.Fatal(err)
 	}
 
-	susResourceObjList, err := ProcessApiGroupList(logger, config, apiGroupList)
+	susResourceObjList, err := ProcessAPIGroupList(logger, config, apiGroupList)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -58,13 +57,15 @@ func AssembleFluxIgnored(
 func splitGroupVersion(logger *log.Logger, s string) (string, string) {
 	sep := "/"
 	gv := strings.Split(s, sep)
-	if len(gv) == 2 {
+	length := len(gv)
+	switch length {
+	case 2:
 		return gv[0], gv[1]
-	} else if len(gv) == 1 {
+	case 1:
 		return "", gv[0]
-	} else {
+	default:
 		logger.Errorf("Couldn't unpack '%s' into group and version\n", s)
-		//TODO: I don't know how to just "fail" and don't return anything
+		//TODO: is it worth it to "just fail" and returning nothing?
 		return "", ""
 	}
 }
@@ -153,14 +154,11 @@ func checkGroupAPIResourceAnnotations(
 					}
 				}
 			}
-			//} else {
-			//	log.Infof("sus: no annotations for namespace: %s, resource: %s, kind: %s", r.GetNamespace(), r.GetName(), r.GetKind())
-			//}
 		}
 	}
 }
 
-func ProcessApiGroupList(
+func ProcessAPIGroupList(
 	logger *log.Logger,
 	config *rest.Config,
 	apiGroupList []*metav1.APIResourceList,
@@ -178,10 +176,6 @@ func ProcessApiGroupList(
 		group, version := splitGroupVersion(logger, g.GroupVersion)
 
 		logger.Debugf("discovered apiGroup: %s, v: %s\n", group, version)
-		//if len(g.APIResources) == 0 {
-		//	logger.Debugf("discovered 0 resources for apiGroup: %s, v: %s\n", group , version)
-		//	continue
-		//}
 		checkGroupAPIResourceAnnotations(logger, config, &susResourceObjList, g)
 	}
 

@@ -13,22 +13,17 @@
     <v-data-table
       :dense="true"
       :headers="headers"
-      :items-per-page="50"
+      :items-per-page="20"
       :items="deployments"
       :loading="loading"
       :search="searchProp"
-      sort-by="age"
+      :sort-by="lastChangedTimestamp"
+      :sort-desc="true"
     >
-      <!-- highlight and set node state colours for the "ready" states -->
-      <template v-slot:item.ready="{ item }">
+      <template v-slot:[`item.ready`]="{ item }">
         <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
-            <v-chip
-              :color="markTrueGood(item.ready)"
-              dark
-              v-bind="attrs"
-              v-on="on"
-            >
+          <template v-slot:activator="{ on }">
+            <v-chip :color="markTrueGood(item.ready)" dark v-on="on">
               {{ item.ready }}
             </v-chip>
           </template>
@@ -38,15 +33,10 @@
         </v-tooltip>
       </template>
 
-      <template v-slot:item.progressing="{ item }">
+      <template v-slot:[`item.progressing`]="{ item }">
         <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
-            <v-chip
-              :color="markTrueGood(item.progressing)"
-              dark
-              v-bind="attrs"
-              v-on="on"
-            >
+          <template v-slot:activator="{ on }">
+            <v-chip :color="markTrueGood(item.progressing)" dark v-on="on">
               {{ item.progressing }}
             </v-chip>
           </template>
@@ -54,13 +44,12 @@
         </v-tooltip>
       </template>
 
-      <template v-slot:item.replicas="{ item }">
+      <template v-slot:[`item.replicas`]="{ item }">
         <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
+          <template v-slot:activator="{ on }">
             <v-chip
               :color="looksOK(item.replicas, item.replicas_available)"
               dark
-              v-bind:active="attrs"
               v-on="on"
             >
               {{ item.replicas }}
@@ -70,13 +59,12 @@
         </v-tooltip>
       </template>
 
-      <template v-slot:item.replicas_available="{ item }">
+      <template v-slot:[`item.replicas_available`]="{ item }">
         <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
+          <template v-slot:activator="{ on }">
             <v-chip
               :color="looksOK(item.replicas_available, item.replicas)"
               dark
-              v-bind:active="attrs"
               v-on="on"
             >
               {{ item.replicas_available }}
@@ -84,6 +72,10 @@
           </template>
           <span>available pods (running)</span>
         </v-tooltip>
+      </template>
+
+      <template v-slot:[`item.lastChangedTimestamp`]="{ item }">
+        {{ howManySecondsAgoFriendly(item.lastChangedTimestamp) }}
       </template>
     </v-data-table>
   </v-card>
@@ -94,8 +86,7 @@ export default {
 
   data: () => ({
     searchProp: '',
-    loading: true, // used to indicate if data is being retrieved
-    isActive: null,
+    loading: false, // used to indicate if data is being retrieved
     deployments: [],
     headers: [
       { text: 'namespace', value: 'ns', align: 'start' },
@@ -105,15 +96,47 @@ export default {
       { text: 'progressing', value: 'progressing' },
       { text: 'replicas (desired)', value: 'replicas' },
       { text: 'replicas (available)', value: 'replicas_available' },
-      { text: 'changed', value: 'changed' },
+      { text: 'last changed', value: 'lastChangedTimestamp' },
     ],
   }),
 
   methods: {
+    // quick and dirty, just show "how long ago" it was till something changed
+    // the input timestamp is a UTC timestamp string, if the users
+    // browser's timestamp is far off in the past bad things could happen here however
+    // so maybe fall back to just showing the timestamp?
+    howManySecondsAgoFriendly(timestamp) {
+      const seconds = this.howManySecondsAgo(timestamp)
+      return this.convertSeconds(seconds)
+    },
+
+    howManySecondsAgo(timestamp) {
+      const secondsNow = new Date().getTime()
+      const secondsThen = new Date(timestamp).getTime()
+
+      return Math.floor((secondsNow - secondsThen) / 1000)
+    },
+
+    convertSeconds(inputSeconds) {
+      const seconds = inputSeconds.toFixed(1)
+      const minutes = (inputSeconds / 60).toFixed(1)
+      const hours = (inputSeconds / (60 * 60)).toFixed(1)
+      const days = (inputSeconds / (60 * 60 * 24)).toFixed(1)
+      if (seconds < 60) {
+        return seconds + 's'
+      } else if (minutes < 60) {
+        return minutes + 'm'
+      } else if (hours < 24) {
+        return hours + 'h'
+      } else {
+        return days + 'd'
+      }
+    },
+
     async getDeployments() {
       try {
         this.loading = true
-        const path = '/v1/table/deployments'
+        const path = '/v1/deploymentTable'
         console.debug('retrieving: ' + path)
         const resp = await fetch(path)
         this.deployments = await resp.json()
@@ -143,7 +166,7 @@ export default {
   },
 
   cron: {
-    time: 10000,
+    time: 5000,
     method: 'getDeployments',
   },
 
