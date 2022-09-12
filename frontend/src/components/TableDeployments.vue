@@ -14,7 +14,6 @@
       :dense="true"
       :headers="headers"
       :items-per-page="50"
-      :dark="true"
       :items="deployments"
       :loading="loading"
       :search="searchProp"
