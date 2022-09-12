@@ -7,8 +7,8 @@ WORKDIR /temp
 RUN go mod init temp
 RUN go get golang.org/x/tools/cmd/goimports@latest && go install golang.org/x/tools/cmd/goimports
 # install golangci-lint
-RUN wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.40.1 && \
-      mv ./bin/golangci-lint /bin/.
+RUN wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.48.0 && \
+  mv ./bin/golangci-lint /bin/.
 
 WORKDIR /src
 COPY . .
@@ -59,13 +59,13 @@ ENV GID=1000
 # add the group+user called $USER
 # NOTE $HOME is being set to /tmp so your shell history isn't stored in the docroot (in case u kubectl exec into the pod)
 RUN addgroup -g "$GID" "$USER" && \
-    adduser \
-      --disabled-password \
-      --gecos "" \
-      --home "/tmp" \
-      --ingroup "$USER" \
-      --uid "$UID" \
-      "$USER"
+  adduser \
+  --disabled-password \
+  --gecos "" \
+  --home "/tmp" \
+  --ingroup "$USER" \
+  --uid "$UID" \
+  "$USER"
 
 # chown the files to be owned by $USER
 RUN chown -R $UID:$GID /app
