@@ -13,23 +13,17 @@
     <v-data-table
       :dense="true"
       :headers="headers"
-      :items-per-page="50"
+      :items-per-page="20"
       :items="deployments"
       :loading="loading"
       :search="searchProp"
-      :sort-by="['lastChangedTimestamp']"
-      :sort-desc="[true]"
+      :sort-by="lastChangedTimestamp"
+      :sort-desc="true"
     >
-      <!-- highlight and set node state colours for the "ready" states -->
-      <template v-slot:item.ready="{ item }">
+      <template v-slot:[`item.ready`]="{ item }">
         <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
-            <v-chip
-              :color="markTrueGood(item.ready)"
-              dark
-              v-bind="attrs"
-              v-on="on"
-            >
+          <template v-slot:activator="{ on }">
+            <v-chip :color="markTrueGood(item.ready)" dark v-on="on">
               {{ item.ready }}
             </v-chip>
           </template>
@@ -39,15 +33,10 @@
         </v-tooltip>
       </template>
 
-      <template v-slot:item.progressing="{ item }">
+      <template v-slot:[`item.progressing`]="{ item }">
         <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
-            <v-chip
-              :color="markTrueGood(item.progressing)"
-              dark
-              v-bind="attrs"
-              v-on="on"
-            >
+          <template v-slot:activator="{ on }">
+            <v-chip :color="markTrueGood(item.progressing)" dark v-on="on">
               {{ item.progressing }}
             </v-chip>
           </template>
@@ -55,13 +44,12 @@
         </v-tooltip>
       </template>
 
-      <template v-slot:item.replicas="{ item }">
+      <template v-slot:[`item.replicas`]="{ item }">
         <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
+          <template v-slot:activator="{ on }">
             <v-chip
               :color="looksOK(item.replicas, item.replicas_available)"
               dark
-              v-bind:active="attrs"
               v-on="on"
             >
               {{ item.replicas }}
@@ -71,13 +59,12 @@
         </v-tooltip>
       </template>
 
-      <template v-slot:item.replicas_available="{ item }">
+      <template v-slot:[`item.replicas_available`]="{ item }">
         <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
+          <template v-slot:activator="{ on }">
             <v-chip
               :color="looksOK(item.replicas_available, item.replicas)"
               dark
-              v-bind:active="attrs"
               v-on="on"
             >
               {{ item.replicas_available }}
@@ -87,7 +74,7 @@
         </v-tooltip>
       </template>
 
-      <template v-slot:item.lastChangedTimestamp="{ item }">
+      <template v-slot:[`item.lastChangedTimestamp`]="{ item }">
         {{ howManySecondsAgoFriendly(item.lastChangedTimestamp) }}
       </template>
     </v-data-table>
@@ -99,8 +86,7 @@ export default {
 
   data: () => ({
     searchProp: '',
-    loading: true, // used to indicate if data is being retrieved
-    isActive: null,
+    loading: false, // used to indicate if data is being retrieved
     deployments: [],
     headers: [
       { text: 'namespace', value: 'ns', align: 'start' },
@@ -180,7 +166,7 @@ export default {
   },
 
   cron: {
-    time: 10000,
+    time: 5000,
     method: 'getDeployments',
   },
 
