@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/gofiber/fiber/v2 v2.25.0
+	github.com/gofiber/redirect/v2 v2.1.14
 	github.com/icza/gox v0.0.0-20200702115100-7dc3510ae515
 	github.com/llgcode/draw2d v0.0.0-20200930101115-bfaf5d914d1e
 	github.com/patrickmn/go-cache v2.1.0+incompatible
@@ -25,7 +26,6 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/go-logr/logr v0.2.0 // indirect
-	github.com/gofiber/redirect/v2 v2.1.14 // indirect
 	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/protobuf v1.4.2 // indirect
@@ -33,7 +33,7 @@ require (
 	github.com/googleapis/gnostic v0.4.1 // indirect
 	github.com/imdario/mergo v0.3.5 // indirect
 	github.com/json-iterator/go v1.1.10 // indirect
-	github.com/klauspost/compress v1.14.2 // indirect
+	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
